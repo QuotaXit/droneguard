@@ -140,7 +140,7 @@ export default function RegisterPage() {
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: "https://www.droneguard.it/login",
           data: {
             role: type,
             username,
