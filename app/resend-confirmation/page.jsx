@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import { supabase } from "@/lib/supabase/client"
@@ -11,11 +11,22 @@ export default function ResendConfirmationPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState("")
   const [error, setError] = useState("")
+  const [cooldown, setCooldown] = useState(0)
+
+  useEffect(() => {
+    if (cooldown <= 0) return
+
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1)
+    }, 1000)
+
+    return () => clearInterval(timer)
+  }, [cooldown])
 
   const handleResend = async (e) => {
     e.preventDefault()
 
-    if (loading) return
+    if (loading || cooldown > 0) return
 
     setLoading(true)
     setSuccess("")
@@ -30,7 +41,7 @@ export default function ResendConfirmationPage() {
     }
 
     try {
-      const { error } = await supabase.auth.resend({
+      const { data, error } = await supabase.auth.resend({
         type: "signup",
         email: cleanEmail,
         options: {
@@ -38,13 +49,17 @@ export default function ResendConfirmationPage() {
         }
       })
 
+      console.log("RESEND DATA:", data)
+      console.log("RESEND ERROR:", error)
+
       if (error) {
         setError(error.message || "Non è stato possibile inviare la conferma.")
         return
       }
 
-      setSuccess("Email di conferma inviata. Controlla anche Spam o Posta indesiderata.")
+      setSuccess("Email di conferma inviata. Attendi almeno 60 secondi prima di richiedere un nuovo link. Controlla anche Spam o Posta indesiderata.")
       setEmail("")
+      setCooldown(60)
     } catch (err) {
       console.error("RESEND CONFIRMATION ERROR:", err)
       setError("Errore imprevisto. Riprova più tardi.")
@@ -109,10 +124,14 @@ export default function ResendConfirmationPage() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || cooldown > 0}
               className="mt-6 w-full rounded-2xl bg-green-500 px-6 py-4 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {loading ? "Invio in corso..." : "Reinvia email di conferma"}
+              {loading
+                ? "Invio in corso..."
+                : cooldown > 0
+                  ? `Attendi ${cooldown}s`
+                  : "Reinvia email di conferma"}
             </button>
           </form>
 

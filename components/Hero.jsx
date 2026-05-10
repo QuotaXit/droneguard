@@ -42,7 +42,8 @@ export default function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-300 sm:text-lg">
-          Un marketplace per piloti di droni e aziende. Trova lavori, assumi talenti e gestisci tutto in un’unica piattaforma sicura.
+          Un marketplace per piloti di droni e aziende. Trova lavori, assumi
+          talenti e gestisci tutto in un’unica piattaforma sicura.
         </p>
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:gap-6">
@@ -59,25 +60,6 @@ export default function Hero() {
           >
             Pubblica il tuo lavoro
           </button>
-        </div>
-
-        <div className="mt-14 flex flex-col items-center justify-center gap-6 text-center sm:mt-16 sm:flex-row sm:gap-0">
-          <div className="px-4 sm:px-8">
-            <p className="text-gray-300 mt-2">Piloti Certificati</p>
-          </div>
-
-          <div className="hidden h-12 w-px bg-white/30 sm:block" />
-
-          <div className="px-4 sm:px-8">
-            <p className="text-2xl font-bold text-white sm:text-4xl">Ogni giorno</p>
-            <p className="text-gray-300 mt-2">Nuovi lavori</p>
-          </div>
-
-          <div className="hidden h-12 w-px bg-white/30 sm:block" />
-
-          <div className="px-4 sm:px-8">
-            <p className="text-gray-300 mt-2">Clienti verificati</p>
-          </div>
         </div>
       </div>
     </section>
