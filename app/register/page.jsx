@@ -137,48 +137,34 @@ export default function RegisterPage() {
       }
 
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: normalizedEmail,
-        password,
-        options: {
-          data: {
-            name: nome,
-            role: type
-          }
-        }
-      })
+  email: normalizedEmail,
+  password,
+  options: {
+    emailRedirectTo: `${window.location.origin}/login`,
+    data: {
+      role: type,
+      username,
+      name: nome,
+      surname: cognome,
+      city: citta || "",
+      company_name: ragioneSociale,
+      vat_number: partitaIva,
+      certifications: type === "pilot" ? certificazioni : "",
+      experience: type === "pilot" ? esperienza : "",
+      drone: type === "pilot" ? drone : "",
+      credits: type === "pilot" ? 50 : 0,
+      verified: false
+    }
+  }
+})
 
       if (authError) {
         toast.error(authError.message)
         return
       }
 
-      if (!authData?.user?.id) {
-        toast.error("Registrazione incompleta: utente Auth non trovato.")
-        return
-      }
-
-      const insertData = {
-        id: authData.user.id,
-        email: normalizedEmail,
-        role: type,
-        username,
-        name: nome,
-        surname: cognome,
-        city: citta || "",
-        company_name: ragioneSociale,
-        vat_number: partitaIva,
-        certifications: type === "pilot" ? certificazioni : "",
-        experience: type === "pilot" ? esperienza : "",
-        drone: type === "pilot" ? drone : "",
-        credits: type === "pilot" ? 50 : 0,
-        verified: false
-      }
-
-      console.log("USER INSERT DATA:", insertData)
-
-      const { error: insertError } = await supabase
-        .from("users")
-        .upsert(insertData)
+      toast.success("Registrazione completata. Controlla la tua email per confermare l'account.")
+router.push("/login")
 
       console.log("USER INSERT ERROR:", insertError)
 
@@ -365,10 +351,6 @@ export default function RegisterPage() {
                 {emailError}
               </p>
             )}
-
-            <p className="mt-2 text-xs text-gray-300">
-              Sono accettati solo provider email comuni. La conferma finale resta via email Supabase.
-            </p>
           </div>
 
           <input
