@@ -87,3 +87,4 @@ export default function ProfilePage() {
   }, [pathname, router])
 
   return null
+  }

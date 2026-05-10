@@ -1,72 +1,87 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
 
 export default function JobCard({ variant = 1 }) {
-
   const router = useRouter()
 
-  // 🔥 DATI REALISTICI
+  const handleGoToProfile = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    const role = profile?.role?.toLowerCase()
+
+    if (role === "cliente" || role === "client") {
+      router.push("/dashboard-client")
+      return
+    }
+
+    router.push("/dashboard")
+  }
+
   const jobs = {
     1: {
-    title: "Riprese aeree per immobili – Roma",
-    desc: "Cerco pilota drone per riprese immobili di lusso. Richiesto stile cinematografico e drone 4K.",
-    client: "Agenzia immobiliare (Roma)",
-    brief: "Riprese esterne + panoramiche + montaggio base"
-  },
-  2: {
-    title: "Sorveglianza complesso industriale – Milano",
-    desc: "Richiesto pilota drone per monitoraggio sicurezza area industriale. Controllo perimetrale e report anomalie.",
-    client: "Azienda logistica",
-    brief: "Ispezione area + sorveglianza + report video"
-  },
-  3: {
-    title: "Mappatura terreno agricolo – Bologna",
-    desc: "Cerco operatore drone per mappatura di terreno agricolo. Richiesta precisione e utilizzo software GIS.",
-    client: "Azienda agricola",
-    brief: "Mappatura area + analisi terreno + esportazione dati"
+      title: "Riprese aeree per immobili – Roma",
+      desc: "Cerco pilota drone per riprese immobili di lusso. Richiesto stile cinematografico e drone 4K.",
+      client: "Agenzia immobiliare (Roma)",
+      brief: "Riprese esterne + panoramiche + montaggio base"
+    },
+    2: {
+      title: "Sorveglianza complesso industriale – Milano",
+      desc: "Richiesto pilota drone per monitoraggio sicurezza area industriale. Controllo perimetrale e report anomalie.",
+      client: "Azienda logistica",
+      brief: "Ispezione area + sorveglianza + report video"
+    },
+    3: {
+      title: "Mappatura terreno agricolo – Bologna",
+      desc: "Cerco operatore drone per mappatura di terreno agricolo. Richiesta precisione e utilizzo software GIS.",
+      client: "Azienda agricola",
+      brief: "Mappatura area + analisi terreno + esportazione dati"
     }
   }
 
-  const job = jobs[variant]
+  const job = jobs[variant] || jobs[1]
 
   return (
-    <div className="bg-gray-100 rounded-xl p-6 flex justify-between items-center shadow-md">
-
-      {/* LEFT */}
+    <div className="bg-gray-100 rounded-xl p-6 flex flex-col md:flex-row justify-between gap-6 md:items-center shadow-md">
       <div className="text-black">
-
-        {/* TITLE */}
         <h3 className="font-semibold text-xl">
           {job.title}
         </h3>
 
-        {/* DESCRIPTION */}
         <p className="text-base mt-2 max-w-md leading-relaxed">
           {job.desc}
         </p>
 
-        {/* DETAILS REALI */}
         <div className="text-base mt-3 leading-relaxed">
           🧑 Cliente: {job.client} <br />
           📄 Brief: {job.brief}
         </div>
 
-        {/* 🔥 LABEL ESEMPIO */}
         <p className="text-sm text-gray-500 mt-2">
           (esempio)
         </p>
-
       </div>
 
-      {/* RIGHT BUTTON */}
       <button
-        onClick={() => router.push("/login")}
+        onClick={handleGoToProfile}
         className="bg-gradient-to-r from-[#60a5fa] via-[#3b82f6] to-[#6366f1] text-white px-6 py-2 rounded-full text-sm font-medium shadow-[0_0_20px_rgba(96,165,250,0.6)] hover:scale-105 transition"
       >
         Accedi per sbloccare
       </button>
-
     </div>
   )
 }

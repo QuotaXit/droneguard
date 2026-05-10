@@ -1,10 +1,36 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
 
 export default function CTA() {
-
   const router = useRouter()
+
+  const handleStart = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      router.push("/login")
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle()
+
+    const role = profile?.role?.toLowerCase()
+
+    if (role === "cliente" || role === "client") {
+      router.push("/dashboard-client")
+      return
+    }
+
+    router.push("/dashboard")
+  }
 
   return (
     <section className="relative text-white py-24 px-6 overflow-hidden">
@@ -16,27 +42,26 @@ export default function CTA() {
       <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
         
         {/* TESTO */}
-        <div className="max-w-xl">
-          <h2 className="text-4xl font-bold leading-tight">
-            Ready to Launch <br /> Your Next Mission?
-          </h2>
+<div className="max-w-xl">
+  <h2 className="text-4xl font-bold leading-tight">
+    Ready to Launch <br /> Your Next Mission?
+  </h2>
 
-          <p className="text-gray-300 mt-4">
-            Unisciti a una rete in crescita di piloti di droni certificati e aziende.
-            Trova lavoro o assumi i migliori professionisti in pochi minuti.
-          </p>
+  <p className="text-gray-300 mt-4">
+    Unisciti a una rete in crescita di piloti di droni certificati e aziende.
+    Trova lavoro o assumi i migliori professionisti in pochi minuti.
+  </p>
 
-          {/* 🔥 FIX LOGIN */}
-          <button
-            onClick={() => router.push("/login")}
-            className="mt-6 px-10 py-2.5 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
-          >
-            Inizia qui
-          </button>
-        </div>
+  <button
+    onClick={handleStart}
+    className="mt-6 px-10 py-2.5 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
+  >
+    Inizia qui
+  </button>
+</div>
 
-        {/* IMMAGINE */}
-        <div className="w-full md:w-[400px] h-[220px] rounded-xl overflow-hidden">
+{/* IMMAGINE */}
+<div className="w-full md:w-[400px] h-[220px] rounded-xl overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1508614589041-895b88991e3e"
             alt="Drone"
