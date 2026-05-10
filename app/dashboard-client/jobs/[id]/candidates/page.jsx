@@ -393,7 +393,7 @@ export default function CandidatesPage() {
 
       if (upsertError) {
         console.log("UPSERT ERROR:", upsertError)
-        alert(`Errore invio dati: ${upsertError.message}`)
+        toast.error(`Errore invio dati: ${upsertError.message}`)
         return
       }
 
@@ -411,7 +411,7 @@ export default function CandidatesPage() {
         console.log("NOTIFICATION ERROR:", notificationError)
       }
 
-      alert("Dati lavoro inviati ✅")
+      toast.success("Dati lavoro inviati ✅")
       setShowDetailsModal(false)
       setMeetingPoint("")
       setExactLocation("")
@@ -423,7 +423,7 @@ export default function CandidatesPage() {
       await loadCandidates()
     } catch (err) {
       console.log("SEND JOB DETAILS GENERAL ERROR:", err)
-      alert("Errore generale invio dati lavoro")
+      toast.error("Errore generale invio dati lavoro")
     } finally {
       setSendingDetails(false)
     }
@@ -528,7 +528,7 @@ export default function CandidatesPage() {
           .single()
 
         if (convError || !newConversation) {
-          alert("Errore creazione chat")
+          toast.error("Errore creazione chat")
           return
         }
 
@@ -557,11 +557,11 @@ export default function CandidatesPage() {
         }
       ])
 
-      alert("Lavoro assegnato con successo ✅")
+      toast.success("Lavoro assegnato con successo ✅")
       await loadCandidates()
     } catch (err) {
       console.log("ASSIGN GENERAL ERROR:", err)
-      alert("Errore generale assegnazione")
+      toast.error("Errore generale assegnazione")
     } finally {
       setLoadingAssign(null)
     }
