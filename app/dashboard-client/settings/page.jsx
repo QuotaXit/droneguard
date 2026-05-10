@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from "react"
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 import {
@@ -244,7 +245,7 @@ export default function SettingsClientPage() {
 
       if (uploadError) {
         console.log(uploadError)
-        alert("Errore upload immagine ❌")
+        toast.error("Errore upload immagine ❌")
         return
       }
 
@@ -270,13 +271,13 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
       setAvatar(finalUrl)
 
-      alert("Foto profilo aggiornata ✅")
+      toast.success("Foto profilo aggiornata ✅")
 
     } catch (err) {
 
       console.log(err)
 
-      alert("Errore upload ❌")
+      toast.error("Errore upload ❌")
     }
   }
 
@@ -286,31 +287,31 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
     try {
 
       if (!user) {
-        alert("Utente non trovato ❌")
+        toast.error("Utente non trovato ❌")
         return
       }
 
       // 🔥 BIO MAX 120
       if (bio.length > 120) {
-        alert("La biografia può avere massimo 120 caratteri ❌")
+        toast.error("La biografia può avere massimo 120 caratteri ❌")
         return
       }
 
       // 🔥 BIO SOLO LETTERE E NUMERI
       if (bio && !validateBio(bio)) {
-        alert("La biografia può contenere solo lettere e numeri ❌")
+        toast.error("La biografia può contenere solo lettere e numeri ❌")
         return
       }
 
       // 🔥 SOCIETÀ MAX 20
       if (companyName.length > 20) {
-        alert("Nome società massimo 20 caratteri ❌")
+        toast.error("Nome società massimo 20 caratteri ❌")
         return
       }
 
       // 🔥 PIVA
       if (vatNumber && !validateVat(vatNumber)) {
-        alert("Partita IVA non valida ❌")
+        toast.error("Partita IVA non valida ❌")
         return
       }
 
@@ -330,17 +331,17 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
       if (error) {
         console.log(error)
-        alert(error.message)
+        toast.error(error.message)
         return
       }
 
-      alert("Profilo aggiornato ✅")
+      toast.success("Profilo aggiornato ✅")
 
     } catch (err) {
 
       console.log(err)
 
-      alert("Errore imprevisto ❌")
+      toast.error("Errore imprevisto ❌")
 
     } finally {
 
@@ -353,12 +354,12 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
   const updateEmail = async () => {
 
     if (!newEmail || !confirmEmail) {
-      alert("Compila tutti i campi")
+      toast.error("Compila tutti i campi")
       return
     }
 
     if (newEmail !== confirmEmail) {
-      alert("Le email non coincidono ❌")
+      toast.error("Le email non coincidono ❌")
       return
     }
 
@@ -367,11 +368,11 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
     })
 
     if (error) {
-      alert("Errore aggiornamento email ❌")
+      toast.error("Errore aggiornamento email ❌")
       return
     }
 
-    alert("Controlla la nuova email 📩")
+    toast.success("Email aggiornata ✅")
 
     setNewEmail("")
     setConfirmEmail("")
@@ -381,12 +382,12 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
   const updatePassword = async () => {
 
     if (!newPassword || !confirmPassword) {
-      alert("Compila tutti i campi")
+      toast.error("Compila tutti i campi")
       return
     }
 
     if (newPassword !== confirmPassword) {
-      alert("Le password non coincidono ❌")
+      toast.error("Le password non coincidono ❌")
       return
     }
 
@@ -395,11 +396,11 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
     })
 
     if (error) {
-      alert("Errore aggiornamento password ❌")
+      toast.error("Errore aggiornamento password ❌")
       return
     }
 
-    alert("Password aggiornata ✅")
+    toast.success("Password aggiornata ✅")
 
     setNewPassword("")
     setConfirmPassword("")
@@ -429,14 +430,14 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
       <Navbar />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
         <div className="max-w-6xl mx-auto">
 
           {/* HEADER */}
           <div className="mb-10">
 
-            <h1 className="text-4xl font-bold mb-2">
+            <h1 className="mb-2 text-3xl font-bold sm:text-4xl">
               Impostazioni Cliente
             </h1>
 
@@ -446,10 +447,10 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
           </div>
 
-          <div className="grid grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
 
             {/* LEFT */}
-            <div className="col-span-4 space-y-6">
+            <div className="space-y-6 lg:col-span-4">
 
               {/* CARD PROFILO */}
               <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
@@ -479,7 +480,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                   </label>
 
-                  <h2 className="text-3xl font-bold mt-5">
+                  <h2 className="mt-5 text-2xl font-bold sm:text-3xl">
                     {name || "Cliente"}
                   </h2>
 
@@ -529,7 +530,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                 </div>
 
-                <h3 className="text-5xl font-bold mb-2">
+                <h3 className="mb-2 text-4xl font-bold sm:text-5xl">
                   {credits}
                 </h3>
 
@@ -548,7 +549,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
             </div>
 
             {/* RIGHT */}
-            <div className="col-span-8 space-y-6">
+            <div className="space-y-6 lg:col-span-8">
 
               {/* INFO */}
               <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
@@ -557,7 +558,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                   <User size={22} />
 
-                  <h2 className="text-2xl font-semibold">
+                  <h2 className="text-xl font-semibold sm:text-2xl">
                     Informazioni profilo
                   </h2>
 
@@ -683,7 +684,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                 <button
                   onClick={updateEmail}
-                  className="bg-green-500 px-5 py-3 rounded-lg text-black font-medium"
+                  className="w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-black sm:w-auto"
                 >
                   Aggiorna email
                 </button>
@@ -725,7 +726,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                 <button
                   onClick={updatePassword}
-                  className="bg-green-500 px-5 py-3 rounded-lg text-black font-medium"
+                  className="w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-black sm:w-auto"
                 >
                   Cambia password
                 </button>
@@ -745,7 +746,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                 </div>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
                   <div>
 
@@ -799,7 +800,7 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                 <button
                   onClick={deleteAccount}
-                  className="bg-red-500 px-5 py-3 rounded-lg font-medium"
+                  className="w-full rounded-lg bg-red-500 px-5 py-3 font-medium sm:w-auto"
                 >
                   Elimina account
                 </button>

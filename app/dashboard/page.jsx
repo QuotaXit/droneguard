@@ -293,14 +293,14 @@ export default function Dashboard() {
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
-        <div className="grid grid-cols-12 items-start gap-8 max-w-7xl mx-auto">
-          <div className="col-span-3 h-fit min-h-[520px] border border-white/20 rounded-2xl p-8 bg-white/5 backdrop-blur-md">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="h-fit border border-white/20 rounded-2xl bg-white/5 p-5 backdrop-blur-md sm:p-8 lg:col-span-3 lg:min-h-[520px]">
             <h2 className="text-2xl font-[var(--font-krona)] mb-10">
               Menu
             </h2>
 
-            <div className="space-y-6 text-xl text-gray-300">
+            <div className="space-y-5 text-base text-gray-300 sm:text-lg lg:space-y-6">
               <Link href="/dashboard/jobs">
                 <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
                   <Briefcase size={20} />
@@ -371,7 +371,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="col-span-3">
+          <div className="lg:col-span-3">
             <div className="border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md">
               <h2 className="text-xl font-[var(--font-krona)] mb-4">
                 Profilo
@@ -454,13 +454,13 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="col-span-6 space-y-6">
-            <div className="border border-white/20 rounded-2xl p-8 bg-[#140a3a]">
-              <h2 className="text-2xl font-semibold mb-6">
+          <div className="space-y-6 lg:col-span-6">
+            <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
+              <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
                 Dashboard Pilota
               </h2>
 
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
                   <div className="flex items-center gap-3">
                     <CheckCircle2 size={22} />
@@ -470,7 +470,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <h2 className="text-4xl font-bold mt-5">
+                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
                     {completedJobs}
                   </h2>
                 </div>
@@ -484,7 +484,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <h2 className="text-4xl font-bold mt-5">
+                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
                     {activeJobs}
                   </h2>
                 </div>
@@ -498,7 +498,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <h2 className="text-4xl font-bold mt-5">
+                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
                     {applications}
                   </h2>
                 </div>
@@ -512,7 +512,7 @@ export default function Dashboard() {
                     </p>
                   </div>
 
-                  <h2 className="text-4xl font-bold mt-5">
+                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
                     {credits}
                   </h2>
                 </div>

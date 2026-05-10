@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 export default function JobDetail() {
@@ -50,7 +51,7 @@ export default function JobDetail() {
         "[job-assign] job update failed:",
         updateJobError
       )
-      alert("Errore aggiornamento lavoro")
+      toast.error("Errore aggiornamento lavoro")
       return
     }
 
@@ -66,7 +67,7 @@ export default function JobDetail() {
         "[job-assign] accept failed:",
         acceptError
       )
-      alert("Errore assegnazione")
+      toast.error("Errore assegnazione")
       return
     }
 
@@ -82,6 +83,7 @@ export default function JobDetail() {
         "[job-assign] reject others failed:",
         rejectError
       )
+      toast.error("Errore rifiuto candidature")
     }
 
     // 🔔 NOTIFICA
@@ -111,7 +113,7 @@ export default function JobDetail() {
       )
     }
 
-    alert("Pilota selezionato ✅")
+    toast.success("Pilota selezionato ✅")
 
     // reload dati
     location.reload()
@@ -124,10 +126,10 @@ export default function JobDetail() {
 
       <Navbar logged />
 
-      <div className="p-10 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
         <div className="max-w-4xl mx-auto mb-10">
-          <h1 className="text-3xl font-[var(--font-krona)] mb-4">
+          <h1 className="mb-4 text-2xl font-[var(--font-krona)] sm:text-3xl">
             {job.title}
           </h1>
 
@@ -149,7 +151,7 @@ export default function JobDetail() {
           {applications.map((app) => (
             <div
               key={app.id}
-              className="bg-white/5 border border-white/20 rounded-xl p-5 flex justify-between items-center"
+              className="flex flex-col gap-4 rounded-xl border border-white/20 bg-white/5 p-5 sm:flex-row sm:items-center sm:justify-between"
             >
 
               <div>
@@ -166,7 +168,7 @@ export default function JobDetail() {
                 </p>
               </div>
 
-              <div className="text-right">
+              <div className="sm:text-right">
 
                 <p className="text-green-400 text-xl font-bold">
                   {app.price}€

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 const allowedDomains = [
@@ -147,12 +148,12 @@ export default function RegisterPage() {
       })
 
       if (authError) {
-        alert(authError.message)
+        toast.error(authError.message)
         return
       }
 
       if (!authData?.user?.id) {
-        alert("Registrazione incompleta: utente Auth non trovato.")
+        toast.error("Registrazione incompleta: utente Auth non trovato.")
         return
       }
 
@@ -182,14 +183,14 @@ export default function RegisterPage() {
       console.log("USER INSERT ERROR:", insertError)
 
       if (insertError) {
-        alert(`Errore salvataggio profilo: ${insertError.message}`)
+        toast.error(`Errore salvataggio profilo: ${insertError.message}`)
         return
       }
 
-      alert("Registrazione completata. Controlla la tua email per confermare l'account.")
+      toast.success("Registrazione completata. Controlla la tua email per confermare l'account.")
       router.push("/login")
     } catch {
-      alert("Errore durante la registrazione.")
+      toast.error("Errore durante la registrazione.")
     } finally {
       setLoading(false)
     }
@@ -199,12 +200,12 @@ export default function RegisterPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
-      <div className="relative flex flex-1 items-center justify-center px-6 text-white">
+      <div className="relative flex flex-1 items-start justify-center px-4 py-8 text-white sm:items-center sm:px-6">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
 
         <form
           onSubmit={handleRegister}
-          className="relative z-10 w-full max-w-sm space-y-4 rounded-2xl border border-white/20 bg-white/5 p-8"
+          className="relative z-10 w-full max-w-sm space-y-4 rounded-2xl border border-white/20 bg-white/5 p-6 sm:p-8"
         >
           <div className="flex gap-3">
             <button

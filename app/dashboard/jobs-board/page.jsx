@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 import {
@@ -91,7 +92,7 @@ setPilotsCount(totalApplications || 0)
     const price = offers[jobId]
 
     if (!price) {
-      alert("Inserisci il tuo prezzo ❌")
+      toast.error("Inserisci il tuo prezzo ❌")
       return
     }
 
@@ -114,7 +115,7 @@ setPilotsCount(totalApplications || 0)
     }
 
     if (targetJob?.status === "assigned" || targetJob?.status === "completed") {
-      alert("Questo lavoro non è più disponibile ❌")
+      toast.error("Questo lavoro non è più disponibile ❌")
       loadJobs()
       return
     }
@@ -126,7 +127,7 @@ setPilotsCount(totalApplications || 0)
       .single()
 
     if (!profile || profile.credits < 5) {
-      alert("Crediti insufficienti ❌")
+      toast.error("Crediti insufficienti ❌")
       return
     }
 
@@ -136,7 +137,7 @@ setPilotsCount(totalApplications || 0)
       .eq("job_id", jobId)
 
     if (count >= 10) {
-      alert("Numero massimo candidature raggiunto ❌")
+      toast.error("Numero massimo candidature raggiunto ❌")
       return
     }
 
@@ -148,7 +149,7 @@ setPilotsCount(totalApplications || 0)
       .maybeSingle()
 
     if (existing) {
-      alert("Ti sei già candidato ❌")
+      toast.error("Ti sei già candidato ❌")
       return
     }
 
@@ -190,7 +191,7 @@ setPilotsCount(totalApplications || 0)
 
     if (error) {
       console.error("[applications] create failed:", error)
-      alert(
+      toast.error(
         "Errore candidatura: " +
           (error?.message || error?.details || error?.code || "errore sconosciuto")
       )
@@ -232,7 +233,7 @@ setPilotsCount(totalApplications || 0)
 
     console.log("[applications] created:", createdApplication)
 
-    alert("Candidatura inviata 🚀")
+    toast.success("Candidatura inviata 🚀")
     loadJobs()
   }
 
@@ -241,10 +242,10 @@ setPilotsCount(totalApplications || 0)
       <Navbar logged />
 
       <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
-        <div className="max-w-[1700px] mx-auto flex gap-8 p-8">
-          <div className="w-[320px] shrink-0">
-            <div className="sticky top-8 border border-white/10 bg-[#140a3a] rounded-3xl p-7">
-              <h2 className="text-3xl font-bold mb-8">Dashboard</h2>
+        <div className="mx-auto flex w-full max-w-[1700px] flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:gap-8 lg:px-8">
+          <div className="w-full lg:w-[320px] lg:shrink-0">
+            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-7 lg:sticky lg:top-8">
+              <h2 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">Dashboard</h2>
 
               <div className="space-y-5">
                 <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
@@ -253,7 +254,7 @@ setPilotsCount(totalApplications || 0)
                     <p className="text-gray-300">Lavori attuali</p>
                   </div>
 
-                  <h3 className="text-4xl font-bold text-green-400">
+                  <h3 className="text-3xl font-bold text-green-400 sm:text-4xl">
                     {activeJobs}
                   </h3>
                 </div>
@@ -264,7 +265,7 @@ setPilotsCount(totalApplications || 0)
                     <p className="text-gray-300">Lavori completati</p>
                   </div>
 
-                  <h3 className="text-4xl font-bold text-cyan-400">
+                  <h3 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
                     {completedJobs}
                   </h3>
                 </div>
@@ -275,7 +276,7 @@ setPilotsCount(totalApplications || 0)
 <p className="text-gray-300">Candidature totali</p>                 
  </div>
 
-                  <h3 className="text-4xl font-bold text-yellow-400">
+                  <h3 className="text-3xl font-bold text-yellow-400 sm:text-4xl">
                     {pilotsCount}
                   </h3>
                 </div>
@@ -285,14 +286,14 @@ setPilotsCount(totalApplications || 0)
 
           <div className="flex-1">
             <div className="mb-12">
-              <h1 className="text-6xl font-bold mb-4">Bacheca lavori</h1>
+              <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-6xl">Bacheca lavori</h1>
 
-              <p className="text-gray-400 text-xl">
+              <p className="text-base text-gray-400 sm:text-xl">
                 Esplora i lavori pubblicati dai clienti DroneGuard.
               </p>
             </div>
 
-            <div className="max-h-[1320px] space-y-8 overflow-y-auto pr-3">
+            <div className="space-y-6 lg:max-h-[1320px] lg:space-y-8 lg:overflow-y-auto lg:pr-3">
               {jobs.length === 0 && (
                 <div className="border border-white/10 bg-[#140a3a] rounded-3xl p-14 text-center">
                   <h2 className="text-3xl font-bold mb-4">
@@ -308,16 +309,16 @@ setPilotsCount(totalApplications || 0)
               {jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="border border-white/10 bg-[#140a3a] rounded-3xl p-8"
+                  className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8"
                 >
-                  <div className="flex justify-between gap-8">
-                    <div className="flex-1 max-w-2xl">
-                      <div className="flex items-center gap-4 mb-5">
+                  <div className="flex flex-col justify-between gap-6 lg:flex-row lg:gap-8">
+                    <div className="max-w-2xl flex-1">
+                      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
                         <Briefcase size={24} />
-                        <h2 className="text-3xl font-bold">{job.title}</h2>
+                        <h2 className="text-2xl font-bold sm:text-3xl">{job.title}</h2>
                       </div>
 
-                      <p className="text-gray-300 text-lg leading-relaxed mb-6">
+                      <p className="mb-6 text-base leading-relaxed text-gray-300 sm:text-lg">
                         {job.description}
                       </p>
 
@@ -362,7 +363,7 @@ setPilotsCount(totalApplications || 0)
                       )}
                     </div>
 
-                    <div className="w-[300px]">
+                    <div className="w-full lg:w-[300px]">
                       <input
                         type="number"
                         placeholder="La tua offerta €"

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { usePathname, useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import { isPilot, getDashboardPath } from "@/lib/auth-utils"
 

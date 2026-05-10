@@ -21,14 +21,14 @@ export default function HowItWorks() {
   ]
 
   return (
-    <section className="relative text-white py-24 px-6">
+    <section className="relative px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
       
       <div className="absolute inset-0 bg-gradient-to-b from-[#0b0f2a] to-[#0a0d1f]" />
 
       <div className="relative z-10 max-w-6xl mx-auto text-center">
         
         {/* TITLE */}
-        <h2 className="text-4xl md:text-5xl font-bold font-[var(--font-krona)]">
+        <h2 className="text-3xl font-bold font-[var(--font-krona)] sm:text-4xl md:text-5xl">
           How it works?
         </h2>
 
@@ -37,11 +37,11 @@ export default function HowItWorks() {
           Dai rilievi nei cantieri alla mappatura agricola — tutti i servizi commerciali con droni in un’unica piattaforma.
         </p>
 
-        <div className="grid md:grid-cols-3 gap-8 mt-14">
+        <div className="mt-14 grid gap-8 md:grid-cols-3">
           {steps.map((step, i) => (
             <div
               key={i}
-              className="relative p-8 rounded-2xl text-left bg-[#0F1535] border border-white/30"
+              className="relative rounded-2xl border border-white/30 bg-[#0F1535] p-5 text-left sm:p-8"
             >
               
               {/* NUMBER */}
@@ -59,7 +59,7 @@ export default function HowItWorks() {
 
               {/* STEP 1 */}
               {step.type === "profile" && (
-                <div className="bg-white text-black rounded-xl p-3 flex items-center gap-3">
+                <div className="flex flex-col gap-3 rounded-xl bg-white p-3 text-black sm:flex-row sm:items-center">
                   <img
                     src="https://randomuser.me/api/portraits/women/44.jpg"
                     className="w-10 h-10 rounded-md"
@@ -70,7 +70,7 @@ export default function HowItWorks() {
                       Dai rilievi nei cantieri alla mappatura agricola — tutti i servizi commerciali con droni in un’unica piattaforma.
                     </p>
                   </div>
-                  <button className="text-xs bg-purple-500 text-white px-2 py-1 rounded-md">
+                  <button className="rounded-md bg-purple-500 px-2 py-2 text-xs text-white sm:py-1">
                     Vedi i Lavori
                   </button>
                 </div>
@@ -87,7 +87,7 @@ export default function HowItWorks() {
               )}
 
               {step.type === "earnings" && (
-  <div className="relative mt-8 w-[90%]">
+  <div className="relative mt-8 w-full sm:w-[90%]">
     
     {/* CARD DIETRO 2 */}
     <div className="absolute top-6 left-6 w-full bg-white text-black rounded-xl p-4 shadow-md opacity-70 z-10" />

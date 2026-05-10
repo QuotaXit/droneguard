@@ -126,18 +126,18 @@ export default function ClientDashboard() {
       <Navbar logged />
 
       {/* CONTENUTO */}
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
-        <div className="grid grid-cols-12 gap-8 max-w-7xl mx-auto">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
 
           {/* MENU */}
-          <div className="col-span-3 border border-white/20 rounded-2xl p-8 bg-white/5 backdrop-blur-md">
+          <div className="rounded-2xl border border-white/20 bg-white/5 p-5 backdrop-blur-md sm:p-8 lg:col-span-3">
 
             <h2 className="text-2xl font-[var(--font-krona)] mb-10">
               Menu
             </h2>
 
-            <ul className="space-y-6 text-xl text-gray-300">
+            <ul className="space-y-5 text-base text-gray-300 sm:text-lg lg:space-y-6">
 
 <Link href="/dashboard-client/in-progress">
   <div className="flex items-center gap-3">
@@ -205,7 +205,7 @@ window.location.href = "/"
           </div>
 
           {/* PROFILO */}
-          <div className="col-span-3 border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md text-center">
+          <div className="rounded-2xl border border-white/20 bg-white/5 p-6 text-center backdrop-blur-md lg:col-span-3">
 
   <h2 className="text-xl font-[var(--font-krona)] mb-4">
     Profilo
@@ -262,9 +262,9 @@ window.location.href = "/"
 
 
           {/* DASHBOARD */}
-          <div className="col-span-6 border border-white/20 rounded-2xl p-8 bg-[#140a3a]">
+          <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8 lg:col-span-6">
 
-            <h2 className="text-2xl font-semibold mb-1">
+            <h2 className="mb-1 text-xl font-semibold sm:text-2xl">
               Dashboard Cliente
             </h2>
 
@@ -273,7 +273,7 @@ window.location.href = "/"
             </p>
 
             {/* STATS */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 
               {/* LAVORI PUBBLICATI */}
               <div className="bg-white/5 p-5 rounded-xl border border-white/10">

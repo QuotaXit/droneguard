@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import Link from "next/link"
 
@@ -148,7 +149,7 @@ export default function ClientJobs() {
 
     await supabase.from("jobs").delete().eq("id", id)
 
-    alert("Lavoro eliminato ✅")
+    toast.success("Lavoro eliminato ✅")
 
     loadJobs()
   }
@@ -173,7 +174,7 @@ export default function ClientJobs() {
       })
       .eq("job_id", job.id)
 
-    alert("Lavoro annullato ✅")
+    toast.success("Lavoro annullato ✅")
 
     loadJobs()
   }
@@ -200,7 +201,7 @@ export default function ClientJobs() {
       })
       .eq("job_id", job.id)
 
-    alert("Lavoro terminato con successo ✅")
+    toast.success("Lavoro terminato con successo ✅")
 
     loadJobs()
   }
@@ -220,7 +221,7 @@ export default function ClientJobs() {
     if (!selectedJob) return
 
     if (selectedJob.status === "assigned") {
-      alert("Non puoi modificare un annuncio dopo aver assegnato il pilota.")
+      toast.error("Non puoi modificare un annuncio dopo aver assegnato il pilota.")
       return
     }
 
@@ -236,11 +237,11 @@ export default function ClientJobs() {
 
     if (error) {
       console.log(error)
-      alert("Errore salvataggio")
+      toast.error("Errore salvataggio")
       return
     }
 
-    alert("Annuncio aggiornato ✅")
+    toast.success("Annuncio aggiornato ✅")
 
     setShowEditModal(false)
 
@@ -270,7 +271,7 @@ export default function ClientJobs() {
       })
       .eq("job_id", selectedJob.id)
 
-    alert("Lavoro chiuso con successo ✅")
+    toast.success("Lavoro chiuso con successo ✅")
 
     setShowCloseModal(false)
 
@@ -281,32 +282,32 @@ export default function ClientJobs() {
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-10">
+          <div className="mb-8 flex flex-col gap-5 sm:mb-10 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-5xl font-bold mb-3">Lavori attivi</h1>
+              <h1 className="mb-3 text-3xl font-bold sm:text-4xl lg:text-5xl">Lavori attivi</h1>
 
-              <p className="text-gray-400 text-lg">
+              <p className="text-base text-gray-400 sm:text-lg">
                 Gestisci i tuoi annunci e controlla i candidati.
               </p>
             </div>
 
             <Link href="/dashboard-client/create-job">
-              <button className="bg-green-500 px-6 py-4 rounded-2xl text-black font-semibold text-lg hover:bg-green-400 transition">
+              <button className="w-full rounded-2xl bg-green-500 px-6 py-4 text-base font-semibold text-black transition hover:bg-green-400 sm:w-auto sm:text-lg">
                 + Nuovo lavoro
               </button>
             </Link>
           </div>
 
-          <div className="grid grid-cols-4 gap-6 mb-10">
+          <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
             <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-6">
               <div className="flex items-center gap-3 mb-4">
                 <Briefcase size={22} />
                 <p className="text-gray-300">Lavori attivi</p>
               </div>
 
-              <h2 className="text-5xl font-bold text-green-400">
+              <h2 className="text-4xl font-bold text-green-400 sm:text-5xl">
                 {activeJobs}
               </h2>
             </div>
@@ -317,7 +318,7 @@ export default function ClientJobs() {
                 <p className="text-gray-300">Assegnati</p>
               </div>
 
-              <h2 className="text-5xl font-bold text-yellow-400">
+              <h2 className="text-4xl font-bold text-yellow-400 sm:text-5xl">
                 {assignedJobs}
               </h2>
             </div>
@@ -328,7 +329,7 @@ export default function ClientJobs() {
                 <p className="text-gray-300">Candidature ricevute</p>
               </div>
 
-              <h2 className="text-5xl font-bold text-yellow-400">
+              <h2 className="text-4xl font-bold text-yellow-400 sm:text-5xl">
                 {totalApplications}
               </h2>
             </div>
@@ -339,7 +340,7 @@ export default function ClientJobs() {
                 <p className="text-gray-300">Nuove notifiche</p>
               </div>
 
-              <h2 className="text-5xl font-bold text-red-400">
+              <h2 className="text-4xl font-bold text-red-400 sm:text-5xl">
                 {notifications}
               </h2>
             </div>
@@ -356,7 +357,7 @@ export default function ClientJobs() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-7">
               {jobs.map((job) => {
                 const daysLeft = getDaysLeft(job)
 
@@ -390,7 +391,7 @@ export default function ClientJobs() {
                     )}
 
                     <div className="p-6">
-                      <div className="flex justify-between items-center mb-4">
+                      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${getJobStatusClass(
                             job
@@ -416,7 +417,7 @@ export default function ClientJobs() {
                         <div>📅 {job.job_date}</div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <button
                           onClick={() => openEditModal(job)}
                           className="bg-green-500 text-black py-3 rounded-xl font-semibold hover:bg-green-400 transition flex items-center justify-center gap-2"
@@ -478,10 +479,10 @@ export default function ClientJobs() {
       </div>
 
       {showEditModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-8 w-full max-w-2xl">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-bold">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:max-w-2xl sm:p-8">
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <h2 className="text-2xl font-bold sm:text-3xl">
                 {selectedJob?.status === "assigned"
                   ? "Dettagli annuncio"
                   : "Modifica annuncio"}
@@ -546,8 +547,8 @@ export default function ClientJobs() {
       )}
 
       {showCloseModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-5">
-          <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-8 w-full max-w-xl relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="relative max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:max-w-xl sm:p-8">
             <button
               onClick={() => setShowCloseModal(false)}
               className="absolute top-5 right-5 text-gray-400 hover:text-white transition"
@@ -555,7 +556,7 @@ export default function ClientJobs() {
               <X size={24} />
             </button>
 
-            <h2 className="text-4xl font-bold mb-4 leading-tight pr-10">
+            <h2 className="mb-4 pr-10 text-2xl font-bold leading-tight sm:text-4xl">
               Sei sicuro di voler chiudere il lavoro?
             </h2>
 
@@ -566,14 +567,14 @@ export default function ClientJobs() {
             <div className="space-y-5">
               <button
                 onClick={() => closeJob("found_pilot")}
-                className="w-full bg-green-500 text-black py-5 rounded-2xl font-bold text-2xl hover:bg-green-400 transition"
+                className="w-full rounded-2xl bg-green-500 py-4 text-lg font-bold text-black transition hover:bg-green-400 sm:py-5 sm:text-2xl"
               >
                 Trovato pilota
               </button>
 
               <button
                 onClick={() => closeJob("cancelled")}
-                className="w-full bg-red-500 text-white py-5 rounded-2xl font-bold text-2xl hover:bg-red-400 transition"
+                className="w-full rounded-2xl bg-red-500 py-4 text-lg font-bold text-white transition hover:bg-red-400 sm:py-5 sm:text-2xl"
               >
                 Annulla il lavoro
               </button>

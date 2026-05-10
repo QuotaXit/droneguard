@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import { Users } from "lucide-react"
 
@@ -105,7 +106,7 @@ export default function InProgressJobs() {
 
     if (error) {
       console.log(error)
-      alert("Errore durante l'eliminazione del lavoro")
+      toast.error("Errore durante l'eliminazione del lavoro")
       return
     }
 
@@ -130,7 +131,7 @@ export default function InProgressJobs() {
 
     if (error) {
       console.log(error)
-      alert("Errore durante il completamento del lavoro")
+      toast.error("Errore durante il completamento del lavoro")
       return
     }
 
@@ -166,12 +167,12 @@ export default function InProgressJobs() {
 
     if (error) {
       console.log(error)
-      alert("Errore caricamento pilota")
+      toast.error("Errore caricamento pilota")
       return
     }
 
     if (!data) {
-      alert("Profilo pilota non trovato")
+      toast.error("Profilo pilota non trovato")
       return
     }
 
@@ -192,7 +193,7 @@ export default function InProgressJobs() {
 
     if (error) {
       console.log(error)
-      alert("Errore caricamento dati")
+      toast.error("Errore caricamento dati")
       return
     }
 
@@ -204,40 +205,40 @@ export default function InProgressJobs() {
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
-        <div className="max-w-7xl mx-auto grid grid-cols-12 gap-8">
-          <div className="col-span-3 space-y-6">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+          <div className="space-y-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 lg:col-span-3 lg:block lg:space-y-6">
             <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
               <p className="text-gray-400">Piloti contattati</p>
-              <h2 className="text-4xl font-bold text-yellow-400">
+              <h2 className="text-3xl font-bold text-yellow-400 sm:text-4xl">
                 {stats.pilots}
               </h2>
             </div>
 
             <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
               <p className="text-gray-400">Lavori completati</p>
-              <h2 className="text-4xl font-bold text-green-400">
+              <h2 className="text-3xl font-bold text-green-400 sm:text-4xl">
                 {stats.completed}
               </h2>
             </div>
 
             <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
               <p className="text-gray-400">Attivi</p>
-              <h2 className="text-4xl font-bold text-cyan-400">
+              <h2 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
                 {stats.active}
               </h2>
             </div>
           </div>
 
-          <div className="col-span-9">
-            <h1 className="text-5xl font-bold mb-8">Lavori in corso</h1>
+          <div className="lg:col-span-9">
+            <h1 className="mb-8 text-3xl font-bold sm:text-4xl lg:text-5xl">Lavori in corso</h1>
 
             {jobs.length === 0 ? (
-              <div className="bg-[#140a3a] p-10 rounded-2xl text-center">
+              <div className="rounded-2xl bg-[#140a3a] p-6 text-center sm:p-10">
                 Nessun lavoro in corso
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 {jobs.map((job) => (
                   <div
                     key={job.id}
@@ -252,7 +253,7 @@ export default function InProgressJobs() {
                     )}
 
                     <div className="p-6">
-                      <div className="flex justify-between mb-3">
+                      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:justify-between">
                         <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-semibold">
                           IN CORSO
                         </span>
@@ -274,7 +275,7 @@ export default function InProgressJobs() {
                         📅 {job.job_date}
                       </div>
 
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <button
                           onClick={() => openPilotDetails(job.pilot_id)}
                           className="bg-green-500 text-black py-2 rounded-lg font-semibold hover:bg-green-400 transition"
@@ -313,8 +314,8 @@ export default function InProgressJobs() {
       </div>
 
       {showPilotModal && selectedPilot && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-8 w-full max-w-xl text-center relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="relative max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-center sm:max-w-xl sm:p-8">
             <button
               onClick={() => setShowPilotModal(false)}
               className="absolute top-4 right-4 text-white text-xl"
@@ -360,8 +361,8 @@ export default function InProgressJobs() {
 
       {showDetailsModal && selectedJob && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
-          <div className="w-full max-w-4xl rounded-3xl border border-white/10 bg-[#140a3a] p-8 text-white">
-            <h2 className="mb-2 text-4xl font-bold">
+          <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-white sm:max-w-4xl sm:p-8">
+            <h2 className="mb-2 text-2xl font-bold sm:text-4xl">
               Dati inviati al pilota
             </h2>
 
@@ -374,8 +375,8 @@ export default function InProgressJobs() {
                 Nessun dato è stato ancora inviato al pilota.
               </div>
             ) : (
-              <div className="overflow-hidden rounded-2xl border border-white/10">
-                <table className="w-full text-left text-sm">
+              <div className="overflow-x-auto rounded-2xl border border-white/10">
+                <table className="w-full min-w-[560px] text-left text-sm">
                   <tbody>
                     <tr className="border-b border-white/10">
                       <th className="w-1/3 bg-black/20 p-4 text-gray-400">

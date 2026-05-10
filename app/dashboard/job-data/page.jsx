@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 const ACTIVE_STATUSES = ["assigned", "accepted", "in_progress", "active", "details_sent"]
@@ -223,7 +224,7 @@ function JobDataContent() {
     const activeJobId = selectedAssignment?.job_id || currentJob?.id
 
     if (!activeJobId || !userId) {
-      alert("Errore: lavoro o utente non trovato")
+      toast.error("Errore: lavoro o utente non trovato")
       return
     }
 
@@ -249,7 +250,7 @@ function JobDataContent() {
       console.log("JOB COMPLETE ERROR:", jobsError)
 
       if (jobsError) {
-        alert("Errore chiusura lavoro: " + jobsError.message)
+        toast.error("Errore chiusura lavoro: " + jobsError.message)
         return
       }
 
@@ -263,7 +264,7 @@ function JobDataContent() {
         .eq("pilot_id", userId)
 
       if (appError) {
-        alert("Errore aggiornamento applications: " + appError.message)
+        toast.error("Errore aggiornamento applications: " + appError.message)
         return
       }
 
@@ -277,14 +278,14 @@ function JobDataContent() {
         .eq("pilot_id", userId)
 
       if (assignmentError) {
-        alert("Errore aggiornamento job_assignments: " + assignmentError.message)
+        toast.error("Errore aggiornamento job_assignments: " + assignmentError.message)
         return
       }
 
       setSelectedAssignment(null)
       setSelectedJob(null)
 
-      alert("Lavoro concluso con successo")
+      toast.success("Lavoro concluso con successo")
       router.replace("/dashboard/jobs")
     } finally {
       setCompleting(false)
@@ -322,14 +323,14 @@ function JobDataContent() {
     <div className="min-h-screen text-white">
       <Navbar logged />
 
-      <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="max-w-6xl mx-auto">
           <div className="mb-10">
-            <h1 className="text-5xl font-bold mb-4">
+            <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
               Dati lavoro
             </h1>
 
-            <p className="text-gray-400 text-lg">
+            <p className="text-base text-gray-400 sm:text-lg">
               Informazioni operative inviate dai clienti
             </p>
           </div>
@@ -341,8 +342,8 @@ function JobDataContent() {
           )}
 
           {!loading && !selectedAssignment && !selectedJob && (
-            <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-10">
-              <h2 className="text-3xl font-bold mb-3">
+            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 sm:p-10">
+              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
                 Nessun dato lavoro
               </h2>
 
@@ -353,10 +354,10 @@ function JobDataContent() {
           )}
 
           {!loading && (selectedAssignment || selectedJob) && (
-            <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-8">
+            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8">
               <div className="flex flex-col gap-5 mb-8 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                  <h2 className="text-3xl font-bold mb-2">
+                  <h2 className="mb-2 text-2xl font-bold sm:text-3xl">
                     {job?.title || "Lavoro"}
                   </h2>
 
@@ -372,7 +373,7 @@ function JobDataContent() {
                 </div>
 
                 <div className="flex flex-col gap-3 lg:items-end">
-                  <div className={`px-5 py-2 rounded-xl font-bold ${
+                  <div className={`rounded-xl px-4 py-2 text-sm font-bold sm:px-5 sm:text-base ${
                     hasOperationalData
                       ? "bg-green-500 text-black"
                       : "bg-white/10 text-white"
@@ -386,7 +387,7 @@ function JobDataContent() {
                     <button
                       onClick={completeJob}
                       disabled={completing}
-                      className="bg-green-500 hover:bg-green-400 text-black font-bold rounded-xl px-5 py-3 transition disabled:opacity-60"
+                      className="w-full rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400 disabled:opacity-60 lg:w-auto"
                     >
                       {completing
                         ? "Chiusura in corso..."
@@ -483,7 +484,7 @@ export default function JobDataPage() {
       fallback={
         <div className="min-h-screen text-white">
           <Navbar logged />
-          <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+          <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
             <div className="max-w-6xl mx-auto text-gray-400">
               Caricamento...
             </div>

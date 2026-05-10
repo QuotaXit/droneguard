@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabase/client"
+import { toast } from "sonner"
 import Navbar from "@/components/Navbar"
 
 export default function CreateJob() {
@@ -55,7 +56,7 @@ export default function CreateJob() {
       .single()
 
     if (profile.credits < 5) {
-      alert("Crediti insufficienti ❌")
+      toast.error("Crediti insufficienti ❌")
       return
     }
 
@@ -77,7 +78,7 @@ export default function CreateJob() {
     ])
 
     if (error) {
-      alert("Errore creazione lavoro ❌")
+      toast.error("Errore creazione lavoro ❌")
       console.log(error)
       return
     }
@@ -107,7 +108,7 @@ export default function CreateJob() {
       .update({ credits: profile.credits - 5 })
       .eq("id", user.id)
 
-    alert("Lavoro pubblicato 🚀")
+    toast.success("Lavoro pubblicato 🚀")
     window.location.href = "/dashboard-client"
   }
 
@@ -116,11 +117,11 @@ export default function CreateJob() {
 
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
-        <div className="max-w-xl mx-auto bg-white/5 border border-white/20 rounded-2xl p-8">
+        <div className="mx-auto w-full max-w-xl rounded-2xl border border-white/20 bg-white/5 p-5 sm:p-8">
 
-          <h2 className="text-2xl mb-6 font-[var(--font-krona)]">
+          <h2 className="mb-6 text-xl font-[var(--font-krona)] sm:text-2xl">
             Pubblica un lavoro
           </h2>
 
@@ -144,7 +145,7 @@ export default function CreateJob() {
 
     setTitle(formatted)
   }}
-  className="w-full p-4 rounded-lg bg-transparent border border-white/20 text-2xl font-bold tracking-wide"
+  className="w-full rounded-lg border border-white/20 bg-transparent p-4 text-xl font-bold tracking-wide sm:text-2xl"
 />
 
             {/* DESCRIZIONE */}

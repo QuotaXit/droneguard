@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import {
   MapPin,
@@ -315,27 +316,27 @@ export default function CandidatesPage() {
 
     try {
       if (!selectedPilot) {
-        alert("Pilota non selezionato")
+        toast.error("Pilota non selezionato")
         return
       }
 
       if (!exactLocation.trim()) {
-        alert("Inserisci la posizione precisa")
+        toast.error("Inserisci la posizione precisa")
         return
       }
 
       if (!meetingPoint.trim()) {
-        alert("Inserisci il punto di ritrovo")
+        toast.error("Inserisci il punto di ritrovo")
         return
       }
 
       if (!phone.trim()) {
-        alert("Inserisci il telefono")
+        toast.error("Inserisci il telefono")
         return
       }
 
       if (!email.trim()) {
-        alert("Inserisci l'email")
+        toast.error("Inserisci l'email")
         return
       }
 
@@ -573,14 +574,14 @@ export default function CandidatesPage() {
       <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-6 sm:p-8 lg:p-10">
         <div className="mx-auto max-w-7xl">
           <div className="mb-10">
-            <h1 className="mb-4 text-4xl font-bold sm:text-5xl">Candidati</h1>
+            <h1 className="mb-4 text-3xl font-bold sm:text-5xl">Candidati</h1>
             <p className="text-lg text-gray-400">{job?.title}</p>
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 sm:p-8">
             <div className="mb-8 flex flex-col gap-5 border-b border-white/10 pb-6 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="mb-2 text-3xl font-bold">{job?.title}</h2>
+                <h2 className="mb-2 text-2xl font-bold sm:text-3xl">{job?.title}</h2>
 
                 <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-gray-400">
                   <div className="flex items-center gap-2">
@@ -723,7 +724,7 @@ export default function CandidatesPage() {
                               </p>
                               <div className="mt-3 flex items-center gap-3">
                                 <BadgeEuro size={20} className="text-emerald-300" />
-                                <p className="text-3xl font-bold text-white">
+                                <p className="break-words text-2xl font-bold text-white sm:text-3xl">
                                   {formatPrice(offerValue)}
                                 </p>
                               </div>
@@ -798,8 +799,8 @@ export default function CandidatesPage() {
 
       {showDetailsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
-          <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-8 text-white">
-            <h2 className="mb-2 text-4xl font-bold">
+          <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-white sm:max-w-3xl sm:p-8">
+            <h2 className="mb-2 text-2xl font-bold sm:text-4xl">
               {selectedPilot?.hasSentDetails ? "Modifica dati lavoro" : "Invia dati lavoro"}
             </h2>
 
@@ -840,7 +841,7 @@ export default function CandidatesPage() {
                 placeholder="Punto di ritrovo"
                 value={meetingPoint}
                 onChange={(e) => setMeetingPoint(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
               />
 
               <input
@@ -853,14 +854,14 @@ export default function CandidatesPage() {
                   const onlyNumbers = e.target.value.replace(/\D/g, "")
                   setPhone(onlyNumbers)
                 }}
-                className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
               />
 
               <input
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
               />
             </div>
 
@@ -871,7 +872,7 @@ export default function CandidatesPage() {
               className="mt-5 h-40 w-full rounded-2xl border border-white/10 bg-black/20 p-4"
             />
 
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <button
                 disabled={sendingDetails}
                 onClick={() => setShowDetailsModal(false)}

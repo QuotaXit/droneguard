@@ -48,12 +48,12 @@ export default function ApplicationsPage() {
       {/* NAVBAR */}
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
         <div className="max-w-6xl mx-auto">
 
           {/* TITLE */}
-          <h1 className="text-3xl font-[var(--font-krona)] mb-10">
+          <h1 className="mb-10 text-2xl font-[var(--font-krona)] sm:text-3xl">
             Le mie candidature
           </h1>
 
@@ -72,7 +72,7 @@ export default function ApplicationsPage() {
                 className="border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md"
               >
 
-                <div className="flex justify-between items-center mb-4">
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
                   <h2 className="text-xl font-semibold">
                     {app.jobs?.title}
@@ -95,7 +95,7 @@ export default function ApplicationsPage() {
                   {app.jobs?.description}
                 </p>
 
-                <div className="flex justify-between text-sm text-gray-400">
+                <div className="flex flex-col gap-2 text-sm text-gray-400 sm:flex-row sm:justify-between">
 
                   <span>💰 Budget: {app.jobs?.budget}€</span>
                   <span>📍 {app.jobs?.location}</span>

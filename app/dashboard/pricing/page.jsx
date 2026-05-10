@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import {
   CreditCard,
@@ -71,7 +72,7 @@ export default function PricingPage() {
       } = await supabase.auth.getUser()
 
       if (!user) {
-        alert("Devi accedere per acquistare crediti")
+        toast.error("Devi accedere per acquistare crediti")
         return
       }
 
@@ -89,14 +90,14 @@ export default function PricingPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data.error || "Errore pagamento")
+        toast.error(data.error || "Errore pagamento")
         return
       }
 
       window.location.href = data.url
     } catch (error) {
       console.error(error)
-      alert("Errore imprevisto durante il pagamento")
+      toast.error("Errore imprevisto durante il pagamento")
     } finally {
       setCheckoutLoading(null)
     }
@@ -106,12 +107,12 @@ export default function PricingPage() {
     if (!userData) return
 
     if (!isPilot) {
-      alert("I 50 crediti gratuiti sono riservati solo ai piloti.")
+      toast.error("I 50 crediti gratuiti sono riservati solo ai piloti.")
       return
     }
 
     if (userData.free_credits_claimed) {
-      alert("Hai già riscattato i crediti ❌")
+      toast.error("Hai già riscattato i crediti ❌")
       return
     }
 
@@ -133,7 +134,7 @@ export default function PricingPage() {
 
       if (error || !data) {
         console.error(error)
-        alert("Bonus disponibile solo per account pilota ❌")
+        toast.error("Bonus disponibile solo per account pilota ❌")
         return
       }
 
@@ -145,7 +146,7 @@ export default function PricingPage() {
         free_credits_claimed: true
       }))
 
-      alert("50 crediti aggiunti 🚀")
+      toast.success("50 crediti aggiunti 🚀")
     } finally {
       setClaimLoading(false)
     }
@@ -157,7 +158,7 @@ export default function PricingPage() {
     } = await supabase.auth.getUser()
 
     if (!user?.email) {
-      alert("Email non trovata")
+      toast.error("Email non trovata")
       return
     }
 
@@ -168,21 +169,21 @@ export default function PricingPage() {
 
     if (error) {
       console.log(error)
-      alert("Errore invio email")
+      toast.error("Errore invio email")
       return
     }
 
-    alert("Email di conferma inviata ✅")
+    toast.success("Email di conferma inviata ✅")
   }
 
   return (
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="max-w-7xl mx-auto space-y-10">
           <div>
-            <h1 className="text-4xl font-bold mb-3">
+            <h1 className="mb-3 text-3xl font-bold sm:text-4xl">
               Crediti DroneGuard
             </h1>
 
@@ -195,7 +196,7 @@ export default function PricingPage() {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <CreditCard size={24} className="mb-3" />
               <p className="text-gray-400 text-sm">Crediti</p>
-              <h2 className="text-4xl font-bold text-green-400">
+              <h2 className="text-3xl font-bold text-green-400 sm:text-4xl">
                 {credits}
               </h2>
             </div>
@@ -203,7 +204,7 @@ export default function PricingPage() {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
               <Users size={24} className="mb-3" />
               <p className="text-gray-400 text-sm">Piloti</p>
-              <h2 className="text-4xl font-bold text-cyan-400">
+              <h2 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
                 {pilots}
               </h2>
             </div>
@@ -229,7 +230,7 @@ export default function PricingPage() {
 
                   <button
                     onClick={sendVerificationEmail}
-                    className="bg-yellow-400 hover:bg-yellow-300 transition text-black px-5 py-3 rounded-2xl font-bold"
+                    className="w-full rounded-2xl bg-yellow-400 px-5 py-3 font-bold text-black transition hover:bg-yellow-300 sm:w-auto"
                   >
                     Conferma email
                   </button>
@@ -238,7 +239,7 @@ export default function PricingPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <div
               className={`rounded-2xl p-6 text-center border ${
                 isPilot
@@ -250,7 +251,7 @@ export default function PricingPage() {
                 Starter pilota
               </h3>
 
-              <p className="text-4xl font-bold text-green-400 mb-4">
+              <p className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
                 50 crediti
               </p>
 
@@ -278,7 +279,7 @@ export default function PricingPage() {
             <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6 text-center">
               <h3 className="text-xl font-bold mb-2">Standard</h3>
 
-              <p className="text-4xl font-bold mb-2">€9</p>
+              <p className="mb-2 text-3xl font-bold sm:text-4xl">€9</p>
 
               <p className="text-gray-400 mb-4">
                 40 crediti
@@ -304,7 +305,7 @@ export default function PricingPage() {
                 Pro
               </h3>
 
-              <p className="text-4xl font-bold mb-2">€19</p>
+              <p className="mb-2 text-3xl font-bold sm:text-4xl">€19</p>
 
               <p className="text-gray-400 mb-4">
                 100 crediti

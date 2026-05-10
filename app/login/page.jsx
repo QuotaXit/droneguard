@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { getDashboardPath } from "@/lib/auth-utils"
@@ -30,15 +31,14 @@ export default function LoginPage() {
 
       if (error) {
         console.log(error)
-        alert("Email o password errati")
-        return
+      toast.error("Password errata")        
       }
 
       // USER
       const user = authData.user
 
       if (!user) {
-        alert("Utente non trovato")
+        toast.error("Utente non trovato")
         return
       }
 
@@ -51,13 +51,13 @@ export default function LoginPage() {
 
       if (profileError) {
         console.error("[Login] Profile error:", profileError)
-        alert("Errore caricamento profilo")
+        toast.error("Errore caricamento profilo")
         return
       }
 
       if (!profile) {
         console.error("[Login] Profilo non trovato per user:", user.id)
-        alert("Profilo utente non trovato")
+        toast.error("Profilo utente non trovato")
         await supabase.auth.signOut()
         return
       }
@@ -81,7 +81,7 @@ export default function LoginPage() {
 
       console.log("LOGIN ERROR:", err)
 
-      alert("Errore login")
+      toast.error("Errore login")
 
     } finally {
 
@@ -98,7 +98,7 @@ export default function LoginPage() {
       <Navbar />
 
       {/* CONTENUTO */}
-      <div className="flex-1 flex items-center justify-center relative text-white px-6">
+      <div className="relative flex flex-1 items-center justify-center px-4 py-8 text-white sm:px-6">
 
         {/* BACKGROUND */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
@@ -106,7 +106,7 @@ export default function LoginPage() {
         {/* CARD */}
         <form
           onSubmit={handleLogin}
-          className="relative z-10 w-full max-w-sm bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl p-8"
+          className="relative z-10 w-full max-w-sm rounded-2xl border border-white/20 bg-white/5 p-6 backdrop-blur-md sm:p-8"
         >
 
           {/* EMAIL */}

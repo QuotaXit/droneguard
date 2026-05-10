@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 export default function MyJobs() {
@@ -248,8 +249,8 @@ export default function MyJobs() {
 
       {selectedJob && (
         <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
-          <div className="w-full max-w-3xl max-h-[90vh] overflow-y-auto bg-[#140a3a] border border-white/20 rounded-3xl p-5 md:p-6 text-white shadow-2xl">
-            <div className="flex justify-between items-start gap-4 mb-5">
+          <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/20 bg-[#140a3a] p-5 text-white shadow-2xl md:max-w-3xl md:p-6">
+            <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl md:text-3xl font-bold mb-1">
                   {selectedJob.title || "Riepilogo lavoro"}
@@ -314,7 +315,7 @@ export default function MyJobs() {
                 Guadagno reale del pilota
               </p>
 
-              <div className="flex gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <input
                   type="number"
                   placeholder="Es. 250"
@@ -325,7 +326,7 @@ export default function MyJobs() {
 
                 <button
                   onClick={saveEarning}
-                  className="px-6 py-3 rounded-xl bg-green-500 hover:bg-green-400 text-black font-bold"
+                  className="rounded-xl bg-green-500 px-6 py-3 font-bold text-black hover:bg-green-400"
                 >
                   Salva
                 </button>

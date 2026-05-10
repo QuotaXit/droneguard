@@ -224,17 +224,17 @@ export default function Navbar() {
         : null
 
   return (
-    <nav className="flex items-center justify-between border-b border-white/10 bg-[#0B0F2A] px-8 py-6 text-white">
-      <Link href="/">
-        <h1 className="cursor-pointer text-lg font-semibold">
+    <nav className="flex items-center justify-between gap-3 border-b border-white/10 bg-[#0B0F2A] px-4 py-4 text-white sm:px-6 sm:py-5 lg:px-8 lg:py-6">
+      <Link href="/" className="min-w-0 shrink-0">
+        <h1 className="cursor-pointer text-base font-semibold sm:text-lg">
           DroneGuard
         </h1>
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         {!user && !authLoading && (
           <Link href="/login">
-            <button className="flex items-center gap-3 rounded-full border-2 border-white px-6 py-3 transition hover:bg-white hover:text-black">
+            <button className="flex items-center gap-2 rounded-full border-2 border-white px-4 py-2 text-sm transition hover:bg-white hover:text-black sm:gap-3 sm:px-6 sm:py-3 sm:text-base">
               <LogIn size={20} />
               Accedi
             </button>
@@ -244,14 +244,14 @@ export default function Navbar() {
         {user && (
           <>
             <Link href="/">
-              <button className="rounded-full border border-white px-4 py-2 transition hover:bg-white hover:text-black">
+              <button className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base">
                 Home
               </button>
             </Link>
 
             {profileHref && (
               <Link href={profileHref}>
-                <button className="rounded-full border border-white px-4 py-2 transition hover:bg-white hover:text-black">
+                <button className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base">
                   Profilo
                 </button>
               </Link>
@@ -275,7 +275,7 @@ export default function Navbar() {
               </button>
 
               {open && (
-                <div className="absolute right-0 z-50 mt-3 w-80 rounded-xl border border-white/20 bg-[#0F1B4D] p-4 shadow-xl">
+                <div className="fixed left-4 right-4 top-20 z-50 rounded-xl border border-white/20 bg-[#0F1B4D] p-4 shadow-xl sm:absolute sm:left-auto sm:right-0 sm:top-auto sm:mt-3 sm:w-80">
                   {notifications.length === 0 && (
                     <p className="text-sm text-gray-400">
                       Nessuna notifica

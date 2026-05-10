@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 function normalizeRole(role) {
@@ -56,12 +57,12 @@ export default function CreditsPage() {
     if (!userData) return
 
     if (!isClient) {
-      alert("I 10 crediti gratuiti sono riservati solo ai clienti.")
+      toast.error("I 10 crediti gratuiti sono riservati solo ai clienti.")
       return
     }
 
     if (userData.free_credits_claimed) {
-      alert("Hai già riscattato i crediti gratuiti ❌")
+      toast.error("Hai già riscattato i crediti gratuiti ❌")
       return
     }
 
@@ -83,7 +84,7 @@ export default function CreditsPage() {
 
       if (error || !data) {
         console.error(error)
-        alert("Bonus disponibile solo per account cliente ❌")
+        toast.error("Bonus disponibile solo per account cliente ❌")
         return
       }
 
@@ -95,7 +96,7 @@ export default function CreditsPage() {
         free_credits_claimed: true
       }))
 
-      alert("10 crediti aggiunti 🚀")
+      toast.success("10 crediti aggiunti 🚀")
     } finally {
       setClaimLoading(false)
     }
@@ -110,7 +111,7 @@ export default function CreditsPage() {
       } = await supabase.auth.getUser()
 
       if (!user) {
-        alert("Devi accedere per acquistare crediti")
+        toast.error("Devi accedere per acquistare crediti")
         return
       }
 
@@ -128,14 +129,14 @@ export default function CreditsPage() {
       const data = await res.json()
 
       if (!res.ok) {
-        alert(data.error || "Errore pagamento")
+        toast.error(data.error || "Errore pagamento")
         return
       }
 
       window.location.href = data.url
     } catch (error) {
       console.error(error)
-      alert("Errore imprevisto durante il pagamento")
+      toast.error("Errore imprevisto durante il pagamento")
     } finally {
       setCheckoutLoading(null)
     }
@@ -145,9 +146,9 @@ export default function CreditsPage() {
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-[var(--font-krona)] mb-6">
+          <h1 className="mb-6 text-3xl font-[var(--font-krona)] sm:text-4xl">
             Crediti
           </h1>
 
@@ -156,12 +157,12 @@ export default function CreditsPage() {
               Crediti disponibili
             </p>
 
-            <h2 className="text-5xl font-bold">
+            <h2 className="text-4xl font-bold sm:text-5xl">
               {loading ? "..." : credits}
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
             <div
               className={`border rounded-2xl p-8 text-center ${
                 isClient
@@ -177,7 +178,7 @@ export default function CreditsPage() {
                 Bonus iniziale
               </p>
 
-              <h2 className="text-4xl font-bold mb-4 text-green-400">
+              <h2 className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
                 Gratis
               </h2>
 
@@ -209,7 +210,7 @@ export default function CreditsPage() {
                 Ricarica veloce
               </p>
 
-              <h2 className="text-4xl font-bold mb-4">
+              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
                 €4
               </h2>
 
@@ -237,7 +238,7 @@ export default function CreditsPage() {
                 Perfetto per iniziare
               </p>
 
-              <h2 className="text-4xl font-bold mb-4">
+              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
                 €9
               </h2>
 
@@ -265,7 +266,7 @@ export default function CreditsPage() {
                 Per clienti professionali
               </p>
 
-              <h2 className="text-4xl font-bold mb-4">
+              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
                 €19.99
               </h2>
 

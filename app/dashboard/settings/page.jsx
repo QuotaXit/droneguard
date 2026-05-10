@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 const certificationsList = [
@@ -83,12 +84,12 @@ function getDisplayPosition(city, location) {
 
 function ProfileInfoRow({ label, value }) {
   return (
-    <div className="grid grid-cols-[110px_1fr] items-start gap-3 rounded-xl bg-white/[0.03] px-4 py-3">
+    <div className="grid grid-cols-1 items-start gap-2 rounded-xl bg-white/[0.03] px-4 py-3 sm:grid-cols-[110px_1fr] sm:gap-3">
       <p className="text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
         {label}
       </p>
 
-      <p className="text-center text-sm font-medium text-gray-200">
+      <p className="break-words text-left text-sm font-medium text-gray-200 sm:text-center">
         {value}
       </p>
     </div>
@@ -169,7 +170,7 @@ export default function SettingsPage() {
 
     if (error) {
       console.error("Errore caricamento profilo:", error)
-      alert(`Errore caricamento profilo: ${error.message}`)
+      toast.error("Errore caricamento profilo")
       return
     }
 
@@ -200,7 +201,7 @@ export default function SettingsPage() {
         .single()
 
       if (createError) {
-        alert(`Errore creazione profilo: ${createError.message}`)
+        toast.error("Errore creazione profilo")
         return
       }
 
@@ -253,7 +254,7 @@ export default function SettingsPage() {
 
     if (uploadError) {
       console.log(uploadError)
-      alert("Errore upload immagine")
+      toast.error("Errore upload immagine")
       return
     }
 
@@ -272,7 +273,7 @@ export default function SettingsPage() {
 
     if (updateError) {
       console.log(updateError)
-      alert("Errore salvataggio avatar")
+      toast.error("Errore salvataggio avatar")
       return
     }
 
@@ -285,7 +286,7 @@ export default function SettingsPage() {
         : prev
     )
 
-    alert("Foto profilo aggiornata")
+    toast.success("Foto profilo aggiornata")
   }
 
   const saveProfile = async () => {
@@ -297,7 +298,7 @@ export default function SettingsPage() {
       } = await supabase.auth.getUser()
 
       if (!currentUser) {
-        alert("Utente non autenticato")
+        toast.error("Utente non autenticato")
         return
       }
 
@@ -326,20 +327,20 @@ export default function SettingsPage() {
 
       if (error) {
         console.error("Errore Supabase settings:", error)
-        alert(`Errore salvataggio: ${error.message}`)
+        toast.error(`Errore salvataggio: ${error.message}`)
         return
       }
 
       if (!data) {
-        alert("Errore: Supabase non ha restituito il profilo salvato")
+        toast.error("Errore: Supabase non ha restituito il profilo salvato")
         return
       }
 
       applyProfileState(data)
-      alert("Profilo aggiornato")
+      toast.success("Profilo aggiornato")
     } catch (err) {
       console.error("Errore imprevisto settings:", err)
-      alert("Errore imprevisto durante il salvataggio.")
+      toast.error("Errore imprevisto durante il salvataggio.")
     } finally {
       setLoading(false)
     }
@@ -347,12 +348,12 @@ export default function SettingsPage() {
 
   const updateEmail = async () => {
     if (!newEmail.trim() || !confirmEmail.trim()) {
-      alert("Inserisci e conferma la nuova email")
+      toast.error("Inserisci e conferma la nuova email")
       return
     }
 
     if (newEmail.trim() !== confirmEmail.trim()) {
-      alert("Le email non coincidono")
+      toast.error("Le email non coincidono")
       return
     }
 
@@ -361,28 +362,28 @@ export default function SettingsPage() {
     })
 
     if (error) {
-      alert(error.message)
+      toast.error(error.message)
       return
     }
 
     setNewEmail("")
     setConfirmEmail("")
-    alert("Controlla la nuova email per confermare la modifica")
+    toast.success("Controlla la nuova email per confermare la modifica")
   }
 
   const updatePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      alert("Compila tutti i campi password")
+      toast.error("Compila tutti i campi password")
       return
     }
 
     if (newPassword !== confirmPassword) {
-      alert("Le password non coincidono")
+      toast.error("Le password non coincidono")
       return
     }
 
     if (newPassword.length < 6) {
-      alert("La nuova password deve avere almeno 6 caratteri")
+      toast.error("La nuova password deve avere almeno 6 caratteri")
       return
     }
 
@@ -392,7 +393,7 @@ export default function SettingsPage() {
     })
 
     if (loginError) {
-      alert("Password attuale non corretta")
+      toast.error("Password attuale non corretta")
       return
     }
 
@@ -401,14 +402,14 @@ export default function SettingsPage() {
     })
 
     if (error) {
-      alert(error.message)
+      toast.error(error.message)
       return
     }
 
     setCurrentPassword("")
     setNewPassword("")
     setConfirmPassword("")
-    alert("Password aggiornata")
+    toast.success("Password aggiornata con successo")
   }
 
   const deleteAccount = async () => {
@@ -527,7 +528,7 @@ export default function SettingsPage() {
 
           <div className="space-y-6 lg:col-span-8">
             <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 md:p-8">
-              <h2 className="mb-8 text-3xl font-bold">
+              <h2 className="mb-8 text-2xl font-bold sm:text-3xl">
                 Informazioni professionali
               </h2>
 
@@ -735,7 +736,7 @@ export default function SettingsPage() {
 
               <button
                 onClick={updateEmail}
-                className="rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400"
+                className="w-full rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400 sm:w-auto"
               >
                 Aggiorna email
               </button>
@@ -776,7 +777,7 @@ export default function SettingsPage() {
 
               <button
                 onClick={updatePassword}
-                className="rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400"
+                className="w-full rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400 sm:w-auto"
               >
                 Cambia password
               </button>
@@ -793,7 +794,7 @@ export default function SettingsPage() {
 
               <button
                 onClick={deleteAccount}
-                className="rounded-lg bg-red-500 px-6 py-3"
+                className="w-full rounded-lg bg-red-500 px-6 py-3 sm:w-auto"
               >
                 Elimina account
               </button>

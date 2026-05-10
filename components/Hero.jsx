@@ -33,51 +33,49 @@ export default function Hero() {
   }
 
   return (
-    <section className="relative text-white py-24 px-6 overflow-hidden">
+    <section className="relative overflow-hidden px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
 
-      <div className="relative z-10 text-center max-w-5xl mx-auto">
-        <h1 className="text-6xl font-bold leading-tight">
+      <div className="relative z-10 mx-auto max-w-5xl text-center">
+        <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-6xl">
           Where Drone Work Happens
         </h1>
 
-        <p className="mt-6 text-gray-300 text-lg max-w-2xl mx-auto">
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-300 sm:text-lg">
           Un marketplace per piloti di droni e aziende. Trova lavori, assumi talenti e gestisci tutto in un’unica piattaforma sicura.
         </p>
 
-        <div className="mt-10 flex justify-center gap-6">
+        <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:gap-6">
           <button
             onClick={handleGoToProfile}
-            className="px-8 py-4 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
+            className="w-full rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-6 py-4 font-medium text-black shadow-lg transition hover:scale-105 sm:w-auto sm:px-8"
           >
             Cerca Lavoro
           </button>
 
           <button
             onClick={handleGoToProfile}
-            className="px-8 py-4 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
+            className="w-full rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-6 py-4 font-medium text-black shadow-lg transition hover:scale-105 sm:w-auto sm:px-8"
           >
             Pubblica il tuo lavoro
           </button>
         </div>
 
-        <div className="mt-16 flex justify-center items-center text-center">
-          <div className="px-8">
-            <p className="text-4xl font-bold text-white">50+</p>
+        <div className="mt-14 flex flex-col items-center justify-center gap-6 text-center sm:mt-16 sm:flex-row sm:gap-0">
+          <div className="px-4 sm:px-8">
             <p className="text-gray-300 mt-2">Piloti Certificati</p>
           </div>
 
-          <div className="w-px h-12 bg-white/30" />
+          <div className="hidden h-12 w-px bg-white/30 sm:block" />
 
-          <div className="px-8">
-            <p className="text-4xl font-bold text-white">Ogni giorno</p>
+          <div className="px-4 sm:px-8">
+            <p className="text-2xl font-bold text-white sm:text-4xl">Ogni giorno</p>
             <p className="text-gray-300 mt-2">Nuovi lavori</p>
           </div>
 
-          <div className="w-px h-12 bg-white/30" />
+          <div className="hidden h-12 w-px bg-white/30 sm:block" />
 
-          <div className="px-8">
-            <p className="text-4xl font-bold text-white">20+</p>
+          <div className="px-4 sm:px-8">
             <p className="text-gray-300 mt-2">Clienti verificati</p>
           </div>
         </div>

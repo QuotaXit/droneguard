@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
 import {
@@ -111,25 +112,25 @@ export default function ClientHistoryPage() {
 
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-10">
+      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
 
         <div className="max-w-7xl mx-auto">
 
           {/* HEADER */}
           <div className="mb-10">
 
-            <h1 className="text-5xl font-bold mb-3">
+            <h1 className="mb-3 text-3xl font-bold sm:text-4xl lg:text-5xl">
               Storico lavori
             </h1>
 
-            <p className="text-gray-400 text-lg">
+            <p className="text-base text-gray-400 sm:text-lg">
               Tutti i lavori completati o annullati.
             </p>
 
           </div>
 
           {/* STATS */}
-          <div className="grid grid-cols-4 gap-6 mb-10">
+          <div className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
 
             {/* TOTALI */}
             <div className="bg-[#140a3a] border border-white/10 rounded-3xl p-6">
@@ -141,7 +142,7 @@ export default function ClientHistoryPage() {
                 </p>
               </div>
 
-              <h2 className="text-5xl font-bold text-cyan-400">
+              <h2 className="text-4xl font-bold text-cyan-400 sm:text-5xl">
                 {totalCount}
               </h2>
 
@@ -157,7 +158,7 @@ export default function ClientHistoryPage() {
                 </p>
               </div>
 
-              <h2 className="text-5xl font-bold text-green-400">
+              <h2 className="text-4xl font-bold text-green-400 sm:text-5xl">
                 {confirmedCount}
               </h2>
 
@@ -173,7 +174,7 @@ export default function ClientHistoryPage() {
                 </p>
               </div>
 
-              <h2 className="text-5xl font-bold text-red-400">
+              <h2 className="text-4xl font-bold text-red-400 sm:text-5xl">
                 {cancelledCount}
               </h2>
 
@@ -189,7 +190,7 @@ export default function ClientHistoryPage() {
                 </p>
               </div>
 
-              <h2 className="text-5xl font-bold text-yellow-400">
+              <h2 className="text-4xl font-bold text-yellow-400 sm:text-5xl">
                 {applicationsCount}
               </h2>
 
@@ -215,7 +216,7 @@ export default function ClientHistoryPage() {
           )}
 
           {/* JOBS */}
-          <div className="grid grid-cols-3 gap-7">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-7">
 
             {jobs.map((job) => (
 
@@ -237,7 +238,7 @@ export default function ClientHistoryPage() {
                 <div className="p-6">
 
                   {/* STATUS */}
-                  <div className="flex justify-between items-center mb-4">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
                     <span className={`
                       px-3 py-1 rounded-full text-xs font-semibold

@@ -33,17 +33,17 @@ export default function CTA() {
   }
 
   return (
-    <section className="relative text-white py-24 px-6 overflow-hidden">
+    <section className="relative overflow-hidden px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
       
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
 
       {/* CONTENUTO */}
-      <div className="relative z-10 max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center justify-between gap-10 md:flex-row">
         
         {/* TESTO */}
 <div className="max-w-xl">
-  <h2 className="text-4xl font-bold leading-tight">
+  <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
     Ready to Launch <br /> Your Next Mission?
   </h2>
 
@@ -54,14 +54,14 @@ export default function CTA() {
 
   <button
     onClick={handleStart}
-    className="mt-6 px-10 py-2.5 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
+    className="mt-6 w-full rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-8 py-3 font-medium text-black shadow-lg transition hover:scale-105 sm:w-auto sm:px-10"
   >
     Inizia qui
   </button>
 </div>
 
 {/* IMMAGINE */}
-<div className="w-full md:w-[400px] h-[220px] rounded-xl overflow-hidden">
+<div className="h-[220px] w-full overflow-hidden rounded-xl md:w-[400px]">
           <img
             src="https://images.unsplash.com/photo-1508614589041-895b88991e3e"
             alt="Drone"
