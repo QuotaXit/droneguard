@@ -107,24 +107,32 @@ export default function LoginPage() {
         <form
           onSubmit={handleLogin}
           className="relative z-10 w-full max-w-sm rounded-2xl border border-white/20 bg-white/5 p-6 backdrop-blur-md sm:p-8"
-        >
+        > 
 
-          {/* EMAIL */}
-          <label className="block text-lg mb-2">
-            email
+                 {/* EMAIL */}
+                 <label className="block text-lg mb-2">
+            Email
           </label>
-
           <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full mb-6 px-4 py-3 rounded-lg bg-white/80 text-black outline-none"
-          />
+  type="email"
+  required
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
+  className="w-full mb-6 px-4 py-3 rounded-lg bg-white/80 text-black outline-none"
+/>
+
+<div className="-mt-3 mb-5 text-right">
+  <a
+    href="/forgot-password"
+    className="text-sm text-gray-300 hover:text-white transition"
+  >
+    Non ricordi i dati di accesso?
+  </a>
+</div>
 
           {/* PASSWORD */}
           <label className="block text-lg mb-2">
-            password
+            Password
           </label>
 
           <input
