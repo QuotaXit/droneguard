@@ -72,6 +72,7 @@ export default function RegisterPage() {
   const [openExp, setOpenExp] = useState(false)
   const [searchDrone, setSearchDrone] = useState("")
   const [loading, setLoading] = useState(false)
+  const [acceptedRules, setAcceptedRules] = useState(false)
 
   const cities = ["Milano", "Roma", "Torino", "Napoli", "Bologna", "Firenze"]
 
@@ -105,6 +106,7 @@ export default function RegisterPage() {
     setCertificazioni("")
     setEsperienza("")
     setDrone("")
+    setAcceptedRules(false)
   }
 
   useEffect(() => {
@@ -127,6 +129,11 @@ export default function RegisterPage() {
     try {
       setLoading(true)
       setEmailError("")
+
+      if (type === "pilot" && !acceptedRules) {
+        toast.error("Devi accettare la dichiarazione prima di registrarti.")
+        return
+      }
 
       const normalizedEmail = email.trim().toLowerCase()
       const emailValidationError = validateEmailAddress(normalizedEmail)
@@ -352,8 +359,23 @@ export default function RegisterPage() {
             className="input bg-white text-black"
           />
 
+          {type === "pilot" && (
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
+              <input
+                type="checkbox"
+                checked={acceptedRules}
+                onChange={(e) => setAcceptedRules(e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-green-500"
+              />
+
+              <span>
+                Dichiaro di essere in possesso delle certificazioni ENAC indicate, di operare nel rispetto delle normative vigenti e di assumermi la responsabilità dei dati inseriti. Ogni pagamento per il lavoro svolto, avviene tra le parti al di fuori della piattaforma DronGuard.
+              </span>
+            </label>
+          )}
+
           <button
-            disabled={loading}
+            disabled={loading || (type === "pilot" && !acceptedRules)}
             className="w-full rounded-lg bg-green-500 py-3 text-black disabled:opacity-60"
           >
             {loading ? "Registrazione..." : "Registrati"}
