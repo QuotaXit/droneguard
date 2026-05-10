@@ -163,7 +163,7 @@ export default function RegisterPage() {
         return
       }
 
-      toast.success("Registrazione avviata. Controlla la tua email per confermare l'account.")
+      toast.success("Registrazione avviata. Controlla la tua email ( casella spam ) per confermare l'account.")
       router.push("/login")
     } catch (err) {
       console.error("REGISTER ERROR:", err)
