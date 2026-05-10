@@ -5,9 +5,9 @@ import Services from "@/components/Services"
 import HowItWorks from "@/components/HowItWorks"
 import CTA from "@/components/CTA"
 
-export default function Home() {
+export default async function Home() {
   return (
-    <main className="bg-[#0A0D1F] min-h-screen">
+    <main className="min-h-screen bg-[#0A0D1F]">
       <Navbar />
       <Hero />
       <Services />

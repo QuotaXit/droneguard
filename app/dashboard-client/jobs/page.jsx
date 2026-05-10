@@ -433,23 +433,15 @@ export default function ClientJobs() {
                           </button>
                         </Link>
 
-                        {job.status === "assigned" ? (
-                          <button
-                            onClick={() => completeJobSuccess(job)}
-                            className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
-                          >
-                            <CheckCircle2 size={16} />
-                            Terminato con successo
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => openCloseModal(job)}
-                            className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
-                          >
-                            <Clock3 size={16} />
-                            Chiudi lavoro
-                          </button>
-                        )}
+                        {job.status === "assigned" && (
+  <button
+    onClick={() => completeJobSuccess(job)}
+    className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
+  >
+    <CheckCircle2 size={16} />
+    Terminato con successo
+  </button>
+)}
 
                         {job.status === "assigned" ? (
                           <button
