@@ -136,46 +136,37 @@ export default function RegisterPage() {
         return
       }
 
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-  email: normalizedEmail,
-  password,
-  options: {
-    emailRedirectTo: `${window.location.origin}/login`,
-    data: {
-      role: type,
-      username,
-      name: nome,
-      surname: cognome,
-      city: citta || "",
-      company_name: ragioneSociale,
-      vat_number: partitaIva,
-      certifications: type === "pilot" ? certificazioni : "",
-      experience: type === "pilot" ? esperienza : "",
-      drone: type === "pilot" ? drone : "",
-      credits: type === "pilot" ? 50 : 0,
-      verified: false
-    }
-  }
-})
+      const { error: authError } = await supabase.auth.signUp({
+        email: normalizedEmail,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+          data: {
+            role: type,
+            username,
+            name: nome,
+            surname: cognome,
+            city: citta || "",
+            company_name: ragioneSociale || "",
+            vat_number: partitaIva || "",
+            certifications: type === "pilot" ? certificazioni : "",
+            experience: type === "pilot" ? esperienza : "",
+            drone: type === "pilot" ? drone : "",
+            credits: type === "pilot" ? 50 : 0,
+            verified: false
+          }
+        }
+      })
 
       if (authError) {
         toast.error(authError.message)
         return
       }
 
-      toast.success("Registrazione completata. Controlla la tua email per confermare l'account.")
-router.push("/login")
-
-      console.log("USER INSERT ERROR:", insertError)
-
-      if (insertError) {
-        toast.error(`Errore salvataggio profilo: ${insertError.message}`)
-        return
-      }
-
-      toast.success("Registrazione completata. Controlla la tua email per confermare l'account.")
+      toast.success("Registrazione avviata. Controlla la tua email per confermare l'account.")
       router.push("/login")
-    } catch {
+    } catch (err) {
+      console.error("REGISTER ERROR:", err)
       toast.error("Errore durante la registrazione.")
     } finally {
       setLoading(false)
