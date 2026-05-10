@@ -1,0 +1,86 @@
+
+> droneguard-v2@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.218:3000
+- Environments: .env.local
+✓ Ready in 3.8s
+Creating turbopack project { dir: 'C:\\Users\\Silvio\\Desktop\\droneguard-v2', testMode: true }
+○ Compiling middleware ...
+
+○ Compiling /login ...
+ HEAD /login 200 in 18.4s (next.js: 16.5s, proxy.ts: 17ms, application-code: 1834ms)
+○ Compiling / ...
+ GET / 200 in 6.7s (next.js: 4.6s, application-code: 2.1s)
+ GET /dashboard 200 in 5.0s (next.js: 3.8s, proxy.ts: 805ms, application-code: 406ms)
+○ Compiling /dashboard/settings ...
+ GET /dashboard/settings 200 in 5.6s (next.js: 4.6s, proxy.ts: 267ms, application-code: 721ms)
+ GET /dashboard/settings 200 in 647ms (next.js: 63ms, proxy.ts: 334ms, application-code: 250ms)
+ GET /dashboard 200 in 681ms (next.js: 74ms, proxy.ts: 284ms, application-code: 323ms)
+ GET /dashboard/jobs 200 in 3.2s (next.js: 2.6s, proxy.ts: 130ms, application-code: 405ms)
+ GET /dashboard 200 in 509ms (next.js: 57ms, proxy.ts: 150ms, application-code: 302ms)
+ GET /dashboard 200 in 757ms (next.js: 186ms, proxy.ts: 118ms, application-code: 453ms)
+ GET /dashboard/jobs 200 in 812ms (next.js: 30ms, proxy.ts: 219ms, application-code: 563ms)
+ GET /dashboard/jobs 200 in 1402ms (next.js: 106ms, proxy.ts: 234ms, application-code: 1062ms)
+ GET /dashboard 200 in 407ms (next.js: 24ms, proxy.ts: 204ms, application-code: 179ms)
+ GET /dashboard 200 in 423ms (next.js: 30ms, proxy.ts: 134ms, application-code: 259ms)
+ GET /dashboard/settings 200 in 650ms (next.js: 22ms, proxy.ts: 318ms, application-code: 309ms)
+ GET /dashboard/settings 200 in 704ms (next.js: 30ms, proxy.ts: 145ms, application-code: 530ms)
+ GET /dashboard 200 in 375ms (next.js: 53ms, proxy.ts: 141ms, application-code: 181ms)
+ GET /dashboard/jobs-board 200 in 2.9s (next.js: 2.5s, proxy.ts: 167ms, application-code: 258ms)
+ GET /dashboard 200 in 814ms (next.js: 28ms, proxy.ts: 197ms, application-code: 589ms)
+ GET /dashboard/settings 200 in 244ms (next.js: 16ms, proxy.ts: 118ms, application-code: 110ms)
+ GET /dashboard 200 in 320ms (next.js: 18ms, proxy.ts: 107ms, application-code: 195ms)
+ GET /dashboard/pricing 200 in 3.3s (next.js: 2.8s, proxy.ts: 116ms, application-code: 368ms)
+ GET /dashboard 200 in 917ms (next.js: 53ms, proxy.ts: 668ms, application-code: 196ms)
+ GET /dashboard 200 in 526ms (next.js: 21ms, proxy.ts: 212ms, application-code: 294ms)
+ GET /dashboard/settings 200 in 326ms (next.js: 14ms, proxy.ts: 107ms, application-code: 205ms)
+ GET /dashboard 200 in 333ms (next.js: 18ms, proxy.ts: 191ms, application-code: 124ms)
+ GET / 200 in 217ms (next.js: 13ms, application-code: 204ms)
+ GET /dashboard 200 in 861ms (next.js: 50ms, proxy.ts: 572ms, application-code: 239ms)
+ GET /dashboard 200 in 404ms (next.js: 20ms, proxy.ts: 130ms, application-code: 254ms)
+ GET /dashboard/settings 200 in 653ms (next.js: 16ms, proxy.ts: 317ms, application-code: 321ms)
+ GET /dashboard 200 in 290ms (next.js: 19ms, proxy.ts: 126ms, application-code: 145ms)
+ GET /dashboard/jobs-board 200 in 1521ms (next.js: 78ms, proxy.ts: 797ms, application-code: 646ms)
+ GET /dashboard 200 in 336ms (next.js: 15ms, proxy.ts: 187ms, application-code: 134ms)
+ GET /dashboard/jobs 200 in 832ms (next.js: 40ms, proxy.ts: 140ms, application-code: 652ms)
+ GET /dashboard/jobs-board 200 in 306ms (next.js: 21ms, proxy.ts: 167ms, application-code: 119ms)
+ GET /dashboard 200 in 393ms (next.js: 36ms, proxy.ts: 209ms, application-code: 147ms)
+○ Compiling /_not-found/page ...
+ GET /dashboard/messages 404 in 5.4s (next.js: 4.8s, proxy.ts: 184ms, application-code: 446ms)
+ GET /dashboard/messages 404 in 1834ms (next.js: 77ms, proxy.ts: 381ms, application-code: 1375ms)
+ GET /dashboard 200 in 707ms (next.js: 20ms, proxy.ts: 225ms, application-code: 463ms)
+ GET / 200 in 708ms (next.js: 20ms, application-code: 688ms)
+ GET /login 200 in 698ms (next.js: 92ms, proxy.ts: 26ms, application-code: 580ms)
+ GET / 200 in 812ms (next.js: 184ms, application-code: 628ms)
+ GET /login 200 in 169ms (next.js: 22ms, proxy.ts: 26ms, application-code: 121ms)
+ GET /dashboard-client 200 in 3.5s (next.js: 3.0s, proxy.ts: 233ms, application-code: 299ms)
+○ Compiling /dashboard-client/create-job ...
+ GET /dashboard-client/create-job 200 in 5.1s (next.js: 4.0s, proxy.ts: 213ms, application-code: 869ms)
+ GET /dashboard-client/create-job 200 in 805ms (next.js: 45ms, proxy.ts: 522ms, application-code: 238ms)
+ GET /dashboard-client 200 in 513ms (next.js: 20ms, proxy.ts: 202ms, application-code: 291ms)
+ GET / 200 in 1081ms (next.js: 378ms, application-code: 703ms)
+ GET / 200 in 1130ms (next.js: 24ms, application-code: 1107ms)
+ GET /login 200 in 179ms (next.js: 23ms, proxy.ts: 26ms, application-code: 130ms)
+ GET /dashboard 200 in 426ms (next.js: 22ms, proxy.ts: 211ms, application-code: 194ms)
+ GET /dashboard/jobs-board 200 in 1124ms (next.js: 40ms, proxy.ts: 117ms, application-code: 968ms)
+ GET /dashboard 200 in 354ms (next.js: 20ms, proxy.ts: 227ms, application-code: 107ms)
+ GET / 200 in 335ms (next.js: 21ms, application-code: 314ms)
+ GET /login 200 in 359ms (next.js: 20ms, proxy.ts: 143ms, application-code: 195ms)
+ GET /login 200 in 323ms (next.js: 32ms, proxy.ts: 31ms, application-code: 260ms)
+ GET / 200 in 397ms (next.js: 32ms, application-code: 365ms)
+ GET /login 200 in 164ms (next.js: 23ms, proxy.ts: 27ms, application-code: 115ms)
+ GET /dashboard-client 200 in 469ms (next.js: 16ms, proxy.ts: 201ms, application-code: 252ms)
+ GET /dashboard-client/jobs 200 in 2.9s (next.js: 2.5s, proxy.ts: 169ms, application-code: 254ms)
+ GET /dashboard-client/jobs/e7b2eb8f-70f7-4fbe-8a22-70858ef44346/candidates 404 in 1491ms (next.js: 40ms, proxy.ts: 229ms, application-code: 1223ms)
+ GET /dashboard-client/jobs/e7b2eb8f-70f7-4fbe-8a22-70858ef44346/candidates 404 in 1795ms (next.js: 64ms, proxy.ts: 315ms, application-code: 1417ms)
+ GET /dashboard-client/jobs 200 in 683ms (next.js: 33ms, proxy.ts: 220ms, application-code: 431ms)
+ GET /dashboard-client/jobs/e7b2eb8f-70f7-4fbe-8a22-70858ef44346/candidates 404 in 287ms (next.js: 43ms, proxy.ts: 118ms, application-code: 126ms)
+ GET /dashboard-client/jobs/e7b2eb8f-70f7-4fbe-8a22-70858ef44346/candidates 404 in 737ms (next.js: 48ms, proxy.ts: 131ms, application-code: 558ms)
+ GET /dashboard-client/jobs 200 in 482ms (next.js: 22ms, proxy.ts: 209ms, application-code: 251ms)
+ GET /dashboard-client 200 in 645ms (next.js: 28ms, proxy.ts: 301ms, application-code: 315ms)
+○ Compiling /dashboard-client/in-progress ...
+ GET /dashboard-client/in-progress 200 in 4.9s (next.js: 4.2s, proxy.ts: 269ms, application-code: 423ms)
+ GET /dashboard-client/in-progress 200 in 631ms (next.js: 19ms, proxy.ts: 211ms, application-code: 401ms)
