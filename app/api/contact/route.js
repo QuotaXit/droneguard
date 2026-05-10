@@ -22,7 +22,7 @@ export async function POST(req) {
     }
 
     const result = await resend.emails.send({
-      from: "DroneGuard <assistenza@send.droneguard.it>",
+      from: "DroneGuard <assistenza@droneguard.it>",
       to: ["assistenza@droneguard.it"],
       replyTo: email,
       subject: `Nuovo messaggio DroneGuard: ${subject}`,
