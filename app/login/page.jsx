@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
@@ -31,7 +32,7 @@ export default function LoginPage() {
 
       if (error) {
         console.log(error)
-      toast.error("Password errata")        
+        toast.error("Password errata")
       }
 
       // USER
@@ -68,13 +69,13 @@ export default function LoginPage() {
       console.log("[Login] USER ID:", user.id)
       console.log("[Login] USER EMAIL:", user.email)
       console.log("[Login] ROLE FROM USERS (raw):", profile.role)
-      
+
       // REDIRECT BASATO SU RUOLO
       const dashboardPath = getDashboardPath(profile.role)
-      
+
       console.log("[Login] FINAL REDIRECT:", dashboardPath)
       console.log("[Login] ===== END LOGIN REDIRECT FLOW =====")
-      
+
       router.replace(dashboardPath)
 
     } catch (err) {
@@ -107,28 +108,29 @@ export default function LoginPage() {
         <form
           onSubmit={handleLogin}
           className="relative z-10 w-full max-w-sm rounded-2xl border border-white/20 bg-white/5 p-6 backdrop-blur-md sm:p-8"
-        > 
+        >
 
-                 {/* EMAIL */}
-                 <label className="block text-lg mb-2">
+          {/* EMAIL */}
+          <label className="block text-lg mb-2">
             Email
           </label>
-          <input
-  type="email"
-  required
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-  className="w-full mb-6 px-4 py-3 rounded-lg bg-white/80 text-black outline-none"
-/>
 
-<div className="-mt-3 mb-5 text-right">
-  <a
-    href="/forgot-password"
-    className="text-sm text-gray-300 hover:text-white transition"
-  >
-    Non ricordi i dati di accesso?
-  </a>
-</div>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full mb-6 px-4 py-3 rounded-lg bg-white/80 text-black outline-none"
+          />
+
+          <div className="-mt-3 mb-5 text-right">
+            <a
+              href="/forgot-password"
+              className="text-sm text-gray-300 hover:text-white transition"
+            >
+              Non ricordi i dati di accesso?
+            </a>
+          </div>
 
           {/* PASSWORD */}
           <label className="block text-lg mb-2">
@@ -156,19 +158,36 @@ export default function LoginPage() {
 
           </div>
 
-          {/* REGISTER */}
-          <p className="text-center text-sm text-gray-300 mt-6">
+          {/* REGISTER + RESEND CONFIRMATION */}
+          <div className="mt-6 space-y-4">
 
-            non hai un account?{" "}
+            <p className="text-center text-sm text-gray-300">
+              non hai un account?{" "}
 
-            <a
-              href="/register"
-              className="underline hover:text-white"
-            >
-              registrati ora
-            </a>
+              <a
+                href="/register"
+                className="underline hover:text-white"
+              >
+                registrati ora
+              </a>
+            </p>
 
-          </p>
+            <div className="rounded-xl border border-green-500/20 bg-green-500/10 p-4 text-center">
+
+              <p className="text-sm text-green-200">
+                Non hai ricevuto la mail di conferma?
+              </p>
+
+              <Link
+                href="/resend-confirmation"
+                className="mt-2 inline-block text-sm font-medium text-green-400 transition hover:text-green-300 hover:underline"
+              >
+                Reinvia email di conferma
+              </Link>
+
+            </div>
+
+          </div>
 
         </form>
 
