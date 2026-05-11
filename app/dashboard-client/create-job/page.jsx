@@ -12,6 +12,7 @@ export default function CreateJob() {
   const [date, setDate] = useState("")
 
   const [images, setImages] = useState([])
+  const [creating, setCreating] = useState(false)
 
   // 🚀 UPLOAD IMMAGINI
   const uploadImages = async (files) => {
@@ -43,73 +44,81 @@ export default function CreateJob() {
   const handleCreateJob = async (e) => {
     e.preventDefault()
 
-    const {
-        data: { user }
-      } = await supabase.auth.getUser()
-    if (!user) return
+    if (creating) return
 
-    // 🚀 PRENDE CREDITI
-    const { data: profile } = await supabase
-      .from("users")
-      .select("credits")
-      .eq("id", user.id)
-      .single()
+    try {
+      setCreating(true)
 
-    if (profile.credits < 5) {
-      toast.error("Crediti insufficienti ❌")
-      return
-    }
+      const {
+          data: { user }
+        } = await supabase.auth.getUser()
+      if (!user) return
 
-    // 🚀 UPLOAD FOTO
-    const imageUrls = await uploadImages(images)
+      // 🚀 PRENDE CREDITI
+      const { data: profile } = await supabase
+        .from("users")
+        .select("credits")
+        .eq("id", user.id)
+        .single()
 
-    // 🚀 CREA JOB
-    const { error } = await supabase.from("jobs").insert([
-      {
-        user_id: user.id,
-        title,
-        description,
-        location,
-        job_date: date,
-        image1: imageUrls[0] || null,
-        image2: imageUrls[1] || null,
-        image3: imageUrls[2] || null
+      if (profile.credits < 5) {
+        toast.error("Crediti insufficienti ❌")
+        return
       }
-    ])
 
-    if (error) {
-      toast.error("Errore creazione lavoro ❌")
-      console.log(error)
-      return
-    }
+      // 🚀 UPLOAD FOTO
+      const imageUrls = await uploadImages(images)
 
-    const { error: notificationError } = await supabase
-      .from("notifications")
-      .insert([
+      // 🚀 CREA JOB
+      const { error } = await supabase.from("jobs").insert([
         {
           user_id: user.id,
-          title: "Lavoro pubblicato 🚀",
-          message: "Il tuo annuncio è stato pubblicato con successo.",
-          type: "job_published",
-          read: false
+          title,
+          description,
+          location,
+          job_date: date,
+          image1: imageUrls[0] || null,
+          image2: imageUrls[1] || null,
+          image3: imageUrls[2] || null
         }
       ])
 
-    if (notificationError) {
-      console.error(
-        "[notifications] job_published failed:",
-        notificationError
-      )
+      if (error) {
+        toast.error("Errore creazione lavoro ❌")
+        console.log(error)
+        return
+      }
+
+      const { error: notificationError } = await supabase
+        .from("notifications")
+        .insert([
+          {
+            user_id: user.id,
+            title: "Lavoro pubblicato 🚀",
+            message: "Il tuo annuncio è stato pubblicato con successo.",
+            type: "job_published",
+            read: false
+          }
+        ])
+
+      if (notificationError) {
+        console.error(
+          "[notifications] job_published failed:",
+          notificationError
+        )
+      }
+
+      // 🚀 SCALA CREDITI
+      await supabase
+        .from("users")
+        .update({ credits: profile.credits - 5 })
+        .eq("id", user.id)
+
+      toast.success("Lavoro pubblicato 🚀")
+      window.location.href = "/dashboard-client"
+    } finally {
+      setCreating(false)
     }
-
-    // 🚀 SCALA CREDITI
-    await supabase
-      .from("users")
-      .update({ credits: profile.credits - 5 })
-      .eq("id", user.id)
-
-    toast.success("Lavoro pubblicato 🚀")
-    window.location.href = "/dashboard-client"
   }
 
   return (
@@ -177,8 +186,12 @@ export default function CreateJob() {
   onChange={(e) => setDate(e.target.value)}
   className="w-full p-3 rounded-lg bg-transparent border border-white/20 text-white"
 />
-            <button className="w-full bg-green-500 py-3 rounded-lg text-black font-medium">
-              Pubblica (5 crediti)
+            <button
+              type="submit"
+              disabled={creating}
+              className="w-full bg-green-500 py-3 rounded-lg text-black font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {creating ? "Pubblicazione..." : "Pubblica (5 crediti)"}
             </button>
 
           </form>

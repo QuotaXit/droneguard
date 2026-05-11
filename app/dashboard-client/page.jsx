@@ -254,25 +254,34 @@ window.location.href = "/"
   </span>
 
   {/* INFO */}
-  <div className="mt-5 space-y-2 text-sm text-gray-300">
-
-    <p>
-      📍 {userData?.city || "Città non impostata"}
+<div className="mt-6 space-y-4 text-center">
+  <div>
+    <p className="text-sm font-bold text-white">
+      📍 Posizione
     </p>
-
-    <p>
-      🏢 {userData?.company_name || "Nessuna azienda"}
+    <p className="text-gray-300">
+      {userData?.city || "Città non impostata"}
     </p>
-
-    <p>
-      🧾 {userData?.vat_number || "P.IVA non inserita"}
-    </p>
-
-    <p className="text-xs text-gray-400 mt-2">
-      {userData?.email || "Email non disponibile"}
-    </p>
-
   </div>
+
+  <div>
+    <p className="text-sm font-bold text-white">
+      🏢 Azienda
+    </p>
+    <p className="text-gray-300">
+      {userData?.company_name || "Nessuna azienda"}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-sm font-bold text-white">
+      🧾 Partita IVA
+    </p>
+    <p className="text-gray-300 break-words">
+      {userData?.vat_number || "P.IVA non inserita"}
+    </p>
+  </div>
+</div>
 
   {/* CTA */}
   <Link href="/dashboard-client/settings">

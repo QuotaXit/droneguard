@@ -481,8 +481,8 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
                   </label>
 
                   <h2 className="mt-5 text-2xl font-bold sm:text-3xl">
-                    {name || "Cliente"}
-                  </h2>
+  {`${name || "Cliente"} ${surname || ""}`.trim()}
+</h2>
 
                   <p className="text-green-400 text-sm mt-1">
                     Cliente verificato
@@ -490,27 +490,27 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
                   <div className="mt-5 space-y-3 text-sm text-gray-300">
 
-                    <div className="flex items-center justify-center gap-2">
-                      <MapPin size={16} />
-                      <span>
-                        {city || "Città non impostata"}
-                      </span>
-                    </div>
+  <div className="flex items-center justify-center gap-2">
+    <MapPin size={16} />
+    <span>
+      {city || "Città non impostata"}
+    </span>
+  </div>
 
-                    <div className="flex items-center justify-center gap-2">
-                      <Building2 size={16} />
-                      <span>
-                        {companyName || "Società non impostata"}
-                      </span>
-                    </div>
+  <div className="flex items-center justify-center gap-2">
+    <Building2 size={16} />
+    <span>
+      {companyName || "Società non impostata"}
+    </span>
+  </div>
 
-                    <div className="flex items-center justify-center gap-2">
-                      <FileText size={16} />
-                      <span>
-                        {vatNumber || "P.IVA non inserita"}
-                      </span>
-                    </div>
-                </div>
+  <div className="flex items-center justify-center gap-2">
+    <FileText size={16} />
+    <span>
+      {vatNumber || "P.IVA non inserita"}
+    </span>
+  </div>
+</div>
 
 
                 </div>

@@ -26,6 +26,13 @@ export default function ClientHistoryPage() {
   const [totalCount, setTotalCount] = useState(0)
   const [applicationsCount, setApplicationsCount] = useState(0)
 
+  const [showReviewModal, setShowReviewModal] = useState(false)
+  const [selectedReviewJob, setSelectedReviewJob] = useState(null)
+  const [reviewRating, setReviewRating] = useState(5)
+  const [reviewTitle, setReviewTitle] = useState("")
+  const [reviewText, setReviewText] = useState("")
+  const [reviewLoading, setReviewLoading] = useState(false)
+
   const loadHistory = async () => {
 
     setLoading(true)
@@ -106,6 +113,58 @@ export default function ClientHistoryPage() {
     loadHistory()
 
   }, [])
+
+  const openReviewModal = (job) => {
+    setSelectedReviewJob(job)
+    setReviewRating(5)
+    setReviewTitle("")
+    setReviewText("")
+    setShowReviewModal(true)
+  }
+
+  const saveReview = async () => {
+    if (!selectedReviewJob) return
+
+    if (!reviewTitle.trim() || !reviewText.trim()) {
+      toast.error("Compila titolo e recensione")
+      return
+    }
+
+    try {
+      setReviewLoading(true)
+
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+
+      if (!user) {
+        toast.error("Devi essere loggato")
+        return
+      }
+
+      const { error } = await supabase
+        .from("reviews")
+        .insert({
+          job_id: selectedReviewJob.id,
+          client_id: user.id,
+          pilot_id: selectedReviewJob.pilot_id || selectedReviewJob.assigned_pilot,
+          rating: Number(reviewRating),
+          title: reviewTitle.trim(),
+          review: reviewText.trim()
+        })
+
+      if (error) {
+        console.log(error)
+        toast.error("Errore salvataggio recensione")
+        return
+      }
+
+      toast.success("Recensione salvata ✅")
+      setShowReviewModal(false)
+    } finally {
+      setReviewLoading(false)
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -293,6 +352,13 @@ export default function ClientHistoryPage() {
 
                   </div>
 
+                  <button
+                    onClick={() => openReviewModal(job)}
+                    className="mt-5 w-full rounded-xl bg-yellow-400 py-3 font-bold text-black transition hover:bg-yellow-300"
+                  >
+                    Lascia recensione
+                  </button>
+
                 </div>
 
               </div>
@@ -304,6 +370,94 @@ export default function ClientHistoryPage() {
         </div>
 
       </div>
+
+      {showReviewModal && selectedReviewJob && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-[#140a3a] p-6 text-white">
+
+            <h2 className="mb-2 text-3xl font-bold">
+              Lascia recensione
+            </h2>
+
+            <p className="mb-6 text-gray-400">
+              Recensione per: {selectedReviewJob.title}
+            </p>
+
+            <label className="mb-2 block text-sm text-gray-300">
+              Valutazione
+            </label>
+
+            <select
+  value={reviewRating}
+  onChange={(e) => setReviewRating(e.target.value)}
+  className="mb-4 w-full rounded-xl bg-white/10 p-3 text-white outline-none"
+>
+  <option value="5" className="text-black">
+    5 stelle
+  </option>
+
+  <option value="4" className="text-black">
+    4 stelle
+  </option>
+
+  <option value="3" className="text-black">
+    3 stelle
+  </option>
+
+  <option value="2" className="text-black">
+    2 stelle
+  </option>
+
+  <option value="1" className="text-black">
+    1 stella
+  </option>
+</select>
+
+            <label className="mb-2 block text-sm text-gray-300">
+              Titolo recensione
+            </label>
+
+            <input
+              value={reviewTitle}
+              onChange={(e) => setReviewTitle(e.target.value)}
+              placeholder="Esempio: Ottimo pilota"
+              className="mb-4 w-full rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500"
+            />
+
+            <label className="mb-2 block text-sm text-gray-300">
+              Recensione
+            </label>
+
+            <textarea
+              value={reviewText}
+              onChange={(e) => setReviewText(e.target.value)}
+              placeholder="Scrivi com'è andato il lavoro..."
+              rows={5}
+              className="mb-6 w-full resize-none rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500"
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+
+              <button
+                onClick={() => setShowReviewModal(false)}
+                className="rounded-xl border border-white/10 bg-white/5 py-3 font-semibold hover:bg-white/10"
+              >
+                Chiudi
+              </button>
+
+              <button
+                onClick={saveReview}
+                disabled={reviewLoading}
+                className="rounded-xl bg-green-500 py-3 font-bold text-black hover:bg-green-400 disabled:opacity-50"
+              >
+                {reviewLoading ? "Salvataggio..." : "Salva"}
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   )
