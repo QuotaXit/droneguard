@@ -16,11 +16,17 @@ import {
   Clock3,
   CheckCircle2,
   Plane,
-  ClipboardList
+  ClipboardList,
+  Mail,
+  BadgeCheck,
+  ShieldCheck,
+  UploadCloud,
+  X
 } from "lucide-react"
 
 const ACTIVE_JOB_STATUSES = ["assigned", "accepted", "in_progress"]
 const APPLICATION_ACTIVE_STATUSES = ["pending"]
+
 
 function getFullName(userData) {
   return `${userData?.name || ""} ${userData?.surname || ""}`.trim() || "Pilota"
@@ -121,6 +127,12 @@ export default function Dashboard() {
   const [credits, setCredits] = useState(0)
   const [upcomingJobs, setUpcomingJobs] = useState([])
 
+  const [showCertRequest, setShowCertRequest] = useState(false)
+  const [certFile, setCertFile] = useState(null)
+  const [certSending, setCertSending] = useState(false)
+  const [certMessage, setCertMessage] = useState("")
+
+
   useEffect(() => {
     const getUser = async () => {
       const {
@@ -140,7 +152,7 @@ export default function Dashboard() {
 
       const { data, error } = await supabase
         .from("users")
-        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified")
+        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified")
         .eq("id", user.id)
         .maybeSingle()
 
@@ -289,6 +301,43 @@ export default function Dashboard() {
   const fullName = getFullName(userData)
   const displayPosition = getDisplayPosition(userData)
 
+  const handleCertificationRequest = async (e) => {
+  e.preventDefault()
+
+  if (!certFile) {
+    setCertMessage("Carica una foto o un PDF della certificazione.")
+    return
+  }
+
+  try {
+    setCertSending(true)
+    setCertMessage("")
+
+    const formData = new FormData()
+    formData.append("name", fullName)
+    formData.append("email", userData?.email || "")
+    formData.append("certification", userData?.certifications || "Non indicata")
+    formData.append("file", certFile)
+
+    const response = await fetch("/api/certification-request", {
+      method: "POST",
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error("Errore invio richiesta")
+    }
+
+    setCertMessage("Richiesta inviata. Attendi fino a 24h per la verifica.")
+    setCertFile(null)
+  } catch (error) {
+    console.error(error)
+    setCertMessage("Errore durante l'invio. Riprova più tardi.")
+  } finally {
+    setCertSending(false)
+  }
+}
+
   return (
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
@@ -371,7 +420,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 lg:order-3">
             <div className="border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md">
               <h2 className="text-xl font-[var(--font-krona)] mb-4">
                 Profilo
@@ -391,9 +440,86 @@ export default function Dashboard() {
                   {fullName}
                 </h3>
 
-                <span className="text-xs bg-green-500 px-3 py-1 rounded-full mt-2 inline-block">
-                  verificato
-                </span>
+                <div className="mt-3 space-y-2">
+  <div className="flex items-center justify-center gap-2">
+    <Mail size={14} />
+    <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <BadgeCheck size={13} />
+      mail verificata
+    </span>
+  </div>
+
+  <div className="flex items-center justify-center gap-2">
+    <ShieldCheck size={14} />
+    {userData?.cert_enac_verified ? (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        Certif. ENAC verificata
+      </span>
+    ) : (
+      <button
+        type="button"
+        onClick={() => setShowCertRequest(true)}
+        className="text-xs bg-yellow-500 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-400 transition"
+      >
+        Certif. ENAC non verificata
+      </button>
+    )}
+  </div>
+</div>
+
+{showCertRequest && (
+  <div className="rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
+    <div className="mb-3 flex items-center justify-between">
+      <h4 className="text-sm font-semibold text-white">
+        Richiesta verifica ENAC
+      </h4>
+
+      <button
+        type="button"
+        onClick={() => setShowCertRequest(false)}
+        className="text-gray-400 hover:text-white"
+      >
+        <X size={16} />
+      </button>
+    </div>
+
+    <form onSubmit={handleCertificationRequest} className="space-y-3">
+      <p className="text-xs leading-5 text-gray-300">
+        Carica una foto chiara del patentino ENAC oppure il documento PDF digitale.
+      </p>
+
+      <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center hover:bg-white/10">
+        <UploadCloud size={24} className="mb-2 text-green-400" />
+
+        <span className="text-xs text-gray-300">
+          {certFile ? certFile.name : "Carica foto o PDF"}
+        </span>
+
+        <input
+          type="file"
+          accept="image/*,.pdf"
+          onChange={(e) => setCertFile(e.target.files?.[0] || null)}
+          className="hidden"
+        />
+      </label>
+
+      <button
+        type="submit"
+        disabled={certSending}
+        className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-400 disabled:opacity-60"
+      >
+        {certSending ? "Invio in corso..." : "Invia richiesta"}
+      </button>
+
+      {certMessage && (
+        <p className="text-xs leading-5 text-green-300">
+          {certMessage}
+        </p>
+      )}
+    </form>
+  </div>
+)}
 
                 <div className="mt-5 space-y-4 text-left">
                   <div>
@@ -454,7 +580,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="space-y-6 lg:col-span-6">
+          <div className="space-y-6 lg:col-span-6 lg:order-2">
             <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
               <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
                 Dashboard Pilota

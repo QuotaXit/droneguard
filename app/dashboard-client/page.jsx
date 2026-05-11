@@ -249,8 +249,8 @@ window.location.href = "/"
   </h3>
 
   {/* BADGE */}
-  <span className="inline-block mt-2 text-xs bg-green-500 text-black px-3 py-1 rounded-full">
-    Cliente verificato
+  <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
+    ✅ Mail verificata
   </span>
 
   {/* INFO */}
