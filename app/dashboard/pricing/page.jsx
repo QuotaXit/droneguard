@@ -6,9 +6,7 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import {
   CreditCard,
-  Users,
-  ShieldCheck,
-  CheckCircle2
+  Users
 } from "lucide-react"
 
 function normalizeRole(role) {
@@ -192,50 +190,45 @@ export default function PricingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <CreditCard size={24} className="mb-3" />
-              <p className="text-gray-400 text-sm">Crediti</p>
+
+              <p className="text-sm text-gray-400">
+                Crediti
+              </p>
+
               <h2 className="text-3xl font-bold text-green-400 sm:text-4xl">
                 {credits}
               </h2>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <Users size={24} className="mb-3" />
-              <p className="text-gray-400 text-sm">Piloti</p>
+
+              <p className="text-sm text-gray-400">
+                Piloti registrati
+              </p>
+
               <h2 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
                 {pilots}
               </h2>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-              <ShieldCheck size={24} className="mb-3" />
-              <p className="text-gray-400 text-sm">Account</p>
+            <div className="relative min-h-[150px] overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-cyan-500/5" />
 
-              {emailVerified ? (
-                <div className="bg-green-500 px-4 py-2 rounded-full inline-flex items-center gap-2 text-black font-semibold">
-                  <CheckCircle2 size={18} />
-                  Verificato
-                </div>
-              ) : (
-                <div>
-                  <p className="text-gray-300 mb-4 max-w-[260px] leading-relaxed">
-                    Per ottenere il badge{" "}
-                    <span className="text-white font-semibold">
-                      Account verificato
-                    </span>{" "}
-                    conferma la tua email.
-                  </p>
+              <div className="relative flex h-full min-h-[110px] items-center justify-center">
+<h3 className="select-none text-center text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">                  
+               <span className="text-white">
+                    Drone
+                  </span>
 
-                  <button
-                    onClick={sendVerificationEmail}
-                    className="w-full rounded-2xl bg-yellow-400 px-5 py-3 font-bold text-black transition hover:bg-yellow-300 sm:w-auto"
-                  >
-                    Conferma email
-                  </button>
-                </div>
-              )}
+                  <span className="bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
+                    Guard
+                  </span>
+                </h3>
+              </div>
             </div>
           </div>
 
@@ -277,9 +270,13 @@ export default function PricingPage() {
             </div>
 
             <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-bold mb-2">Standard</h3>
+              <h3 className="text-xl font-bold mb-2">
+                Standard
+              </h3>
 
-              <p className="mb-2 text-3xl font-bold sm:text-4xl">€9</p>
+              <p className="mb-2 text-3xl font-bold sm:text-4xl">
+                €9
+              </p>
 
               <p className="text-gray-400 mb-4">
                 40 crediti
@@ -305,7 +302,9 @@ export default function PricingPage() {
                 Pro
               </h3>
 
-              <p className="mb-2 text-3xl font-bold sm:text-4xl">€19</p>
+              <p className="mb-2 text-3xl font-bold sm:text-4xl">
+                €19
+              </p>
 
               <p className="text-gray-400 mb-4">
                 100 crediti
