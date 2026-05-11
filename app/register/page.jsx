@@ -74,7 +74,115 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [acceptedRules, setAcceptedRules] = useState(false)
 
-  const cities = ["Milano", "Roma", "Torino", "Napoli", "Bologna", "Firenze"]
+  const cities = [
+    "Agrigento",
+    "Alessandria",
+    "Ancona",
+    "Aosta",
+    "Arezzo",
+    "Ascoli Piceno",
+    "Asti",
+    "Avellino",
+    "Bari",
+    "Barletta",
+    "Belluno",
+    "Benevento",
+    "Bergamo",
+    "Biella",
+    "Bologna",
+    "Bolzano",
+    "Brescia",
+    "Brindisi",
+    "Cagliari",
+    "Caltanissetta",
+    "Campobasso",
+    "Carbonia",
+    "Caserta",
+    "Catania",
+    "Catanzaro",
+    "Chieti",
+    "Como",
+    "Cosenza",
+    "Cremona",
+    "Crotone",
+    "Cuneo",
+    "Enna",
+    "Fermo",
+    "Ferrara",
+    "Firenze",
+    "Foggia",
+    "Forlì",
+    "Frosinone",
+    "Genova",
+    "Gorizia",
+    "Grosseto",
+    "Imperia",
+    "Isernia",
+    "La Spezia",
+    "L'Aquila",
+    "Latina",
+    "Lecce",
+    "Lecco",
+    "Livorno",
+    "Lodi",
+    "Lucca",
+    "Macerata",
+    "Mantova",
+    "Massa",
+    "Matera",
+    "Messina",
+    "Milano",
+    "Modena",
+    "Monza",
+    "Napoli",
+    "Novara",
+    "Nuoro",
+    "Oristano",
+    "Padova",
+    "Palermo",
+    "Parma",
+    "Pavia",
+    "Perugia",
+    "Pesaro",
+    "Pescara",
+    "Piacenza",
+    "Pisa",
+    "Pistoia",
+    "Pordenone",
+    "Potenza",
+    "Prato",
+    "Ragusa",
+    "Ravenna",
+    "Reggio Calabria",
+    "Reggio Emilia",
+    "Rieti",
+    "Rimini",
+    "Roma",
+    "Rovigo",
+    "Salerno",
+    "Sassari",
+    "Savona",
+    "Siena",
+    "Siracusa",
+    "Sondrio",
+    "Taranto",
+    "Teramo",
+    "Terni",
+    "Torino",
+    "Trapani",
+    "Trento",
+    "Treviso",
+    "Trieste",
+    "Udine",
+    "Varese",
+    "Venezia",
+    "Verbania",
+    "Vercelli",
+    "Verona",
+    "Vibo Valentia",
+    "Vicenza",
+    "Viterbo"
+  ]
 
   const droneList = [
     "DJI Air 2S",
@@ -215,28 +323,14 @@ export default function RegisterPage() {
               <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} className="input" />
 
               <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div
-                  onClick={() => {
-                    setOpenCert(!openCert)
-                    setOpenExp(false)
-                    setOpenDrone(false)
-                  }}
-                  className="input cursor-pointer"
-                >
+                <div onClick={() => { setOpenCert(!openCert); setOpenExp(false); setOpenDrone(false) }} className="input cursor-pointer">
                   {certificazioni || "Certificazioni"}
                 </div>
 
                 {openCert && (
                   <div className="dropdown">
                     {certificationsList.map((item) => (
-                      <div
-                        key={item}
-                        onClick={() => {
-                          setCertificazioni(item)
-                          setOpenCert(false)
-                        }}
-                        className="item"
-                      >
+                      <div key={item} onClick={() => { setCertificazioni(item); setOpenCert(false) }} className="item">
                         {item}
                       </div>
                     ))}
@@ -245,28 +339,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div
-                  onClick={() => {
-                    setOpenExp(!openExp)
-                    setOpenCert(false)
-                    setOpenDrone(false)
-                  }}
-                  className="input cursor-pointer"
-                >
+                <div onClick={() => { setOpenExp(!openExp); setOpenCert(false); setOpenDrone(false) }} className="input cursor-pointer">
                   {esperienza || "Esperienza"}
                 </div>
 
                 {openExp && (
                   <div className="dropdown">
                     {experienceList.map((item) => (
-                      <div
-                        key={item}
-                        onClick={() => {
-                          setEsperienza(item)
-                          setOpenExp(false)
-                        }}
-                        className="item"
-                      >
+                      <div key={item} onClick={() => { setEsperienza(item); setOpenExp(false) }} className="item">
                         {item}
                       </div>
                     ))}
@@ -275,35 +355,16 @@ export default function RegisterPage() {
               </div>
 
               <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div
-                  onClick={() => {
-                    setOpenDrone(!openDrone)
-                    setOpenCert(false)
-                    setOpenExp(false)
-                  }}
-                  className="input cursor-pointer"
-                >
+                <div onClick={() => { setOpenDrone(!openDrone); setOpenCert(false); setOpenExp(false) }} className="input cursor-pointer">
                   {drone || "Seleziona drone"}
                 </div>
 
                 {openDrone && (
                   <div className="dropdown h-52 overflow-y-auto">
-                    <input
-                      placeholder="Cerca..."
-                      value={searchDrone}
-                      onChange={(e) => setSearchDrone(e.target.value)}
-                      className="input mb-2"
-                    />
+                    <input placeholder="Cerca..." value={searchDrone} onChange={(e) => setSearchDrone(e.target.value)} className="input mb-2" />
 
                     {filteredDrones.map((item) => (
-                      <div
-                        key={item}
-                        onClick={() => {
-                          setDrone(item)
-                          setOpenDrone(false)
-                        }}
-                        className="item"
-                      >
+                      <div key={item} onClick={() => { setDrone(item); setOpenDrone(false) }} className="item">
                         {item}
                       </div>
                     ))}
@@ -321,7 +382,7 @@ export default function RegisterPage() {
               <select value={citta} onChange={(e) => setCitta(e.target.value)} className="input">
                 <option value="">Seleziona città</option>
                 {cities.map((item) => (
-                  <option key={item}>{item}</option>
+                  <option key={item} value={item}>{item}</option>
                 ))}
               </select>
 
@@ -337,27 +398,15 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value)
-                if (emailError) {
-                  setEmailError("")
-                }
+                if (emailError) setEmailError("")
               }}
-              className={`input bg-white text-black ${emailError ? "border-red-500" : ""}`}
+              className={`input ${emailError ? "border-red-500" : ""}`}
             />
 
-            {emailError && (
-              <p className="mt-2 text-sm text-red-300">
-                {emailError}
-              </p>
-            )}
+            {emailError && <p className="mt-2 text-sm text-red-300">{emailError}</p>}
           </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="input bg-white text-black"
-          />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" />
 
           {type === "pilot" && (
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
@@ -374,10 +423,7 @@ export default function RegisterPage() {
             </label>
           )}
 
-          <button
-            disabled={loading || (type === "pilot" && !acceptedRules)}
-            className="w-full rounded-lg bg-green-500 py-3 text-black disabled:opacity-60"
-          >
+          <button disabled={loading || (type === "pilot" && !acceptedRules)} className="w-full rounded-lg bg-green-500 py-3 text-black disabled:opacity-60">
             {loading ? "Registrazione..." : "Registrati"}
           </button>
         </form>
@@ -390,7 +436,18 @@ export default function RegisterPage() {
           border-radius: 8px;
           border: 1px solid rgba(255,255,255,0.2);
           background: transparent;
+          color: white;
         }
+
+        .input::placeholder {
+          color: rgba(255,255,255,0.7);
+        }
+
+        .input option {
+          color: black;
+          background: white;
+        }
+
         .dropdown {
           position: absolute;
           width: 100%;
@@ -401,11 +458,13 @@ export default function RegisterPage() {
           margin-top: 5px;
           z-index: 50;
         }
+
         .item {
           padding: 8px;
           cursor: pointer;
           border-radius: 6px;
         }
+
         .item:hover {
           background: rgba(255,255,255,0.1);
         }
