@@ -252,7 +252,7 @@ export default function InProgressJobs() {
                       />
                     )}
 
-                    <div className="p-6">
+                    <div className="p-6 text-center">
                       <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:justify-between">
                         <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-semibold">
                           IN CORSO
@@ -270,10 +270,25 @@ export default function InProgressJobs() {
                         {job.description}
                       </p>
 
-                      <div className="text-sm text-gray-400 mb-5">
-                        📍 {job.location} <br />
-                        📅 {job.job_date}
-                      </div>
+                      <div className="mb-5 space-y-3 text-center">
+  <div>
+    <p className="text-xs uppercase tracking-widest text-gray-500">
+      📍 Posizione
+    </p>
+    <p className="text-lg font-bold text-white">
+      {job.location}
+    </p>
+  </div>
+
+  <div>
+    <p className="text-xs uppercase tracking-widest text-gray-500">
+      📅 Data
+    </p>
+    <p className="text-lg font-bold text-white">
+      {job.job_date}
+    </p>
+  </div>
+</div>
 
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                         <button
