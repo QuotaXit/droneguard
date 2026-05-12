@@ -11,7 +11,10 @@ import {
   Plane,
   BadgeEuro,
   CheckCircle2,
-  Users
+  Users,
+  Star,
+  MessageSquare,
+  X
 } from "lucide-react"
 
 const DEFAULT_PILOT_BIO = "Nessuna bio disponibile"
@@ -155,6 +158,10 @@ export default function CandidatesPage() {
   const [sendingDetails, setSendingDetails] = useState(false)
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [selectedPilot, setSelectedPilot] = useState(null)
+  const [showReviewsModal, setShowReviewsModal] = useState(false)
+  const [selectedReviewPilot, setSelectedReviewPilot] = useState(null)
+  const [pilotReviews, setPilotReviews] = useState([])
+  const [reviewsLoading, setReviewsLoading] = useState(false)
 
   const [meetingPoint, setMeetingPoint] = useState("")
   const [exactLocation, setExactLocation] = useState("")
@@ -567,6 +574,29 @@ export default function CandidatesPage() {
     }
   }
 
+  const openPilotReviews = async (application) => {
+  setSelectedReviewPilot(application)
+  setShowReviewsModal(true)
+  setReviewsLoading(true)
+  setPilotReviews([])
+
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("id,rating,title,review,created_at,job_id")
+    .eq("pilot_id", application.pilot_id)
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    console.log("PILOT REVIEWS ERROR:", error)
+    toast.error("Errore caricamento recensioni")
+    setPilotReviews([])
+  } else {
+    setPilotReviews(data || [])
+  }
+
+  setReviewsLoading(false)
+}
+
   return (
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
@@ -658,14 +688,14 @@ export default function CandidatesPage() {
                               <span>{pilotInfo.city}</span>
                             </div>
 
-                            <div className="mt-4 rounded-2xl border border-white/[0.08] bg-black/20 p-4">
-                              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-500">
-                                Certificazioni
-                              </p>
-                              <p className="mt-2 text-sm font-medium text-white">
-                                {pilotInfo.certifications}
-                              </p>
-                            </div>
+                            <button
+  type="button"
+  onClick={() => openPilotReviews(application)}
+  className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-white/[0.08] bg-black/20 p-4 text-sm font-bold text-white transition hover:bg-white/10"
+>
+  <Star size={18} className="text-yellow-400" />
+  Vedi recensioni pilota
+</button>
                           </div>
                         </div>
                       </div>
@@ -711,6 +741,15 @@ export default function CandidatesPage() {
                                 {pilotInfo.experience}
                               </p>
                             </div>
+
+                            <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-500">
+    Certificazioni
+  </p>
+  <p className="mt-3 text-sm font-medium text-white">
+    {pilotInfo.certifications}
+  </p>
+</div>
                           </div>
                         </div>
                       </div>
@@ -892,6 +931,85 @@ export default function CandidatesPage() {
           </div>
         </div>
       )}
+
+      {showReviewsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
+          <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-white sm:max-w-3xl sm:p-8">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-bold sm:text-4xl">
+                  Recensioni pilota
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-400">
+                  {selectedReviewPilot
+                    ? getPilotDisplayData(selectedReviewPilot.pilot).fullName
+                    : "Pilota"}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowReviewsModal(false)}
+                className="rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {reviewsLoading ? (
+              <p className="text-gray-300">Caricamento recensioni...</p>
+            ) : pilotReviews.length === 0 ? (
+              <div className="rounded-2xl border border-white/10 bg-black/20 p-6 text-center">
+                <MessageSquare size={32} className="mx-auto mb-3 text-gray-400" />
+
+                <h3 className="text-xl font-bold">
+                  Nessuna recensione
+                </h3>
+
+                <p className="mt-2 text-sm text-gray-400">
+                  Questo pilota non ha ancora ricevuto recensioni.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {pilotReviews.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-white/10 bg-black/20 p-5"
+                  >
+                    <div className="mb-3 flex items-center justify-between gap-4">
+                      <h3 className="text-xl font-bold">
+                        {item.title || "Recensione"}
+                      </h3>
+
+                      <div className="flex items-center gap-1 text-yellow-400">
+                        {Array.from({ length: Number(item.rating) || 0 }).map(
+                          (_, index) => (
+                            <Star key={index} size={18} fill="currentColor" />
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <p className="whitespace-pre-line text-sm leading-6 text-gray-300">
+                      {item.review || "Nessun testo inserito."}
+                    </p>
+
+                    <p className="mt-4 text-xs text-gray-500">
+                      Ricevuta il{" "}
+                      {item.created_at
+                        ? new Date(item.created_at).toLocaleDateString("it-IT")
+                        : "Data non disponibile"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

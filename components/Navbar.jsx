@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
-import { LogIn, Bell } from "lucide-react"
+import { LogIn, Bell, Trash2 } from "lucide-react"
 import { supabase } from "@/lib/supabase/client"
 
 function normalizeRole(role) {
@@ -210,6 +210,37 @@ export default function Navbar() {
     )
   }
 
+  const deleteNotification = async (notificationId) => {
+    if (!user?.id || !notificationId) return
+
+    const { error } = await supabase
+      .from("notifications")
+      .delete()
+      .eq("id", notificationId)
+      .eq("user_id", user.id)
+
+    if (error) {
+      console.error("[notifications] delete failed:", error)
+      return
+    }
+
+    setNotifications((prev) =>
+      prev.filter((notification) => notification.id !== notificationId)
+    )
+  }
+
+  const formatNotificationDate = (value) => {
+    if (!value) return ""
+
+    return new Date(value).toLocaleString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit"
+    })
+  }
+
   const unreadCount = notifications.filter(
     (notification) => notification.user_id === user?.id && !notification.read
   ).length
@@ -234,47 +265,47 @@ export default function Navbar() {
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         {!user && !authLoading && (
           <>
-  <div className="hidden items-center gap-2 sm:flex">
-    <Link href="/come-funziona">
-      <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
-        Come funziona
-      </button>
-    </Link>
+            <div className="hidden items-center gap-2 sm:flex">
+              <Link href="/come-funziona">
+                <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
+                  Come funziona
+                </button>
+              </Link>
 
-    <Link href="/contattaci">
-      <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
-        Contattaci
-      </button>
-    </Link>
+              <Link href="/contattaci">
+                <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
+                  Contattaci
+                </button>
+              </Link>
 
-    <Link href="/login">
-      <button className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black">
-        <LogIn size={20} />
-        Accedi
-      </button>
-    </Link>
-  </div>
+              <Link href="/login">
+                <button className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black">
+                  <LogIn size={20} />
+                  Accedi
+                </button>
+              </Link>
+            </div>
 
-  <div className="flex items-center gap-2 sm:hidden">
-    <Link href="/come-funziona">
-      <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-        Info
-      </button>
-    </Link>
+            <div className="flex items-center gap-2 sm:hidden">
+              <Link href="/come-funziona">
+                <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
+                  Info
+                </button>
+              </Link>
 
-    <Link href="/contattaci">
-      <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-        Contatti
-      </button>
-    </Link>
+              <Link href="/contattaci">
+                <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
+                  Contatti
+                </button>
+              </Link>
 
-    <Link href="/login">
-      <button className="flex items-center rounded-full border-2 border-white px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-        <LogIn size={18} />
-      </button>
-    </Link>
-  </div>
-</>
+              <Link href="/login">
+                <button className="flex items-center rounded-full border-2 border-white px-3 py-2 text-xs transition hover:bg-white hover:text-black">
+                  <LogIn size={18} />
+                </button>
+              </Link>
+            </div>
+          </>
         )}
 
         {user && (
@@ -331,13 +362,35 @@ export default function Navbar() {
                                 : "bg-white/10 hover:bg-white/[0.12]"
                             }`}
                           >
-                            <p className="font-medium">
-                              {cleanEncoding(notification.title) || "Notifica"}
-                            </p>
+                            <div className="flex items-start justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="font-medium">
+                                  {cleanEncoding(notification.title) || "Notifica"}
+                                </p>
 
-                            <p className="mt-1 text-xs text-gray-400">
-                              {cleanEncoding(notification.message)}
-                            </p>
+                                <p className="mt-1 text-xs text-gray-400">
+                                  {cleanEncoding(notification.message)}
+                                </p>
+                              </div>
+
+                              <div className="flex shrink-0 flex-col items-end gap-2">
+                                <span className="text-[10px] text-gray-500">
+                                  {formatNotificationDate(notification.created_at)}
+                                </span>
+
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    deleteNotification(notification.id)
+                                  }}
+                                  className="rounded-md border border-white/10 bg-white/5 p-1.5 text-gray-300 transition hover:bg-red-500/20 hover:text-red-300"
+                                  title="Cancella notifica"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         ))}
                     </div>
