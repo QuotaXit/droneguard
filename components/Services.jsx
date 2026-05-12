@@ -34,29 +34,22 @@ export default function Services() {
 
   return (
     <section className="relative text-white py-24 px-6">
-      
+
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
 
-      <div className="relative z-10 max-w-6xl mx-auto text-center">
-        
-        {/* TITLE */}
-        <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
-          Accesso su Richiesta a Servizi Professionali di Droni
-        </h2>
+      <div className="relative z-10 max-w-6xl mx-auto">
 
-       <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-  Dai rilievi del cantiere alle mappature agricole — ogni servizio di droni commerciali, una piattaforma.
-</p>
+        {/* GRID SOPRA */}
+        <div className="grid md:grid-cols-3 gap-6">
 
-        {/* GRID */}
-        <div className="grid md:grid-cols-3 gap-6 mt-12">
           {services.map((item, i) => (
+
             <div
               key={i}
               className="border border-white/20 rounded-xl p-6 text-left bg-white/5 backdrop-blur-md hover:bg-white/10 transition"
             >
-              
+
               {/* ICON */}
               <div className="text-2xl mb-3">
                 {item.icon}
@@ -73,7 +66,22 @@ export default function Services() {
               </p>
 
             </div>
+
           ))}
+
+        </div>
+
+        {/* TESTI SOTTO */}
+        <div className="text-center mt-16">
+
+          <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
+            Accesso su Richiesta a Servizi Professionali di Droni
+          </h2>
+
+          <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+            Dai rilievi del cantiere alle mappature agricole — ogni servizio di droni commerciali, una piattaforma.
+          </p>
+
         </div>
 
       </div>
