@@ -89,6 +89,10 @@ export default function JobCard({ variant = 1 }) {
           {job.tag}
         </span>
 
+        <p className="mb-4 text-xs uppercase tracking-[0.2em] text-gray-500">
+  ESEMPIO ANNUNCIO
+</p>
+
         <h3 className="text-2xl font-bold">
           {job.title}
         </h3>
