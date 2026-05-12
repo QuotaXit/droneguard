@@ -42,7 +42,7 @@ export default function Hero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-300 sm:text-lg">
-          Un marketplace per piloti di droni e aziende. Trova lavori, assumi
+          Un marketplace per piloti di droni e clienti. Trova lavori, assumi
           talenti e gestisci tutto in un’unica piattaforma sicura.
         </p>
 

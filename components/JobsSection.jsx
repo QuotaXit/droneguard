@@ -48,7 +48,7 @@ export default function JobsSection() {
 
         {/* SUBTITLE */}
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-          Sfoglia i lavori aerei verificati dai clienti fidati. Sblocca tutti i dettagli con l'acquisto dei crediti.
+          Sfoglia i lavori aerei nella bacheca lavoro. Candidati subito al prossimo lavoro.
         </p>
 
         {/* LIST */}
@@ -61,7 +61,7 @@ export default function JobsSection() {
         {/* CTA */}
         <div className="text-center mt-16">
           <p className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed tracking-wide font-medium">
-            Accedi a missioni esclusive con clienti verificati. Scopri i budget, sblocca i contatti e gestisci il tuo lavoro in modo professionale — tutto in un’unica piattaforma.
+            Accedi a missioni esclusive. Candidati, vola, guadagna.
           </p>
 
           <button

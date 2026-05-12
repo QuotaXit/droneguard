@@ -21,7 +21,8 @@ import {
   BadgeCheck,
   ShieldCheck,
   UploadCloud,
-  X
+  X,
+  Star
 } from "lucide-react"
 
 const ACTIVE_JOB_STATUSES = ["assigned", "accepted", "in_progress"]
@@ -370,6 +371,14 @@ export default function Dashboard() {
                   Dati lavoro
                 </div>
               </Link>
+
+<Link href="/dashboard/reviews">
+  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+    <Star size={20} />
+    Recensioni
+  </div>
+</Link>
+
 
               <Link href="/dashboard/credits">
                 <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">

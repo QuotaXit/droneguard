@@ -150,7 +150,8 @@ export default function ClientHistoryPage() {
           pilot_id: selectedReviewJob.pilot_id || selectedReviewJob.assigned_pilot,
           rating: Number(reviewRating),
           title: reviewTitle.trim(),
-          review: reviewText.trim()
+          review: reviewText.trim(),
+          comment: reviewText.trim()
         })
 
       if (error) {
