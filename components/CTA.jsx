@@ -48,7 +48,7 @@ export default function CTA() {
   </h2>
 
   <p className="text-gray-300 mt-4">
-    Unisciti a una rete in crescita di piloti di droni certificati e aziende.
+    Unisciti a una rete in crescita di piloti di droni certificati e clienti.
     Trova lavoro o assumi i migliori professionisti in pochi minuti.
   </p>
 
@@ -61,13 +61,15 @@ export default function CTA() {
 </div>
 
 {/* IMMAGINE */}
-<div className="h-[220px] w-full overflow-hidden rounded-xl md:w-[400px]">
-          <img
-            src="https://images.unsplash.com/photo-1508614589041-895b88991e3e"
-            alt="Drone"
-            className="w-full h-full object-cover"
-          />
-        </div>
+<div className="h-[260px] w-full overflow-hidden rounded-3xl border border-white/20 shadow-2xl md:w-[520px]">
+
+  <img
+    src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1200"
+    alt="Drone"
+    className="h-full w-full object-cover"
+  />
+
+</div>
 
       </div>
 
