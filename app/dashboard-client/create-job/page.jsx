@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import Navbar from "@/components/Navbar"
@@ -11,8 +11,40 @@ export default function CreateJob() {
   const [location, setLocation] = useState("")
   const [date, setDate] = useState("")
 
+  const [locationSuggestions, setLocationSuggestions] = useState([])
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
+
   const [images, setImages] = useState([])
   const [creating, setCreating] = useState(false)
+
+  useEffect(() => {
+    const searchLocations = async () => {
+      if (location.trim().length < 3) {
+        setLocationSuggestions([])
+        setShowLocationSuggestions(false)
+        return
+      }
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&countrycodes=it&q=${encodeURIComponent(
+            location
+          )}`
+        )
+
+        const data = await res.json()
+
+        setLocationSuggestions(data || [])
+        setShowLocationSuggestions(true)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const timer = setTimeout(searchLocations, 500)
+
+    return () => clearTimeout(timer)
+  }, [location])
 
   // 🚀 UPLOAD IMMAGINI
   const uploadImages = async (files) => {
@@ -50,8 +82,9 @@ export default function CreateJob() {
       setCreating(true)
 
       const {
-          data: { user }
-        } = await supabase.auth.getUser()
+        data: { user }
+      } = await supabase.auth.getUser()
+
       if (!user) return
 
       // 🚀 PRENDE CREDITI
@@ -123,39 +156,34 @@ export default function CreateJob() {
 
   return (
     <div className="min-h-screen flex flex-col text-white">
-
       <Navbar logged />
 
       <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-
         <div className="mx-auto w-full max-w-xl rounded-2xl border border-white/20 bg-white/5 p-5 sm:p-8">
-
           <h2 className="mb-6 text-xl font-[var(--font-krona)] sm:text-2xl">
             Pubblica un lavoro
           </h2>
 
           <form onSubmit={handleCreateJob} className="space-y-4">
-
-           
             {/* TITOLO */}
-<input
-  placeholder="Titolo lavoro"
-  required
-  minLength={10}
-  maxLength={30}
-  value={title}
-  onChange={(e) => {
-    const value = e.target.value
+            <input
+              placeholder="Titolo lavoro"
+              required
+              minLength={10}
+              maxLength={30}
+              value={title}
+              onChange={(e) => {
+                const value = e.target.value
 
-    const formatted = value.replace(
-      /\b\w/g,
-      (char) => char.toUpperCase()
-    )
+                const formatted = value.replace(
+                  /\b\w/g,
+                  (char) => char.toUpperCase()
+                )
 
-    setTitle(formatted)
-  }}
-  className="w-full rounded-lg border border-white/20 bg-transparent p-4 text-xl font-bold tracking-wide sm:text-2xl"
-/>
+                setTitle(formatted)
+              }}
+              className="w-full rounded-lg border border-white/20 bg-transparent p-4 text-xl font-bold tracking-wide sm:text-2xl"
+            />
 
             {/* DESCRIZIONE */}
             <textarea
@@ -167,25 +195,51 @@ export default function CreateJob() {
             />
 
             {/* LUOGO */}
-            <input
-              placeholder="Luogo"
-              required
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full p-3 rounded-lg bg-transparent border border-white/20"
-            />
+            <div className="relative">
+              <input
+                placeholder="Luogo"
+                required
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                onFocus={() => {
+                  if (locationSuggestions.length > 0) {
+                    setShowLocationSuggestions(true)
+                  }
+                }}
+                className="w-full p-3 rounded-lg bg-transparent border border-white/20"
+              />
+
+              {showLocationSuggestions && locationSuggestions.length > 0 && (
+                <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-white/20 bg-[#140a3a] shadow-xl">
+                  {locationSuggestions.map((item) => (
+                    <button
+                      key={item.place_id}
+                      type="button"
+                      onClick={() => {
+                        setLocation(item.display_name)
+                        setShowLocationSuggestions(false)
+                      }}
+                      className="w-full border-b border-white/10 px-4 py-3 text-left text-sm text-white hover:bg-white/10"
+                    >
+                      {item.display_name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* DATA */}
             <input
-  type="date"
-  required
-  value={date}
-  min={new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-    .toISOString()
-    .split("T")[0]}
-  onChange={(e) => setDate(e.target.value)}
-  className="w-full p-3 rounded-lg bg-transparent border border-white/20 text-white"
-/>
+              type="date"
+              required
+              value={date}
+              min={new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                .toISOString()
+                .split("T")[0]}
+              onChange={(e) => setDate(e.target.value)}
+              className="w-full p-3 rounded-lg bg-transparent border border-white/20 text-white"
+            />
+
             <button
               type="submit"
               disabled={creating}
@@ -193,9 +247,7 @@ export default function CreateJob() {
             >
               {creating ? "Pubblicazione..." : "Pubblica (5 crediti)"}
             </button>
-
           </form>
-
         </div>
       </div>
     </div>

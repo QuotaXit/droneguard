@@ -733,48 +733,6 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
               </div>
 
-              {/* NOTIFICHE */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
-
-                <div className="flex items-center gap-3 mb-6">
-
-                  <Bell size={22} />
-
-                  <h2 className="text-xl font-semibold">
-                    Notifiche
-                  </h2>
-
-                </div>
-
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-                  <div>
-
-                    <p className="font-medium">
-                      Notifiche email
-                    </p>
-
-                    <span className="text-sm text-gray-400">
-                      Ricevi aggiornamenti sui tuoi lavori
-                    </span>
-
-                  </div>
-
-                  <input
-                    type="checkbox"
-                    checked={emailNotifications}
-                    onChange={() =>
-                      setEmailNotifications(
-                        !emailNotifications
-                      )
-                    }
-                    className="w-5 h-5"
-                  />
-
-                </div>
-
-              </div>
-
               {/* DELETE */}
               <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6">
 

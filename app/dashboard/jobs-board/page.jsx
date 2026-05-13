@@ -32,6 +32,32 @@ export default function JobsBoardPage() {
   const [completedJobs, setCompletedJobs] = useState(0)
   const [pilotsCount, setPilotsCount] = useState(0)
 
+  const [cityFilter, setCityFilter] = useState("")
+  const [workTypeFilter, setWorkTypeFilter] = useState("")
+
+  const filteredJobs = jobs.filter((job) => {
+    const cityMatch =
+      !cityFilter ||
+      String(job.location || "")
+        .toLowerCase()
+        .includes(cityFilter.toLowerCase())
+
+    const workTypeMatch =
+      !workTypeFilter ||
+      String(
+        job.type ||
+          job.work_type ||
+          job.category ||
+          job.service ||
+          job.title ||
+          ""
+      )
+        .toLowerCase()
+        .includes(workTypeFilter.toLowerCase())
+
+    return cityMatch && workTypeMatch
+  })
+
   const loadJobs = async () => {
     const { data, error } = await supabase
       .from("jobs")
@@ -75,13 +101,13 @@ export default function JobsBoardPage() {
     setCompletedJobs(completed || 0)
 
     const { count: totalApplications } = await supabase
-  .from("applications")
-  .select("*", {
-    count: "exact",
-    head: true
-  })
+      .from("applications")
+      .select("*", {
+        count: "exact",
+        head: true
+      })
 
-setPilotsCount(totalApplications || 0)
+    setPilotsCount(totalApplications || 0)
   }
 
   useEffect(() => {
@@ -273,8 +299,8 @@ setPilotsCount(totalApplications || 0)
                 <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
                   <div className="flex items-center gap-3 mb-3">
                     <Users size={20} />
-<p className="text-gray-300">Candidature totali</p>                 
- </div>
+                    <p className="text-gray-300">Candidature totali</p>
+                  </div>
 
                   <h3 className="text-3xl font-bold text-yellow-400 sm:text-4xl">
                     {pilotsCount}
@@ -285,7 +311,7 @@ setPilotsCount(totalApplications || 0)
           </div>
 
           <div className="flex-1">
-            <div className="mb-12">
+            <div className="mb-8">
               <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-6xl">Bacheca lavori</h1>
 
               <p className="text-base text-gray-400 sm:text-xl">
@@ -293,8 +319,38 @@ setPilotsCount(totalApplications || 0)
               </p>
             </div>
 
+            <div className="mb-8 rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-6">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <input
+                  type="text"
+                  placeholder="Filtra per città"
+                  value={cityFilter}
+                  onChange={(e) => setCityFilter(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-white placeholder:text-gray-400 outline-none"
+                />
+
+                <input
+                  type="text"
+                  placeholder="Filtra per tipo lavoro"
+                  value={workTypeFilter}
+                  onChange={(e) => setWorkTypeFilter(e.target.value)}
+                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-white placeholder:text-gray-400 outline-none"
+                />
+
+                <button
+                  onClick={() => {
+                    setCityFilter("")
+                    setWorkTypeFilter("")
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-white/5 p-4 font-semibold text-white hover:bg-white/10 transition"
+                >
+                  Reset filtri
+                </button>
+              </div>
+            </div>
+
             <div className="space-y-6 lg:max-h-[1320px] lg:space-y-8 lg:overflow-y-auto lg:pr-3">
-              {jobs.length === 0 && (
+              {filteredJobs.length === 0 && (
                 <div className="border border-white/10 bg-[#140a3a] rounded-3xl p-14 text-center">
                   <h2 className="text-3xl font-bold mb-4">
                     Nessun lavoro disponibile
@@ -306,7 +362,7 @@ setPilotsCount(totalApplications || 0)
                 </div>
               )}
 
-              {jobs.map((job) => (
+              {filteredJobs.map((job) => (
                 <div
                   key={job.id}
                   className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8"
