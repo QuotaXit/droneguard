@@ -265,7 +265,13 @@ export default function Navbar() {
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         {!user && !authLoading && (
           <>
-            <div className="hidden items-center gap-2 sm:flex">
+<div className="hidden items-center gap-2 sm:flex">
+  <Link href="/faq">
+    <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
+      FAQ
+    </button>
+  </Link>
+
               <Link href="/come-funziona">
                 <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
                   Come funziona

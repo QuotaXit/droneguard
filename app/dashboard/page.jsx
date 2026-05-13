@@ -409,6 +409,10 @@ export default function Dashboard() {
               </div>
               <div className="border-t border-white/10 my-6" />
 
+<Link 
+ href="/faq">FAQ
+</Link>              
+
 <Link href="/come-funziona">
   <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
     Come funziona
