@@ -33,7 +33,7 @@ export default function CTA() {
   }
 
   return (
-    <section className="relative overflow-hidden px-4 py-16 text-white sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+    <section className="relative overflow-hidden px-4 pt-16 pb-8 text-white sm:px-6 sm:pt-20 sm:pb-10 lg:px-8 lg:pt-24 lg:pb-12">
       
       {/* BACKGROUND */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
@@ -72,23 +72,6 @@ export default function CTA() {
 </div>
 
       </div>
-
-      {/* TESTO CURVO */}
-      <svg
-        className="absolute bottom-0 left-0 w-full h-32 opacity-30"
-        viewBox="0 0 1000 200"
-      >
-        <path
-          id="curve"
-          d="M 0 150 Q 500 50 1000 150"
-          fill="transparent"
-        />
-        <text fill="white" fontSize="20" letterSpacing="2">
-          <textPath href="#curve" startOffset="0%">
-            Fly your skills. Find your mission. Fly your skills. Find your mission.
-          </textPath>
-        </text>
-      </svg>
 
     </section>
   )

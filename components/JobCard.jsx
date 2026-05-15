@@ -118,7 +118,6 @@ export default function JobCard({ variant = 1 }) {
           <p>✓ Budget: Da definire</p>
           <p>📅 Scadenza: {job.deadline}</p>
           <p>◇ Tipologia: {job.type}</p>
-          <p>◇ Livello: {job.level}</p>
         </div>
 
         <button

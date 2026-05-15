@@ -264,54 +264,12 @@ export default function Navbar() {
 
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         {!user && !authLoading && (
-          <>
-<div className="hidden items-center gap-2 sm:flex">
-  <Link href="/faq">
-    <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
-      FAQ
-    </button>
-  </Link>
-
-              <Link href="/come-funziona">
-                <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
-                  Come funziona
-                </button>
-              </Link>
-
-              <Link href="/contattaci">
-                <button className="rounded-full border border-white/40 px-4 py-2 text-sm transition hover:bg-white hover:text-black">
-                  Contattaci
-                </button>
-              </Link>
-
-              <Link href="/login">
-                <button className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black">
-                  <LogIn size={20} />
-                  Accedi
-                </button>
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-2 sm:hidden">
-              <Link href="/come-funziona">
-                <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-                  Info
-                </button>
-              </Link>
-
-              <Link href="/contattaci">
-                <button className="rounded-full border border-white/40 px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-                  Contatti
-                </button>
-              </Link>
-
-              <Link href="/login">
-                <button className="flex items-center rounded-full border-2 border-white px-3 py-2 text-xs transition hover:bg-white hover:text-black">
-                  <LogIn size={18} />
-                </button>
-              </Link>
-            </div>
-          </>
+          <Link href="/login">
+            <button className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black">
+              <LogIn size={20} />
+              Accedi
+            </button>
+          </Link>
         )}
 
         {user && (
