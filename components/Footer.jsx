@@ -13,7 +13,7 @@ export default function Footer() {
             Come funziona
           </Link>
 
-          <Link href="/contatti" className="hover:text-white transition">
+          <Link href="/contattaci" className="hover:text-white transition">
             Contattaci
           </Link>
 
