@@ -84,6 +84,19 @@ export default function InProgressJobs() {
   const cancelJob = async (jobId) => {
     if (!confirm("Vuoi annullare ed eliminare il lavoro?")) return
 
+    const job = jobs.find((item) => item.id === jobId)
+    const pilotId = job?.pilot_id || job?.assigned_pilot
+
+    if (pilotId) {
+      await supabase.from("notifications").insert({
+        user_id: pilotId,
+        title: "Lavoro annullato",
+        message: `Il cliente ha annullato il lavoro "${job?.title || "assegnato"}".`,
+        type: "job_cancelled",
+        read: false
+      })
+    }
+
     await supabase
       .from("conversations")
       .update({ status: "closed" })
@@ -117,16 +130,39 @@ export default function InProgressJobs() {
       active: Math.max(prev.active - 1, 0),
       pilots: Math.max(prev.pilots - 1, 0)
     }))
+
+    toast.success("Lavoro annullato e pilota notificato ✅")
   }
 
   const completeJob = async (jobId) => {
     if (!confirm("Segnare come completato?")) return
 
+    const completedAt = new Date().toISOString()
+
+    const { data: jobData, error: jobReadError } = await supabase
+      .from("jobs")
+      .select("pilot_completed_at")
+      .eq("id", jobId)
+      .maybeSingle()
+
+    if (jobReadError) {
+      console.log(jobReadError)
+      toast.error("Errore caricamento lavoro")
+      return
+    }
+
+    const updateData = {
+      client_completed_at: completedAt
+    }
+
+    if (jobData?.pilot_completed_at) {
+      updateData.status = "completed"
+      updateData.completed_at = completedAt
+    }
+
     const { error } = await supabase
       .from("jobs")
-      .update({
-        status: "completed"
-      })
+      .update(updateData)
       .eq("id", jobId)
 
     if (error) {
@@ -135,16 +171,23 @@ export default function InProgressJobs() {
       return
     }
 
-    await supabase
-      .from("applications")
-      .update({ status: "completed" })
-      .eq("job_id", jobId)
-      .eq("status", "accepted")
+    if (jobData?.pilot_completed_at) {
+      await supabase
+        .from("applications")
+        .update({ status: "completed", completed_at: completedAt })
+        .eq("job_id", jobId)
+        .eq("status", "accepted")
 
-    await supabase
-      .from("conversations")
-      .update({ status: "closed" })
-      .eq("job_id", jobId)
+      await supabase
+        .from("job_assignments")
+        .update({ status: "completed", completed_at: completedAt })
+        .eq("job_id", jobId)
+
+      await supabase
+        .from("conversations")
+        .update({ status: "closed" })
+        .eq("job_id", jobId)
+    }
 
     setJobs((prev) => prev.filter((job) => job.id !== jobId))
 
@@ -154,6 +197,8 @@ export default function InProgressJobs() {
       pilots: Math.max(prev.pilots - 1, 0),
       completed: prev.completed + 1
     }))
+
+    toast.success("Conferma completamento registrata ✅")
   }
 
   const openPilotDetails = async (pilotId) => {

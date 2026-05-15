@@ -433,33 +433,6 @@ export default function ClientJobs() {
                           </button>
                         </Link>
 
-                        {job.status === "assigned" && (
-  <button
-    onClick={() => completeJobSuccess(job)}
-    className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
-  >
-    <CheckCircle2 size={16} />
-    Terminato con successo
-  </button>
-)}
-
-                        {job.status === "assigned" ? (
-                          <button
-                            onClick={() => cancelJob(job)}
-                            className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
-                          >
-                            <Trash2 size={16} />
-                            Annulla lavoro
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => deleteJob(job.id)}
-                            className="bg-red-500 text-white py-3 rounded-xl font-semibold hover:bg-red-400 transition flex items-center justify-center gap-2"
-                          >
-                            <Trash2 size={16} />
-                            Elimina
-                          </button>
-                        )}
                       </div>
                     </div>
                   </div>
