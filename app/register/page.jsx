@@ -482,7 +482,7 @@ export default function RegisterPage() {
               />
 
               <span>
-                Dichiaro di essere in possesso delle certificazioni ENAC indicate, di operare nel rispetto delle normative vigenti e di assumermi la responsabilità dei dati inseriti. Ogni pagamento per il lavoro svolto, avviene tra le parti al di fuori della piattaforma DronGuard.
+                Dichiaro di essere in possesso delle certificazioni ENAC indicate, di operare nel rispetto delle normative vigenti e di assumermi la responsabilità dei dati inseriti. Ogni pagamento per il lavoro svolto, avviene tra le parti al di fuori della piattaforma DroneGuard.
               </span>
             </label>
           )}
