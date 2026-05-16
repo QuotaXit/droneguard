@@ -18,20 +18,14 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const prepareSession = async () => {
+      setCheckingSession(true)
       setError("")
 
       const url = new URL(window.location.href)
       const code = url.searchParams.get("code")
 
       if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
-
-        if (error) {
-          setError("Link scaduto o non valido. Richiedi un nuovo recupero password.")
-        }
-
-        setCheckingSession(false)
-        return
+        await supabase.auth.exchangeCodeForSession(code)
       }
 
       const hash = window.location.hash
@@ -42,14 +36,10 @@ export default function ResetPasswordPage() {
         const refresh_token = params.get("refresh_token")
 
         if (access_token && refresh_token) {
-          const { error } = await supabase.auth.setSession({
+          await supabase.auth.setSession({
             access_token,
             refresh_token
           })
-
-          if (error) {
-            setError("Link scaduto o non valido. Richiedi un nuovo recupero password.")
-          }
         }
       }
 
@@ -83,12 +73,22 @@ export default function ResetPasswordPage() {
       return
     }
 
+    const {
+      data: { session }
+    } = await supabase.auth.getSession()
+
+    if (!session) {
+      setError("Sessione non valida. Torna alla pagina recupero password e richiedi un nuovo link.")
+      setLoading(false)
+      return
+    }
+
     const { error } = await supabase.auth.updateUser({
       password
     })
 
     if (error) {
-      setError("Link scaduto o non valido. Richiedi un nuovo recupero password.")
+      setError("Sessione non valida. Torna alla pagina recupero password e richiedi un nuovo link.")
       setLoading(false)
       return
     }
