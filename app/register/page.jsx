@@ -280,6 +280,28 @@ export default function RegisterPage() {
         return
       }
 
+      if (type === "cliente") {
+  if (!nome.trim()) {
+    toast.error("Inserisci il nome.")
+    return
+  }
+
+  if (!cognome.trim()) {
+    toast.error("Inserisci il cognome.")
+    return
+  }
+
+  if (!citta) {
+    toast.error("Seleziona la città.")
+    return
+  }
+
+  if (!ragioneSociale.trim()) {
+    toast.error("Inserisci ragione sociale o nome attività.")
+    return
+  }
+}
+
       const normalizedEmail = email.trim().toLowerCase()
       const emailValidationError = validateEmailAddress(normalizedEmail)
 
