@@ -51,26 +51,70 @@ const experienceList = [
 ]
 
 const droneList = [
-  "DJI Mini 4 Pro",
-  "DJI Mini 3 Pro",
-  "DJI Mini 3",
+  "DJI Air 2",
+  "DJI Air 2S",
   "DJI Air 3",
   "DJI Air 3S",
-  "DJI Mavic 3 Pro",
+
+  "DJI Avata",
+  "DJI Avata 2",
+
+  "DJI FPV",
+
+  "DJI Inspire 1",
+  "DJI Inspire 2",
+  "DJI Inspire 3",
+
+  "DJI Mavic Pro",
+  "DJI Mavic 2 Pro",
+  "DJI Mavic 2 Zoom",
+  "DJI Mavic 3",
   "DJI Mavic 3 Classic",
+  "DJI Mavic 3 Cine",
   "DJI Mavic 3 Enterprise",
+  "DJI Mavic 3 Thermal",
+
+  "DJI Mini 2",
+  "DJI Mini 2 SE",
+  "DJI Mini 3",
+  "DJI Mini 3 Pro",
+  "DJI Mini 4 Pro",
+
+  "DJI Phantom 4",
+  "DJI Phantom 4 Advanced",
+  "DJI Phantom 4 Pro",
+  "DJI Phantom 4 RTK",
+
   "DJI Matrice 30",
   "DJI Matrice 30T",
+  "DJI Matrice 4E",
+  "DJI Matrice 4T",
+  "DJI Matrice 200",
+  "DJI Matrice 210",
   "DJI Matrice 300 RTK",
   "DJI Matrice 350 RTK",
-  "DJI Phantom 4 RTK",
-  "DJI Avata 2",
-  "DJI FPV",
+  "DJI Matrice 600",
+
+  "DJI Agras T10",
+  "DJI Agras T20",
+  "DJI Agras T30",
+  "DJI Agras T40",
+
+  "Autel EVO Nano+",
+  "Autel EVO Lite+",
+  "Autel EVO II",
   "Autel EVO II Pro",
   "Autel EVO Max 4T",
+
   "Parrot Anafi",
   "Parrot Anafi USA",
-  "Yuneec H520E",
+
+  "Skydio 2+",
+  "Skydio X2",
+
+  "Yuneec Typhoon H",
+  "Yuneec H520",
+
   "Altro"
 ]
 
