@@ -238,6 +238,43 @@ export default function RegisterPage() {
       setLoading(true)
       setEmailError("")
 
+      if (!password || password.length < 6) {
+  toast.error("La password deve contenere almeno 6 caratteri.")
+  return
+}
+
+      if (type === "pilot") {
+  if (!nome.trim()) {
+    toast.error("Inserisci il nome.")
+    return
+  }
+
+  if (!cognome.trim()) {
+    toast.error("Inserisci il cognome.")
+    return
+  }
+
+  if (!certificazioni) {
+    toast.error("Seleziona le certificazioni.")
+    return
+  }
+
+  if (!esperienza) {
+    toast.error("Seleziona l'esperienza.")
+    return
+  }
+
+  if (!drone) {
+    toast.error("Seleziona il drone.")
+    return
+  }
+
+  if (!acceptedRules) {
+    toast.error("Devi accettare la dichiarazione prima di registrarti.")
+    return
+  }
+}
+
       if (type === "pilot" && !acceptedRules) {
         toast.error("Devi accettare la dichiarazione prima di registrarti.")
         return
@@ -250,6 +287,11 @@ export default function RegisterPage() {
         setEmailError(emailValidationError)
         return
       }
+
+      if (!password || password.length < 6) {
+  toast.error("La password deve contenere almeno 6 caratteri.")
+  return
+}
 
       const { error: authError } = await supabase.auth.signUp({
         email: normalizedEmail,
