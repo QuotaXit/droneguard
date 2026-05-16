@@ -31,9 +31,11 @@ export default function LoginPage() {
       })
 
       if (error) {
-        console.log(error)
-        toast.error("Password errata")
-      }
+  console.log(error)
+  toast.error("Email o password non corretti")
+  await supabase.auth.signOut()
+  return
+}
 
       // USER
       const user = authData.user
