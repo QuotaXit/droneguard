@@ -5,9 +5,28 @@ import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import { supabase } from "@/lib/supabase/client"
 import { Lock, CheckCircle2 } from "lucide-react"
+import { useState, useEffect } from "react"
 
 export default function ResetPasswordPage() {
   const router = useRouter()
+
+  useEffect(() => {
+  const hash = window.location.hash
+
+  if (hash) {
+    const params = new URLSearchParams(hash.substring(1))
+
+    const access_token = params.get("access_token")
+    const refresh_token = params.get("refresh_token")
+
+    if (access_token && refresh_token) {
+      supabase.auth.setSession({
+        access_token,
+        refresh_token
+      })
+    }
+  }
+}, [])
 
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
