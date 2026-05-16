@@ -1,38 +1,63 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import { supabase } from "@/lib/supabase/client"
 import { Lock, CheckCircle2 } from "lucide-react"
-import { useState, useEffect } from "react"
 
 export default function ResetPasswordPage() {
   const router = useRouter()
 
-  useEffect(() => {
-  const hash = window.location.hash
-
-  if (hash) {
-    const params = new URLSearchParams(hash.substring(1))
-
-    const access_token = params.get("access_token")
-    const refresh_token = params.get("refresh_token")
-
-    if (access_token && refresh_token) {
-      supabase.auth.setSession({
-        access_token,
-        refresh_token
-      })
-    }
-  }
-}, [])
-
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
+  const [checkingSession, setCheckingSession] = useState(true)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+
+  useEffect(() => {
+    const prepareSession = async () => {
+      setError("")
+
+      const url = new URL(window.location.href)
+      const code = url.searchParams.get("code")
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+
+        if (error) {
+          setError("Link scaduto o non valido. Richiedi un nuovo recupero password.")
+        }
+
+        setCheckingSession(false)
+        return
+      }
+
+      const hash = window.location.hash
+
+      if (hash) {
+        const params = new URLSearchParams(hash.substring(1))
+        const access_token = params.get("access_token")
+        const refresh_token = params.get("refresh_token")
+
+        if (access_token && refresh_token) {
+          const { error } = await supabase.auth.setSession({
+            access_token,
+            refresh_token
+          })
+
+          if (error) {
+            setError("Link scaduto o non valido. Richiedi un nuovo recupero password.")
+          }
+        }
+      }
+
+      setCheckingSession(false)
+    }
+
+    prepareSession()
+  }, [])
 
   const handleUpdatePassword = async (e) => {
     e.preventDefault()
@@ -82,7 +107,6 @@ export default function ResetPasswordPage() {
 
       <main className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12">
         <div className="w-full max-w-md rounded-3xl border border-white/15 bg-white/5 p-7 shadow-2xl backdrop-blur-md sm:p-9">
-
           <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-green-500/15 text-green-400">
             <Lock size={28} />
           </div>
@@ -94,6 +118,12 @@ export default function ResetPasswordPage() {
           <p className="mt-3 text-sm leading-6 text-gray-300">
             Inserisci una nuova password per accedere al tuo account DroneGuard.
           </p>
+
+          {checkingSession && (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-white/10 p-4 text-sm text-gray-300">
+              Verifica link in corso...
+            </div>
+          )}
 
           {success && (
             <div className="mt-6 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-sm text-green-300">
@@ -143,7 +173,7 @@ export default function ResetPasswordPage() {
 
             <button
               type="submit"
-              disabled={loading || success}
+              disabled={loading || success || checkingSession}
               className="w-full rounded-2xl bg-green-500 px-6 py-4 font-semibold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? "Aggiornamento..." : "Aggiorna password"}
