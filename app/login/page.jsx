@@ -50,7 +50,7 @@ export default function LoginPage() {
         .from("users")
         .select("role")
         .eq("id", user.id)
-        .single()
+        .maybeSingle()
 
       if (profileError) {
         console.error("[Login] Profile error:", profileError)
