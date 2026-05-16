@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import { supabase } from "@/lib/supabase/client"
@@ -13,37 +13,92 @@ export default function ResetPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [checkingSession, setCheckingSession] = useState(true)
+  const [sessionReady, setSessionReady] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
+  const hasPreparedSession = useRef(false)
 
   useEffect(() => {
+    if (hasPreparedSession.current) {
+      return
+    }
+
+    hasPreparedSession.current = true
+
     const prepareSession = async () => {
       setCheckingSession(true)
+      setSessionReady(false)
       setError("")
 
-      const url = new URL(window.location.href)
-      const code = url.searchParams.get("code")
+      try {
+        const url = new URL(window.location.href)
+        const code = url.searchParams.get("code")
 
-      if (code) {
-        await supabase.auth.exchangeCodeForSession(code)
-      }
+        if (code) {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+          const codeStillInUrl = new URL(window.location.href).searchParams.get("code")
 
-      const hash = window.location.hash
+          if (error && codeStillInUrl) {
+            console.error("Errore reset password Supabase:", error)
+            setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
+            setCheckingSession(false)
+            return
+          }
 
-      if (hash) {
-        const params = new URLSearchParams(hash.substring(1))
-        const access_token = params.get("access_token")
-        const refresh_token = params.get("refresh_token")
-
-        if (access_token && refresh_token) {
-          await supabase.auth.setSession({
-            access_token,
-            refresh_token
-          })
+          if (data?.session) {
+            url.searchParams.delete("code")
+            window.history.replaceState(window.history.state, "", url.toString())
+          }
         }
-      }
 
-      setCheckingSession(false)
+        const hash = window.location.hash
+
+        if (hash) {
+          const params = new URLSearchParams(hash.substring(1))
+          const hashError = params.get("error_description") || params.get("error")
+          const access_token = params.get("access_token")
+          const refresh_token = params.get("refresh_token")
+
+          if (hashError) {
+            setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
+            setCheckingSession(false)
+            return
+          }
+
+          if (access_token && refresh_token) {
+            const { error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token
+            })
+
+            if (error) {
+              console.error("Errore sessione reset password:", error)
+              setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
+              setCheckingSession(false)
+              return
+            }
+          }
+        }
+
+        const {
+          data: { session },
+          error: sessionError
+        } = await supabase.auth.getSession()
+
+        if (sessionError || !session) {
+          console.error("Sessione reset password non valida:", sessionError)
+          setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
+          setCheckingSession(false)
+          return
+        }
+
+        setSessionReady(true)
+        setCheckingSession(false)
+      } catch (err) {
+        console.error("Errore verifica reset password:", err)
+        setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
+        setCheckingSession(false)
+      }
     }
 
     prepareSession()
@@ -97,7 +152,7 @@ export default function ResetPasswordPage() {
     setLoading(false)
 
     setTimeout(() => {
-      router.push("/login")
+      router.push("/login?reset=success")
     }, 2000)
   }
 
@@ -140,45 +195,47 @@ export default function ResetPasswordPage() {
             </div>
           )}
 
-          <form onSubmit={handleUpdatePassword} className="mt-8 space-y-5">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">
-                Nuova password
-              </label>
+          {sessionReady && !success && (
+            <form onSubmit={handleUpdatePassword} className="mt-8 space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-200">
+                  Nuova password
+                </label>
 
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Nuova password"
-                className="w-full rounded-2xl border border-white/10 bg-white/90 px-4 py-4 text-black outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-400/30"
-              />
-            </div>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Nuova password"
+                  className="w-full rounded-2xl border border-white/10 bg-white/90 px-4 py-4 text-black outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-400/30"
+                />
+              </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-gray-200">
-                Conferma password
-              </label>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-200">
+                  Conferma password
+                </label>
 
-              <input
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Conferma password"
-                className="w-full rounded-2xl border border-white/10 bg-white/90 px-4 py-4 text-black outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-400/30"
-              />
-            </div>
+                <input
+                  type="password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Conferma password"
+                  className="w-full rounded-2xl border border-white/10 bg-white/90 px-4 py-4 text-black outline-none transition focus:border-green-400 focus:ring-2 focus:ring-green-400/30"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={loading || success || checkingSession}
-              className="w-full rounded-2xl bg-green-500 px-6 py-4 font-semibold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? "Aggiornamento..." : "Aggiorna password"}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={loading || success || checkingSession}
+                className="w-full rounded-2xl bg-green-500 px-6 py-4 font-semibold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? "Aggiornamento..." : "Aggiorna password"}
+              </button>
+            </form>
+          )}
         </div>
       </main>
     </div>
