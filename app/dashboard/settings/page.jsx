@@ -103,12 +103,12 @@ export default function SettingsPage() {
   const [name, setName] = useState("")
   const [surname, setSurname] = useState("")
   const [bio, setBio] = useState("")
-  const [certifications, setCertifications] = useState("")
+  const [certifications, setCertifications] = useState([])
   const [experience, setExperience] = useState("")
-  const [services, setServices] = useState("")
+  const [services, setServices] = useState([])
   const [city, setCity] = useState("")
   const [location, setLocation] = useState("")
-  const [drone, setDrone] = useState("")
+  const [drone, setDrone] = useState([])
   const [addressResults, setAddressResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState("")
@@ -132,9 +132,9 @@ export default function SettingsPage() {
     setName(profileData.name || "")
     setSurname(profileData.surname || "")
     setBio(profileData.bio || "")
-    setDrone(profileData.drone || "")
-    setServices(profileData.services || "")
-    setCertifications(profileData.certifications || "")
+    setDrone(profileData.drone ? profileData.drone.split(",").map((x) => x.trim()).filter(Boolean) : [])
+    setServices(profileData.services ? profileData.services.split(",").map((x) => x.trim()).filter(Boolean) : [])
+    setCertifications(profileData.certifications ? profileData.certifications.split(",").map((x) => x.trim()).filter(Boolean) : [])
     setExperience(profileData.experience || "")
     setCity(profileData.city || "")
     setLocation(profileData.location || profileData.city || "")
@@ -309,9 +309,9 @@ export default function SettingsPage() {
         name: name?.trim() || "",
         surname: surname?.trim() || "",
         bio: bio?.trim() || "",
-        drone,
-        services,
-        certifications,
+        drone: drone.join(", "),
+        services: services.join(", "),
+        certifications: certifications.join(", "),
         experience,
         city: location || "",
         location: location || "",
@@ -477,7 +477,7 @@ export default function SettingsPage() {
 
                     <ProfileInfoRow
                       label="Drone"
-                      value={drone || "Non impostato"}
+                      value={drone.length > 0 ? drone.join(", ") : "Non impostato"}
                     />
 
                     <ProfileInfoRow
@@ -487,7 +487,7 @@ export default function SettingsPage() {
 
                     <ProfileInfoRow
                       label="Certificato"
-                      value={certifications || "Nessuna"}
+                      value={certifications.length > 0 ? certifications.join(", ") : "Nessuna"}
                     />
                   </div>
 
@@ -578,67 +578,198 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                <div>
+  <label className="mb-2 block text-sm text-gray-400">
+    Drone
+  </label>
+
+  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+    <div className="mb-3 flex flex-wrap gap-2">
+      {drone.length > 0 ? (
+        drone.map((item) => (
+          <div
+            key={item}
+            className="flex items-center gap-2 rounded-full bg-green-500 px-3 py-1 text-sm font-medium text-black"
+          >
+            {item}
+
+            <button
+              type="button"
+              onClick={() =>
+                setDrone(drone.filter((d) => d !== item))
+              }
+              className="text-black opacity-70 hover:opacity-100"
+            >
+              ×
+            </button>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500">
+          Seleziona massimo 3 droni
+        </p>
+      )}
+    </div>
+
+    <select
+      onChange={(e) => {
+        const value = e.target.value
+
+        if (!value) return
+
+        if (drone.includes(value)) return
+
+        if (drone.length >= 3) {
+          toast.error("Puoi selezionare massimo 3 droni.")
+          return
+        }
+
+        setDrone([...drone, value])
+      }}
+      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
+      defaultValue=""
+    >
+      <option value="" disabled>
+        Seleziona drone
+      </option>
+
+      {droneList.map((item) => (
+        <option key={item} value={item}>
+          {item}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
                   <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Drone
-                    </label>
+  <label className="mb-2 block text-sm text-gray-400">
+    Certificazioni
+  </label>
 
-                    <select
-                      value={drone}
-                      onChange={(e) => setDrone(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    >
-                      <option value="">Seleziona drone</option>
+  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+    <div className="mb-3 flex flex-wrap gap-2">
+      {certifications.length > 0 ? (
+        certifications.map((item) => (
+          <div
+            key={item}
+            className="flex items-center gap-2 rounded-full bg-blue-500 px-3 py-1 text-sm font-medium text-white"
+          >
+            {item}
 
-                      {droneList.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            <button
+              type="button"
+              onClick={() =>
+                setCertifications(
+                  certifications.filter((c) => c !== item)
+                )
+              }
+              className="text-white opacity-70 hover:opacity-100"
+            >
+              ×
+            </button>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500">
+          Seleziona massimo 3 certificazioni
+        </p>
+      )}
+    </div>
 
+    <select
+      onChange={(e) => {
+        const value = e.target.value
+
+        if (!value) return
+
+        if (certifications.includes(value)) return
+
+        if (certifications.length >= 3) {
+          toast.error("Puoi selezionare massimo 3 certificazioni.")
+          return
+        }
+
+        setCertifications([...certifications, value])
+      }}
+      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
+      defaultValue=""
+    >
+      <option value="" disabled>
+        Seleziona certificazione
+      </option>
+
+      {certificationsList.map((item) => (
+        <option key={item} value={item}>
+          {item}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
                   <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Certificazione
-                    </label>
+  <label className="mb-2 block text-sm text-gray-400">
+    Servizi offerti
+  </label>
 
-                    <select
-                      value={certifications}
-                      onChange={(e) => setCertifications(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    >
-                      <option value="">Seleziona</option>
+  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+    <div className="mb-3 flex flex-wrap gap-2">
+      {services.length > 0 ? (
+        services.map((item) => (
+          <div
+            key={item}
+            className="flex items-center gap-2 rounded-full bg-purple-500 px-3 py-1 text-sm font-medium text-white"
+          >
+            {item}
 
-                      {certificationsList.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+            <button
+              type="button"
+              onClick={() =>
+                setServices(services.filter((s) => s !== item))
+              }
+              className="text-white opacity-70 hover:opacity-100"
+            >
+              ×
+            </button>
+          </div>
+        ))
+      ) : (
+        <p className="text-sm text-gray-500">
+          Seleziona massimo 3 servizi
+        </p>
+      )}
+    </div>
 
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Servizi offerti
-                    </label>
+    <select
+      onChange={(e) => {
+        const value = e.target.value
 
-                    <select
-                      value={services}
-                      onChange={(e) => setServices(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    >
-                      <option value="">Seleziona</option>
+        if (!value) return
 
-                      {servicesList.map((item) => (
-                        <option key={item} value={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+        if (services.includes(value)) return
 
+        if (services.length >= 3) {
+          toast.error("Puoi selezionare massimo 3 servizi.")
+          return
+        }
+
+        setServices([...services, value])
+      }}
+      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
+      defaultValue=""
+    >
+      <option value="" disabled>
+        Seleziona servizio
+      </option>
+
+      {servicesList.map((item) => (
+        <option key={item} value={item}>
+          {item}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
                   <div>
                     <label className="mb-2 block text-sm text-gray-400">
                       Esperienza

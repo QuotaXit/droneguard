@@ -64,9 +64,9 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [emailError, setEmailError] = useState("")
-  const [certificazioni, setCertificazioni] = useState("")
+  const [certificazioni, setCertificazioni] = useState([])
   const [esperienza, setEsperienza] = useState("")
-  const [drone, setDrone] = useState("")
+  const [drone, setDrone] = useState([])
   const [openDrone, setOpenDrone] = useState(false)
   const [openCert, setOpenCert] = useState(false)
   const [openExp, setOpenExp] = useState(false)
@@ -211,9 +211,9 @@ export default function RegisterPage() {
 
   const switchType = (newType) => {
     setType(newType)
-    setCertificazioni("")
+    setCertificazioni([])
     setEsperienza("")
-    setDrone("")
+    setDrone([])
     setAcceptedRules(false)
   }
 
@@ -239,41 +239,41 @@ export default function RegisterPage() {
       setEmailError("")
 
       if (!password || password.length < 6) {
-  toast.error("La password deve contenere almeno 6 caratteri.")
-  return
-}
+        toast.error("La password deve contenere almeno 6 caratteri.")
+        return
+      }
 
       if (type === "pilot") {
-  if (!nome.trim()) {
-    toast.error("Inserisci il nome.")
-    return
-  }
+        if (!nome.trim()) {
+          toast.error("Inserisci il nome.")
+          return
+        }
 
-  if (!cognome.trim()) {
-    toast.error("Inserisci il cognome.")
-    return
-  }
+        if (!cognome.trim()) {
+          toast.error("Inserisci il cognome.")
+          return
+        }
 
-  if (!certificazioni) {
-    toast.error("Seleziona le certificazioni.")
-    return
-  }
+        if (certificazioni.length === 0) {
+          toast.error("Seleziona almeno una certificazione.")
+          return
+        }
 
-  if (!esperienza) {
-    toast.error("Seleziona l'esperienza.")
-    return
-  }
+        if (!esperienza) {
+          toast.error("Seleziona l'esperienza.")
+          return
+        }
 
-  if (!drone) {
-    toast.error("Seleziona il drone.")
-    return
-  }
+        if (drone.length === 0) {
+          toast.error("Seleziona almeno un drone.")
+          return
+        }
 
-  if (!acceptedRules) {
-    toast.error("Devi accettare la dichiarazione prima di registrarti.")
-    return
-  }
-}
+        if (!acceptedRules) {
+          toast.error("Devi accettare la dichiarazione prima di registrarti.")
+          return
+        }
+      }
 
       if (type === "pilot" && !acceptedRules) {
         toast.error("Devi accettare la dichiarazione prima di registrarti.")
@@ -281,26 +281,26 @@ export default function RegisterPage() {
       }
 
       if (type === "cliente") {
-  if (!nome.trim()) {
-    toast.error("Inserisci il nome.")
-    return
-  }
+        if (!nome.trim()) {
+          toast.error("Inserisci il nome.")
+          return
+        }
 
-  if (!cognome.trim()) {
-    toast.error("Inserisci il cognome.")
-    return
-  }
+        if (!cognome.trim()) {
+          toast.error("Inserisci il cognome.")
+          return
+        }
 
-  if (!citta) {
-    toast.error("Seleziona la città.")
-    return
-  }
+        if (!citta) {
+          toast.error("Seleziona la città.")
+          return
+        }
 
-  if (!ragioneSociale.trim()) {
-    toast.error("Inserisci ragione sociale o nome attività.")
-    return
-  }
-}
+        if (!ragioneSociale.trim()) {
+          toast.error("Inserisci ragione sociale o nome attività.")
+          return
+        }
+      }
 
       const normalizedEmail = email.trim().toLowerCase()
       const emailValidationError = validateEmailAddress(normalizedEmail)
@@ -311,9 +311,9 @@ export default function RegisterPage() {
       }
 
       if (!password || password.length < 6) {
-  toast.error("La password deve contenere almeno 6 caratteri.")
-  return
-}
+        toast.error("La password deve contenere almeno 6 caratteri.")
+        return
+      }
 
       const { error: authError } = await supabase.auth.signUp({
         email: normalizedEmail,
@@ -328,9 +328,9 @@ export default function RegisterPage() {
             city: citta || "",
             company_name: ragioneSociale || "",
             vat_number: partitaIva || "",
-            certifications: type === "pilot" ? certificazioni : "",
+            certifications: type === "pilot" ? certificazioni.join(", ") : "",
             experience: type === "pilot" ? esperienza : "",
-            drone: type === "pilot" ? drone : "",
+            drone: type === "pilot" ? drone.join(", ") : "",
             credits: type === "pilot" ? 50 : 0,
             verified: false
           }
@@ -388,13 +388,26 @@ export default function RegisterPage() {
 
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <div onClick={() => { setOpenCert(!openCert); setOpenExp(false); setOpenDrone(false) }} className="input cursor-pointer">
-                  {certificazioni || "Certificazioni"}
+                  {certificazioni.length > 0 ? certificazioni.join(", ") : "Certificazioni"}
                 </div>
 
                 {openCert && (
                   <div className="dropdown">
                     {certificationsList.map((item) => (
-                      <div key={item} onClick={() => { setCertificazioni(item); setOpenCert(false) }} className="item">
+                      <div
+                        key={item}
+                        onClick={() => {
+                          if (certificazioni.includes(item)) {
+                            setCertificazioni(certificazioni.filter((c) => c !== item))
+                          } else if (certificazioni.length < 3) {
+                            setCertificazioni([...certificazioni, item])
+                          } else {
+                            toast.error("Puoi selezionare massimo 3 certificazioni.")
+                          }
+                        }}
+                        className="item"
+                      >
+                        {certificazioni.includes(item) ? "✓ " : ""}
                         {item}
                       </div>
                     ))}
@@ -420,7 +433,7 @@ export default function RegisterPage() {
 
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <div onClick={() => { setOpenDrone(!openDrone); setOpenCert(false); setOpenExp(false) }} className="input cursor-pointer">
-                  {drone || "Seleziona drone"}
+                  {drone.length > 0 ? drone.join(", ") : "Seleziona drone"}
                 </div>
 
                 {openDrone && (
@@ -428,7 +441,20 @@ export default function RegisterPage() {
                     <input placeholder="Cerca..." value={searchDrone} onChange={(e) => setSearchDrone(e.target.value)} className="input mb-2" />
 
                     {filteredDrones.map((item) => (
-                      <div key={item} onClick={() => { setDrone(item); setOpenDrone(false) }} className="item">
+                      <div
+                        key={item}
+                        onClick={() => {
+                          if (drone.includes(item)) {
+                            setDrone(drone.filter((d) => d !== item))
+                          } else if (drone.length < 3) {
+                            setDrone([...drone, item])
+                          } else {
+                            toast.error("Puoi selezionare massimo 3 droni.")
+                          }
+                        }}
+                        className="item"
+                      >
+                        {drone.includes(item) ? "✓ " : ""}
                         {item}
                       </div>
                     ))}

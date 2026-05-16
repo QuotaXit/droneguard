@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Toaster } from "sonner"
+import CookieBanner from "@/components/CookieBanner"
 import { Geist, Geist_Mono, Krona_One } from "next/font/google";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <Toaster richColors position="top-right" />
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
