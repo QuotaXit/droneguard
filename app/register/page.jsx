@@ -185,6 +185,7 @@ export default function RegisterPage() {
   ]
 
   const droneList = [
+
   "DJI Air 2",
   "DJI Air 2S",
   "DJI Air 3",
@@ -213,35 +214,47 @@ export default function RegisterPage() {
   "DJI Mini 3",
   "DJI Mini 3 Pro",
   "DJI Mini 4 Pro",
+  "DJI Mini 5 Pro",
+  "DJI Mini SE",
+
+  "DJI Neo",
 
   "DJI Phantom 4",
   "DJI Phantom 4 Advanced",
   "DJI Phantom 4 Pro",
   "DJI Phantom 4 RTK",
 
-  "DJI Matrice 30",
-  "DJI Matrice 30T",
   "DJI Matrice 4E",
   "DJI Matrice 4T",
+  "DJI Matrice 30",
+  "DJI Matrice 30T",
   "DJI Matrice 200",
   "DJI Matrice 210",
   "DJI Matrice 300 RTK",
   "DJI Matrice 350 RTK",
   "DJI Matrice 600",
 
+  "DJI Dock 2",
+
+  "DJI FlyCart 30",
+
   "DJI Agras T10",
   "DJI Agras T20",
   "DJI Agras T30",
   "DJI Agras T40",
+
+  "DJI Spark",
 
   "Autel EVO Nano+",
   "Autel EVO Lite+",
   "Autel EVO II",
   "Autel EVO II Pro",
   "Autel EVO Max 4T",
+  "Autel Alpha",
 
   "Parrot Anafi",
   "Parrot Anafi USA",
+  "Parrot Bebop 2",
 
   "Skydio 2+",
   "Skydio X2",
