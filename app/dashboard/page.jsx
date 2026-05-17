@@ -153,7 +153,7 @@ export default function Dashboard() {
 
       const { data, error } = await supabase
         .from("users")
-        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified")
+        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified")
         .eq("id", user.id)
         .maybeSingle()
 
@@ -462,23 +462,106 @@ export default function Dashboard() {
     </span>
   </div>
 
-  <div className="flex items-center justify-center gap-2">
-    <ShieldCheck size={14} />
-    {userData?.cert_enac_verified ? (
+  <div className="flex flex-col items-center gap-2">
+
+
+  {/* CERTIFICAZIONI SPECIFICHE */}
+
+  <div className="flex flex-wrap justify-center gap-1.5 max-w-[260px] mx-auto">
+
+    {userData?.cert_a1a3_verified && (
       <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
         <BadgeCheck size={13} />
-        Certif. ENAC verificata
+        A1/A3 verificata
       </span>
-    ) : (
-      <button
-        type="button"
-        onClick={() => setShowCertRequest(true)}
-        className="text-xs bg-yellow-500 text-black px-3 py-1 rounded-full font-semibold hover:bg-yellow-400 transition"
-      >
-        Certif. ENAC non verificata
-      </button>
     )}
+
+    {userData?.cert_a2_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        A2 verificata
+      </span>
+    )}
+
+    {userData?.cert_sts_verified && (
+  <span className="text-[11px] bg-green-500 px-2.5 py-1 rounded-full inline-flex items-center justify-center gap-1 whitespace-nowrap">
+    <BadgeCheck size={13} />
+    STS verificata
+  </span>
+)}
+
+    {userData?.cert_sts01_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        STS-01 verificata
+      </span>
+    )}
+
+    {userData?.cert_sts02_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        STS-02 verificata
+      </span>
+    )}
+
+    {userData?.cert_specific_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        SPECIFIC verificata
+      </span>
+    )}
+
+    {userData?.cert_open_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        OPEN verificata
+      </span>
+    )}
+
+    {userData?.cert_cro_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        CRO verificata
+      </span>
+    )}
+
+    {userData?.cert_luc_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        LUC verificata
+      </span>
+    )}
+
+    {userData?.cert_bvlos_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        BVLOS verificata
+      </span>
+    )}
+
+    {userData?.cert_notturno_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        NOTTURNO verificata
+      </span>
+    )}
+
+    {userData?.cert_termografia_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        TERMOGRAFIA verificata
+      </span>
+    )}
+
+    {userData?.cert_fpv_racing_verified && (
+      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+        <BadgeCheck size={13} />
+        FPV RACING verificata
+      </span>
+    )}
+
   </div>
+
 </div>
 
 {showCertRequest && (
@@ -534,6 +617,7 @@ export default function Dashboard() {
   </div>
 )}
 
+</div>
                 <div className="mt-5 space-y-4 text-left">
                   <div>
                     <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
