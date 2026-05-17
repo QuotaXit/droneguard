@@ -19,10 +19,7 @@ export default function ResetPasswordPage() {
   const hasPreparedSession = useRef(false)
 
   useEffect(() => {
-    if (hasPreparedSession.current) {
-      return
-    }
-
+    if (hasPreparedSession.current) return
     hasPreparedSession.current = true
 
     const prepareSession = async () => {
@@ -31,26 +28,6 @@ export default function ResetPasswordPage() {
       setError("")
 
       try {
-        const url = new URL(window.location.href)
-        const code = url.searchParams.get("code")
-
-        if (code) {
-          const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-          const codeStillInUrl = new URL(window.location.href).searchParams.get("code")
-
-          if (error && codeStillInUrl) {
-            console.error("Errore reset password Supabase:", error)
-            setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
-            setCheckingSession(false)
-            return
-          }
-
-          if (data?.session) {
-            url.searchParams.delete("code")
-            window.history.replaceState(window.history.state, "", url.toString())
-          }
-        }
-
         const hash = window.location.hash
 
         if (hash) {
@@ -66,17 +43,18 @@ export default function ResetPasswordPage() {
           }
 
           if (access_token && refresh_token) {
-            const { error } = await supabase.auth.setSession({
+            const { error: setSessionError } = await supabase.auth.setSession({
               access_token,
               refresh_token
             })
 
-            if (error) {
-              console.error("Errore sessione reset password:", error)
+            if (setSessionError) {
               setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
               setCheckingSession(false)
               return
             }
+
+            window.history.replaceState(null, "", window.location.pathname)
           }
         }
 
@@ -86,7 +64,6 @@ export default function ResetPasswordPage() {
         } = await supabase.auth.getSession()
 
         if (sessionError || !session) {
-          console.error("Sessione reset password non valida:", sessionError)
           setError("Sessione scaduta o link non valido. Richiedi un nuovo link di recupero password.")
           setCheckingSession(false)
           return
@@ -133,17 +110,17 @@ export default function ResetPasswordPage() {
     } = await supabase.auth.getSession()
 
     if (!session) {
-      setError("Sessione non valida. Torna alla pagina recupero password e richiedi un nuovo link.")
+      setError("Sessione non valida. Richiedi un nuovo link di recupero password.")
       setLoading(false)
       return
     }
 
-    const { error } = await supabase.auth.updateUser({
+    const { error: updateError } = await supabase.auth.updateUser({
       password
     })
 
-    if (error) {
-      setError("Sessione non valida. Torna alla pagina recupero password e richiedi un nuovo link.")
+    if (updateError) {
+      setError("Errore durante l’aggiornamento della password. Richiedi un nuovo link.")
       setLoading(false)
       return
     }
