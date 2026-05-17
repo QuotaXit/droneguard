@@ -467,94 +467,94 @@ export default function Dashboard() {
 
   {/* CERTIFICAZIONI SPECIFICHE */}
 
-  <div className="flex flex-wrap justify-center gap-1.5 max-w-[260px] mx-auto">
+  <div className="grid grid-cols-2 gap-2 w-full max-w-[260px] mx-auto">
 
     {userData?.cert_a1a3_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         A1/A3 verificata
       </span>
     )}
 
     {userData?.cert_a2_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         A2 verificata
       </span>
     )}
 
     {userData?.cert_sts_verified && (
-  <span className="text-[11px] bg-green-500 px-2.5 py-1 rounded-full inline-flex items-center justify-center gap-1 whitespace-nowrap">
+  <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
     <BadgeCheck size={13} />
     STS verificata
   </span>
 )}
 
     {userData?.cert_sts01_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         STS-01 verificata
       </span>
     )}
 
     {userData?.cert_sts02_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         STS-02 verificata
       </span>
     )}
 
     {userData?.cert_specific_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         SPECIFIC verificata
       </span>
     )}
 
     {userData?.cert_open_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         OPEN verificata
       </span>
     )}
 
     {userData?.cert_cro_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         CRO verificata
       </span>
     )}
 
     {userData?.cert_luc_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         LUC verificata
       </span>
     )}
 
     {userData?.cert_bvlos_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         BVLOS verificata
       </span>
     )}
 
     {userData?.cert_notturno_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         NOTTURNO verificata
       </span>
     )}
 
     {userData?.cert_termografia_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         TERMOGRAFIA verificata
       </span>
     )}
 
     {userData?.cert_fpv_racing_verified && (
-      <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         FPV RACING verificata
       </span>
