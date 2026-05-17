@@ -28,7 +28,7 @@ export default function ForgotPasswordPage() {
 
   // 🔥 Controllo se la mail esiste nella tabella users
   const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-  redirectTo: "https://www.droneguard.it/auth/callback?next=/reset-password"
+  redirectTo: "https://droneguard.it/reset-password"
 })
 
   if (error) {
