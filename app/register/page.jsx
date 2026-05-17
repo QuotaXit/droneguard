@@ -405,32 +405,6 @@ export default function RegisterPage() {
         return
       }
 
-      if (authData?.user?.id) {
-  const { error: profileError } = await supabase.from("users").upsert({
-    id: authData.user.id,
-    email: normalizedEmail,
-    role: type,
-    username,
-    name: nome,
-    surname: cognome,
-    city: citta || "",
-    location: citta || "",
-    company_name: ragioneSociale || "",
-    vat_number: partitaIva || "",
-    certifications: type === "pilot" ? certificazioni.join(", ") : "",
-    experience: type === "pilot" ? esperienza : "",
-    drone: type === "pilot" ? drone.join(", ") : "",
-    credits: type === "pilot" ? 50 : 0,
-    verified: false
-  })
-
-  if (profileError) {
-    console.error("Errore creazione profilo users:", profileError)
-    toast.error("Account creato, ma errore salvataggio profilo.")
-    return
-  }
-}
-
       toast.success("Registrazione avviata. Controlla la tua email ( casella spam ) per confermare l'account.")
       router.push("/login")
     } catch (err) {
