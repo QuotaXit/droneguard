@@ -50,9 +50,6 @@ export default function PilotCitiesStats() {
     )
   }
 
-  const visibleCities = cities.slice(0, 12)
-const scrollCities = cities.slice(12)
-
   return (
     <section className="bg-[#0B0F2A] px-4 py-16 text-white">
       <div className="mx-auto max-w-5xl text-center">
@@ -71,59 +68,30 @@ const scrollCities = cities.slice(12)
         </p>
 
         <div className="mt-8 overflow-x-auto pb-4">
-  <div className="grid min-w-max grid-rows-3 grid-flow-col gap-3">
-    {cities.map((item) => (
-      <div
-        key={item.city}
-        className="w-64 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
-      >
-        <div className="mb-2 flex items-center gap-2 text-green-300">
-          <MapPin size={16} />
-          <span className="text-sm font-semibold">{item.city}</span>
+          <div className="grid min-w-max grid-flow-col grid-rows-3 gap-3">
+            {cities.map((item) => (
+              <div
+                key={item.city}
+                className="w-64 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
+              >
+                <div className="mb-2 flex items-center gap-2 text-green-300">
+                  <MapPin size={16} />
+                  <span className="text-sm font-semibold">{item.city}</span>
+                </div>
+
+                <p className="text-sm text-gray-300">
+                  {Number(item.count)}{" "}
+                  {Number(item.count) === 1 ? "pilota" : "piloti"}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <p className="text-sm text-gray-300">
-          {Number(item.count)}{" "}
-          {Number(item.count) === 1 ? "pilota" : "piloti"}
-        </p>
-      </div>
-    ))}
-  </div>
-</div>
-
-{cities.length > 12 && (
-  <p className="mt-2 text-sm text-gray-400">
-    Scorri verso destra per vedere altre città →
-  </p>
-)}
-        
-        {scrollCities.length > 0 && (
-          <div className="mt-6">
-            <p className="mb-3 text-sm text-gray-400">
-              Scorri per vedere altre città →
-            </p>
-
-            <div className="overflow-x-auto pb-3">
-              <div className="flex min-w-max gap-3">
-                {scrollCities.map((item) => (
-                  <div
-                    key={item.city}
-                    className="w-64 shrink-0 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
-                  >
-                    <div className="mb-2 flex items-center gap-2 text-green-300">
-                      <MapPin size={16} />
-                      <span className="text-sm font-semibold">{item.city}</span>
-                    </div>
-
-                    <p className="text-sm text-gray-300">
-                      {Number(item.count)}{" "}
-                      {Number(item.count) === 1 ? "pilota" : "piloti"}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {cities.length > 12 && (
+          <p className="mt-2 text-sm text-gray-400">
+            Scorri verso destra per vedere altre città →
+          </p>
         )}
 
         <p className="mt-6 text-sm text-gray-400">
