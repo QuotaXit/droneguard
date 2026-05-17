@@ -31,14 +31,14 @@ export default function ForgotPasswordPage() {
   redirectTo: "https://droneguard.it/reset-password"
 })
 
-if (error) {
-  setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
-  setLoading(false)
-  return
-}
+  if (error) {
+    setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
+    setLoading(false)
+    return
+  }
 
-setSuccess(true)
-setLoading(false)
+  setSuccess(true)
+  setLoading(false)
 }
 
   return (
@@ -73,7 +73,7 @@ setLoading(false)
               <div className="flex items-start gap-3">
                 <CheckCircle2 size={20} />
                 <p>
-                  Email inviata. Controlla la tua casella di posta e segui il link per reimpostare la password.
+                  Se l’email è registrata su DroneGuard, riceverai un link per reimpostare la password.
                 </p>
               </div>
             </div>
