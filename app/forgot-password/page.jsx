@@ -27,10 +27,6 @@ export default function ForgotPasswordPage() {
   }
 
   // 🔥 Controllo se la mail esiste nella tabella users
- const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-  redirectTo: `${window.location.origin}/reset-password`
-})
-
   const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
     redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`
   })
