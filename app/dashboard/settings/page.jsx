@@ -538,9 +538,13 @@ export default function SettingsPage() {
                     />
 
                     <ProfileInfoRow
-                      label="Servizio"
-                      value={services || "Non inserito"}
-                    />
+  label="Servizio"
+  value={
+    services.length > 0
+      ? services.join(" • ")
+      : "Non inserito"
+  }
+/>
 
                     <ProfileInfoRow
                       label="Certificato"
