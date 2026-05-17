@@ -67,7 +67,7 @@ export default function PilotCitiesStats() {
           Le città mostrate sono aggiornate in base ai profili reali presenti sulla piattaforma.
         </p>
 
-        <div className="mt-8 overflow-x-auto pb-4">
+        <div className="mt-8 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div className="grid min-w-max grid-flow-col grid-rows-3 gap-3">
             {cities.map((item) => (
               <div
