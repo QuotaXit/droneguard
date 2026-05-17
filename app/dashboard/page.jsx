@@ -563,6 +563,16 @@ export default function Dashboard() {
   </div>
 
 </div>
+{!showCertRequest && (
+  <button
+    type="button"
+    onClick={() => setShowCertRequest(true)}
+    className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/15"
+  >
+    <UploadCloud size={14} />
+    Carica certificazione ENAC
+  </button>
+)}
 
 {showCertRequest && (
   <div className="rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
