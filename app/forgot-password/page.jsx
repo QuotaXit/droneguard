@@ -28,22 +28,22 @@ export default function ForgotPasswordPage() {
 
     // Controllo se la mail esiste nella tabella users
     const { data: existingUser, error: userError } = await supabase
-      .from("users")
-      .select("id")
-      .eq("email", cleanEmail)
-      .maybeSingle()
+  .from("users")
+  .select("id")
+  .eq("email", cleanEmail)
+  .maybeSingle()
 
-    if (userError) {
-      setError("Errore durante il controllo dell’email. Riprova.")
-      setLoading(false)
-      return
-    }
+if (userError) {
+  setError("Errore durante il controllo dell’email. Riprova.")
+  setLoading(false)
+  return
+}
 
-    if (!existingUser) {
-      setError("Questa email non risulta registrata su DroneGuard.")
-      setLoading(false)
-      return
-    }
+if (!existingUser) {
+  setError("Questa email non risulta registrata su DroneGuard.")
+  setLoading(false)
+  return
+}
 
     const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
       redirectTo: "https://droneguard.it/reset-password"
