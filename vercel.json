@@ -1,15 +1,15 @@
 {
   "redirects": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",
           "value": "www.droneguard.it"
         }
       ],
-      "destination": "https://droneguard.it/$1",
-      "permanent": true
+      "destination": "https://droneguard.it/:path*",
+      "permanent": false
     }
   ]
 }
