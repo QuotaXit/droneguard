@@ -13,51 +13,33 @@ export default function ForgotPasswordPage() {
   const [error, setError] = useState("")
 
   const handleResetPassword = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setError("")
-    setSuccess(false)
+  e.preventDefault()
+  setLoading(true)
+  setError("")
+  setSuccess(false)
 
-    const cleanEmail = email.trim().toLowerCase()
+  const cleanEmail = email.trim().toLowerCase()
 
-    if (!cleanEmail) {
-      setError("Inserisci l’email del tuo account.")
-      setLoading(false)
-      return
-    }
-
-    // Controllo se la mail esiste nella tabella users
-    const { data: existingUser, error: userError } = await supabase
-  .from("users")
-  .select("id")
-  .eq("email", cleanEmail)
-  .maybeSingle()
-
-if (userError) {
-  setError("Errore durante il controllo dell’email. Riprova.")
-  setLoading(false)
-  return
-}
-
-if (!existingUser) {
-  setError("Questa email non risulta registrata su DroneGuard.")
-  setLoading(false)
-  return
-}
-
-    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
-      redirectTo: "https://droneguard.it/reset-password"
-    })
-
-    if (error) {
-      setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
-      setLoading(false)
-      return
-    }
-
-    setSuccess(true)
+  if (!cleanEmail) {
+    setError("Inserisci l’email del tuo account.")
     setLoading(false)
+    return
   }
+
+  // 🔥 Controllo se la mail esiste nella tabella users
+  const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+  redirectTo: "https://droneguard.it/reset-password"
+})
+
+  if (error) {
+    setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
+    setLoading(false)
+    return
+  }
+
+  setSuccess(true)
+  setLoading(false)
+}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] text-white">
@@ -140,4 +122,4 @@ if (!existingUser) {
       </main>
     </div>
   )
-}
+} 
