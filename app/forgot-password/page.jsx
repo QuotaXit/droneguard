@@ -31,14 +31,14 @@ export default function ForgotPasswordPage() {
   redirectTo: "https://droneguard.it/reset-password"
 })
 
-  if (error) {
-    setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
-    setLoading(false)
-    return
-  }
-
-  setSuccess(true)
+if (error) {
+  setError("Non è stato possibile inviare l’email di recupero. Riprova tra poco.")
   setLoading(false)
+  return
+}
+
+setSuccess(true)
+setLoading(false)
 }
 
   return (
