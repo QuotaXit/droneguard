@@ -27,24 +27,9 @@ export default function ForgotPasswordPage() {
   }
 
   // 🔥 Controllo se la mail esiste nella tabella users
-  const { data: existingUser, error: userError } = await supabase
-    .from("users")
-    .select("id")
-    .eq("email", cleanEmail)
-    .maybeSingle()
-
-  if (userError) {
-    console.error("Errore controllo email:", userError)
-    setError("Errore durante il controllo email. Riprova.")
-    setLoading(false)
-    return
-  }
-
-  if (!existingUser) {
-    setError("Questa email non risulta registrata.")
-    setLoading(false)
-    return
-  }
+ const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+  redirectTo: `${window.location.origin}/reset-password`
+})
 
   const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
     redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`
