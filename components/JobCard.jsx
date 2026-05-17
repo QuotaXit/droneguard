@@ -41,7 +41,7 @@ export default function JobCard({ variant = 1 }) {
       brief: "Riprese esterne + panoramiche + montaggio base",
       location: "Roma, Lazio",
       published: "Pubblicato 2 giorni fa",
-      deadline: "15/06/2025",
+      deadline: "15/06/2026",
       type: "Riprese immobili",
       image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500"
     },
@@ -53,7 +53,7 @@ export default function JobCard({ variant = 1 }) {
       brief: "Ispezione area + sorveglianza + report video",
       location: "Milano, Lombardia",
       published: "Pubblicato 3 giorni fa",
-      deadline: "20/06/2025",
+      deadline: "20/06/2026",
       type: "Ispezione industriale",
       image: "https://images.unsplash.com/photo-1513828583688-c52646db42da?q=80&w=500"
     },
@@ -65,7 +65,7 @@ export default function JobCard({ variant = 1 }) {
       brief: "Mappatura area + analisi terreno + esportazione dati",
       location: "Bologna, Emilia-Romagna",
       published: "Pubblicato 1 giorno fa",
-      deadline: "10/06/2025",
+      deadline: "10/06/2026",
       type: "Mappatura agricola",
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=500"
     }

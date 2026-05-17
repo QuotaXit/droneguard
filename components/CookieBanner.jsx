@@ -1,14 +1,15 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 export default function CookieBanner() {
   const [showBanner, setShowBanner] = useState(false)
 
   useEffect(() => {
-    const cookieChoice = localStorage.getItem("cookie-consent")
+    const choice = localStorage.getItem("cookie-consent")
 
-    if (!cookieChoice) {
+    if (!choice) {
       setShowBanner(true)
     }
   }, [])
@@ -31,12 +32,24 @@ export default function CookieBanner() {
 
         <div className="text-left">
           <h3 className="text-lg font-semibold">
-            Gestione cookie
+            Privacy e gestione cookie
           </h3>
 
           <p className="mt-1 text-sm leading-6 text-gray-300">
             Utilizziamo cookie tecnici necessari al funzionamento del sito e,
             previo consenso, cookie statistici per migliorare l’esperienza utente.
+            Continuando puoi accettare o rifiutare i cookie non necessari.
+          </p>
+
+          <p className="mt-2 text-xs leading-5 text-gray-400">
+            Leggi la nostra{" "}
+            <Link
+              href="/privacy-policy"
+              className="font-semibold text-green-400 underline underline-offset-4 hover:text-green-300"
+            >
+              Privacy Policy e Termini di Utilizzo
+            </Link>
+            .
           </p>
         </div>
 
