@@ -124,7 +124,7 @@ export default function JobCard({ variant = 1 }) {
           onClick={handleGoToProfile}
           className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#60a5fa] via-[#3b82f6] to-[#6366f1] px-6 py-4 text-base font-semibold text-white shadow-[0_0_20px_rgba(96,165,250,0.6)] transition hover:scale-105"
         >
-          Accedi per sbloccare 🔒
+          Anteprima Annuncio
         </button>
       </div>
     </div>
