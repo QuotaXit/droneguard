@@ -64,10 +64,10 @@ export default function CTA() {
 <div className="h-[260px] w-full overflow-hidden rounded-3xl border border-white/20 shadow-2xl md:w-[520px]">
 
   <img
-    src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=1200"
-    alt="Drone"
-    className="h-full w-full object-cover"
-  />
+  src="/images/droneguard-cta.png"
+  alt="DroneGuard"
+  className="h-full w-full object-cover"
+/>
 
 </div>
 

@@ -32,7 +32,7 @@ export default function HowItWorks() {
 
         {/* TITLE */}
         <h2 className="text-3xl font-bold font-[var(--font-krona)] sm:text-4xl md:text-5xl">
-          Come funziona ( piloti )        </h2>
+          Come funziona ( Piloti )        </h2>
 
         {/* SUBTITLE */}
         <p className="text-gray-300 mt-4 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed">
@@ -74,10 +74,10 @@ export default function HowItWorks() {
                     <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-purple-100 overflow-hidden">
 
                       <img
-                        src="https://cdn-icons-png.flaticon.com/512/3652/3652191.png"
-                        alt="Drone"
-                        className="h-10 w-10 object-contain"
-                      />
+                         src="/images/droneguard-cta.png"
+                         alt="DroneGuard"
+                         className="h-full w-full object-cover"
+                         />
 
                     </div>
 
