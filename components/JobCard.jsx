@@ -115,7 +115,7 @@ export default function JobCard({ variant = 1 }) {
 
       <div className="rounded-2xl border border-white/10 bg-black/10 p-5">
         <div className="space-y-3 text-sm text-gray-300">
-          <p>✓ Budget: Da definire</p>
+          <p>💰 Compenso: Inserisci il tuo prezzo</p>
           <p>📅 Scadenza: {job.deadline}</p>
           <p>◇ Tipologia: {job.type}</p>
         </div>
