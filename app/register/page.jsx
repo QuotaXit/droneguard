@@ -208,6 +208,7 @@ export default function RegisterPage() {
   "DJI Mavic 3 Cine",
   "DJI Mavic 3 Enterprise",
   "DJI Mavic 3 Thermal",
+  "DJI Mavic 3 Multispectral",
 
   "DJI Mini 2",
   "DJI Mini 2 SE",
@@ -233,6 +234,8 @@ export default function RegisterPage() {
   "DJI Matrice 300 RTK",
   "DJI Matrice 350 RTK",
   "DJI Matrice 600",
+  "DJI Matrice 3D",
+  "DJI Matrice 3TD",
 
   "DJI Dock 2",
 
@@ -240,8 +243,10 @@ export default function RegisterPage() {
 
   "DJI Agras T10",
   "DJI Agras T20",
+  "DJI Agras T25",
   "DJI Agras T30",
   "DJI Agras T40",
+  "DJI Agras T50",
 
   "DJI Spark",
 
@@ -261,6 +266,15 @@ export default function RegisterPage() {
 
   "Yuneec Typhoon H",
   "Yuneec H520",
+
+  "senseFly eBee X",
+  "senseFly eBee Ag",
+
+  "WingtraOne GEN II",
+
+  "Quantum Systems Trinity Pro",
+
+  "Freefly Alta X",
 
   "Altro"
 ]
