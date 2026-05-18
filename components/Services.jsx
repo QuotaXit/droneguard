@@ -40,6 +40,19 @@ export default function Services() {
 
       <div className="relative z-10 max-w-6xl mx-auto">
 
+         {/* TESTI SOTTO */}
+        <div className="text-center mt-16">
+
+          <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
+            Accesso su Richiesta a Servizi Professionali di Droni
+          </h2>
+
+          <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
+            Dai rilievi del cantiere alle mappature agricole — ogni servizio di droni commerciali, una piattaforma.
+          </p>
+
+        </div>
+
         {/* GRID SOPRA */}
         <div className="grid md:grid-cols-3 gap-6">
 
@@ -70,20 +83,6 @@ export default function Services() {
           ))}
 
         </div>
-
-        {/* TESTI SOTTO */}
-        <div className="text-center mt-16">
-
-          <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
-            Accesso su Richiesta a Servizi Professionali di Droni
-          </h2>
-
-          <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-            Dai rilievi del cantiere alle mappature agricole — ogni servizio di droni commerciali, una piattaforma.
-          </p>
-
-        </div>
-
       </div>
     </section>
   )
