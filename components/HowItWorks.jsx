@@ -32,8 +32,7 @@ export default function HowItWorks() {
 
         {/* TITLE */}
         <h2 className="text-3xl font-bold font-[var(--font-krona)] sm:text-4xl md:text-5xl">
-          Come funziona per i piloti
-        </h2>
+          Come funziona ( piloti )        </h2>
 
         {/* SUBTITLE */}
         <p className="text-gray-300 mt-4 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed">
