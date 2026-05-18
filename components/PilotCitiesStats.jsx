@@ -67,24 +67,55 @@ export default function PilotCitiesStats() {
           Le città mostrate sono aggiornate in base ai profili reali presenti sulla piattaforma.
         </p>
 
-        <div className="mt-8 overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div className="grid min-w-max grid-flow-col grid-rows-3 gap-3">
-            {cities.map((item) => (
-              <div
-                key={item.city}
-                className="w-64 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
-              >
-                <div className="mb-2 flex items-center gap-2 text-green-300">
-                  <MapPin size={16} />
-                  <span className="text-sm font-semibold">{item.city}</span>
-                </div>
+        <div className="relative mt-8">
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("cities-scroll")?.scrollBy({
+                left: -320,
+                behavior: "smooth"
+              })
+            }}
+            className="hidden md:flex absolute left-0 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20"
+          >
+            ‹
+          </button>
 
-                <p className="text-sm text-gray-300">
-                  {Number(item.count)}{" "}
-                  {Number(item.count) === 1 ? "pilota" : "piloti"}
-                </p>
-              </div>
-            ))}
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("cities-scroll")?.scrollBy({
+                left: 320,
+                behavior: "smooth"
+              })
+            }}
+            className="hidden md:flex absolute right-0 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20"
+          >
+            ›
+          </button>
+
+          <div
+            id="cities-scroll"
+            className="overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <div className="grid min-w-max grid-flow-col grid-rows-3 gap-3 md:px-16">
+              {cities.map((item) => (
+                <div
+                  key={item.city}
+                  className="w-64 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
+                >
+                  <div className="mb-2 flex items-center gap-2 text-green-300">
+                    <MapPin size={16} />
+                    <span className="text-sm font-semibold">{item.city}</span>
+                  </div>
+
+                  <p className="text-sm text-gray-300">
+                    {Number(item.count)}{" "}
+                    {Number(item.count) === 1 ? "pilota" : "piloti"}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
