@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
+import { italianCities } from "@/app/data/italianCities"
 import { supabase } from "@/lib/supabase/client"
 
 const allowedDomains = [
@@ -371,6 +372,11 @@ export default function RegisterPage() {
         if (!citta) {
           toast.error("Seleziona la città.")
           return
+       }
+
+        if (!citta) {
+          toast.error("Seleziona la città.")
+          return
         }
 
         if (!ragioneSociale.trim()) {
@@ -463,6 +469,20 @@ export default function RegisterPage() {
               <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} className="input" />
               <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} className="input" />
 
+<select
+  value={citta}
+  onChange={(e) => setCitta(e.target.value)}
+  className="input"
+>
+  <option value="">Seleziona città</option>
+
+  {italianCities.map((item) => (
+    <option key={item} value={item}>
+      {item}
+    </option>
+  ))}
+</select>
+
               <div className="relative" onClick={(e) => e.stopPropagation()}>
                 <div onClick={() => { setOpenCert(!openCert); setOpenExp(false); setOpenDrone(false) }} className="input cursor-pointer">
                   {certificazioni.length > 0 ? certificazioni.join(", ") : "Certificazioni"}
@@ -548,7 +568,7 @@ export default function RegisterPage() {
 
               <select value={citta} onChange={(e) => setCitta(e.target.value)} className="input">
                 <option value="">Seleziona città</option>
-                {cities.map((item) => (
+                {italianCities.map((item) => (
                   <option key={item} value={item}>{item}</option>
                 ))}
               </select>
