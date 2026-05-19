@@ -599,6 +599,7 @@ setUserData((prev) => ({
         <X size={16} />
       </button>
     </div>
+    
 
     {userData?.cert_request_sent && (
   <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
