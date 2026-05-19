@@ -601,8 +601,7 @@ const hasVerifiedCertification =
 
 {(userData?.cert_request_sent || hasVerifiedCertification) && (
   <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
-    Richiesta di verifica ENAC già inviata o certificazione verificata.
-    Per aggiungere altri documenti o ulteriori certificazioni, contatta l’assistenza via email.
+    Per aggiungere ulteriori certificazioni, contatta l’assistenza via email.
   </p>
 )}
 
