@@ -584,7 +584,7 @@ setUserData((prev) => ({
   </button>
 )}
 
-{showCertRequest && (
+{showCertRequest && !userData?.cert_request_sent && (
   <div className="rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
     <div className="mb-3 flex items-center justify-between">
       <h4 className="text-sm font-semibold text-white">
@@ -599,6 +599,12 @@ setUserData((prev) => ({
         <X size={16} />
       </button>
     </div>
+
+    {userData?.cert_request_sent && (
+  <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
+    Richiesta di verifica ENAC già inviata. Per aggiungere altri documenti o certificazioni, contatta l’assistenza via email.
+  </p>
+)}
 
     <form onSubmit={handleCertificationRequest} className="space-y-3">
       <p className="text-xs leading-5 text-gray-300">
