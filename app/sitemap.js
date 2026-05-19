@@ -13,7 +13,7 @@ export default function sitemap() {
       lastModified: new Date(),
     },
     {
-      url: "https://droneguard.it/contatti",
+      url: "https://droneguard.it/contattaci",
       lastModified: new Date(),
     },
     {
