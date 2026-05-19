@@ -599,10 +599,30 @@ const hasVerifiedCertification =
   </button>
 )}
 
-{(userData?.cert_request_sent || hasVerifiedCertification) && (
-  <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
-    Per aggiungere ulteriori certificazioni, contatta l’assistenza via email.
-  </p>
+{userData?.cert_request_sent && (
+  <div className="mt-2 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3">
+    <p className="text-xs font-semibold text-yellow-300">
+      ⏳ Verifica in corso
+    </p>
+
+    <p className="mt-1 text-xs text-gray-300">
+      Hai già inviato la certificazione ENAC.
+      Attendi fino a 24 ore per la verifica.
+      Non è possibile inviare altri documenti finché la richiesta è in lavorazione.
+    </p>
+  </div>
+)}
+
+{hasVerifiedCertification && (
+  <div className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3">
+    <p className="text-xs font-semibold text-green-300">
+      ✅ Certificazione verificata
+    </p>
+
+    <p className="mt-1 text-xs text-gray-300">
+      Per aggiungere ulteriori certificazioni contatta l'assistenza.
+    </p>
+  </div>
 )}
 
 {showCertRequest &&
