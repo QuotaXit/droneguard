@@ -207,7 +207,7 @@ export default function PricingPage() {
               <Users size={24} className="mb-3" />
 
               <p className="text-sm text-gray-400">
-                Piloti registrati
+                Piloti Disponibili
               </p>
 
               <h2 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
