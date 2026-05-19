@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
-import { italianCities } from "@/data/italianCities"
+import { italianCities } from "@/app/data/italianCities"
 import { supabase } from "@/lib/supabase/client"
 
 const certificationsList = [
