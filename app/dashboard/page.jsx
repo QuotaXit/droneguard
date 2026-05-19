@@ -153,7 +153,7 @@ export default function Dashboard() {
 
       const { data, error } = await supabase
         .from("users")
-        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified")
+        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified,cert_request_sent")
         .eq("id", user.id)
         .maybeSingle()
 
@@ -328,6 +328,16 @@ export default function Dashboard() {
     if (!response.ok) {
       throw new Error("Errore invio richiesta")
     }
+
+    await supabase
+  .from("users")
+  .update({ cert_request_sent: true })
+  .eq("id", userData.id)
+
+setUserData((prev) => ({
+  ...prev,
+  cert_request_sent: true
+}))
 
     setCertMessage("Richiesta inviata. Attendi fino a 24h per la verifica.")
     setCertFile(null)
@@ -563,7 +573,7 @@ export default function Dashboard() {
   </div>
 
 </div>
-{!showCertRequest && (
+{!showCertRequest && !userData?.cert_request_sent && (
   <button
     type="button"
     onClick={() => setShowCertRequest(true)}
