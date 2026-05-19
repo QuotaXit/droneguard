@@ -1,4 +1,4 @@
-export const cities = [
+export const italianCities = [
     "Agrigento",
     "Alessandria",
     "Ancona",
