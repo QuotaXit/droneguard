@@ -55,7 +55,7 @@ export default function PilotCitiesStats() {
       <div className="mx-auto max-w-5xl text-center">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-500/10 px-4 py-2 text-sm text-green-300">
           <Users size={16} />
-          {totalPilots} piloti registrati
+          {totalPilots} piloti disponibili
         </div>
 
         <h2 className="text-3xl font-bold sm:text-4xl">

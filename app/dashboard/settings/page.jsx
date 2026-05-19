@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
+import { italianCities } from "@/data/italianCities"
 import { supabase } from "@/lib/supabase/client"
 
 const certificationsList = [
@@ -871,16 +872,22 @@ export default function SettingsPage() {
                     Posizione
                   </label>
 
-                  <input
+                  <select
   value={location}
   onChange={(e) => {
     setLocation(e.target.value)
-    searchAddress(e.target.value)
+    setCity(e.target.value)
   }}
-  placeholder="Cerca città..."
-  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-  autoComplete="off"
-/>
+  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-white"
+>
+  <option value="">Seleziona città</option>
+
+  {italianCities.map((cityName) => (
+    <option key={cityName} value={cityName}>
+      {cityName}
+    </option>
+  ))}
+</select>
 
                   {addressResults.length > 0 && (
                     <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#1b114d]">
