@@ -872,14 +872,15 @@ export default function SettingsPage() {
                   </label>
 
                   <input
-                    value={location}
-                    onChange={(e) => {
-                      setLocation(e.target.value)
-                      setCity(e.target.value)
-                      searchAddress(e.target.value)
-                    }}
-                    className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                  />
+  value={location}
+  onChange={(e) => {
+    setLocation(e.target.value)
+    searchAddress(e.target.value)
+  }}
+  placeholder="Cerca città..."
+  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
+  autoComplete="off"
+/>
 
                   {addressResults.length > 0 && (
                     <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#1b114d]">
@@ -887,10 +888,14 @@ export default function SettingsPage() {
                         <div
                           key={item.place_id}
                           onClick={() => {
-                            setLocation(item.display_name)
-                            setCity(item.display_name)
-                            setAddressResults([])
-                          }}
+  const cleanCity = item.display_name
+    .split(",")[0]
+    .trim()
+
+  setLocation(cleanCity)
+  setCity(cleanCity)
+  setAddressResults([])
+}}
                           className="cursor-pointer border-b border-white/5 p-4 hover:bg-white/10"
                         >
                           {item.display_name}
