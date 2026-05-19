@@ -349,6 +349,21 @@ setUserData((prev) => ({
   }
 }
 
+const hasVerifiedCertification =
+  userData?.cert_a1a3_verified ||
+  userData?.cert_a2_verified ||
+  userData?.cert_sts_verified ||
+  userData?.cert_sts01_verified ||
+  userData?.cert_sts02_verified ||
+  userData?.cert_specific_verified ||
+  userData?.cert_open_verified ||
+  userData?.cert_cro_verified ||
+  userData?.cert_luc_verified ||
+  userData?.cert_bvlos_verified ||
+  userData?.cert_notturno_verified ||
+  userData?.cert_termografia_verified ||
+  userData?.cert_fpv_racing_verified
+
   return (
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
@@ -573,7 +588,7 @@ setUserData((prev) => ({
   </div>
 
 </div>
-{!showCertRequest && !userData?.cert_request_sent && (
+{!showCertRequest && !userData?.cert_request_sent && !hasVerifiedCertification && (
   <button
     type="button"
     onClick={() => setShowCertRequest(true)}
@@ -584,7 +599,16 @@ setUserData((prev) => ({
   </button>
 )}
 
-{showCertRequest && !userData?.cert_request_sent && (
+{(userData?.cert_request_sent || hasVerifiedCertification) && (
+  <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
+    Richiesta di verifica ENAC già inviata o certificazione verificata.
+    Per aggiungere altri documenti o ulteriori certificazioni, contatta l’assistenza via email.
+  </p>
+)}
+
+{showCertRequest &&
+ !userData?.cert_request_sent &&
+ !hasVerifiedCertification && (
   <div className="rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
     <div className="mb-3 flex items-center justify-between">
       <h4 className="text-sm font-semibold text-white">
@@ -599,13 +623,6 @@ setUserData((prev) => ({
         <X size={16} />
       </button>
     </div>
-    
-
-    {userData?.cert_request_sent && (
-  <p className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-xs leading-5 text-green-300">
-    Richiesta di verifica ENAC già inviata. Per aggiungere altri documenti o certificazioni, contatta l’assistenza via email.
-  </p>
-)}
 
     <form onSubmit={handleCertificationRequest} className="space-y-3">
       <p className="text-xs leading-5 text-gray-300">
