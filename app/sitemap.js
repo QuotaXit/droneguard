@@ -143,7 +143,122 @@ export default function sitemap() {
       url: "https://droneguard.it/piloti-drone-certificati",
       lastModified: new Date(),
     },
-
+    {
+      url: "https://droneguard.it/rilievi-topografici-con-drone",
+      lastModified: new Date(),
+    },
+    {
+    url: "https://droneguard.it/riprese-aeree-con-drone",
+    lastModified: new Date(),
+    },
+    {
+    url: "https://droneguard.it/monitoraggio-cantieri-con-drone",
+    lastModified: new Date(),
+    },
+    {
+    url: "https://droneguard.it/fotogrammetria-con-drone",
+    lastModified: new Date(),
+   },
+   {
+  url: "https://droneguard.it/ispezione-tetti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-facciate-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-pannelli-fotovoltaici-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/drone-per-edilizia",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/mappatura-terreni-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-coperture-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-ciminiere-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/riprese-drone-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/agricoltura-di-precisione-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/drone-per-cantieri",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-serbatoi-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-linee-elettriche-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/ispezione-tralicci-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/riprese-drone-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/video-aerei-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/preventivo-riprese-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/noleggio-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/servizi-drone-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/drone-per-fotogrammetria",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/riprese-aeree-professionali",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/fotografie-aeree-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/video-promozionali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/drone-per-impianti-fotovoltaici",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/drone-per-infrastrutture",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/operatore-drone-per-eventi",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
