@@ -102,53 +102,42 @@ export default function PricingPage() {
   }
 
   const claimFreeCredits = async () => {
-    if (!userData) return
+  if (claimLoading) return
+  if (!userData) return
 
-    if (!isPilot) {
-      toast.error("I 50 crediti gratuiti sono riservati solo ai piloti.")
-      return
-    }
+  if (!isPilot) {
+    toast.error("I 50 crediti gratuiti sono riservati solo ai piloti.")
+    return
+  }
 
-    if (userData.free_credits_claimed) {
+  try {
+    setClaimLoading(true)
+
+    const { data, error } = await supabase.rpc("claim_free_pilot_credits")
+
+    if (error || !data?.length) {
       toast.error("Hai già riscattato i crediti ❌")
       return
     }
 
-    try {
-      setClaimLoading(true)
+    const updated = data[0]
 
-      const newCredits = Number(userData.credits || 0) + 50
+    setCredits(updated.credits)
 
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          credits: newCredits,
-          free_credits_claimed: true
-        })
-        .eq("id", userData.id)
-        .in("role", ["pilot", "pilota"])
-        .select()
-        .maybeSingle()
+    setUserData((prev) => ({
+      ...prev,
+      credits: updated.credits,
+      free_credits_claimed: true
+    }))
 
-      if (error || !data) {
-        console.error(error)
-        toast.error("Bonus disponibile solo per account pilota ❌")
-        return
-      }
-
-      setCredits(newCredits)
-
-      setUserData((prev) => ({
-        ...prev,
-        credits: newCredits,
-        free_credits_claimed: true
-      }))
-
-      toast.success("50 crediti aggiunti 🚀")
-    } finally {
-      setClaimLoading(false)
-    }
+    toast.success("50 crediti aggiunti 🚀")
+  } catch (error) {
+    console.error(error)
+    toast.error("Errore durante il riscatto")
+  } finally {
+    setClaimLoading(false)
   }
+}
 
   const sendVerificationEmail = async () => {
     const {
