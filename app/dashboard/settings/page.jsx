@@ -1009,7 +1009,7 @@ export default function SettingsPage() {
     Notifiche Email
   </h2>
 
-  <label className="flex items-center gap-3">
+  <label className="flex items-center gap-3 mb-5">
     <input
       type="checkbox"
       checked={emailNewJobs}
@@ -1020,6 +1020,13 @@ export default function SettingsPage() {
       Ricevi email quando vengono pubblicati nuovi lavori
     </span>
   </label>
+
+  <button
+    onClick={saveProfile}
+    className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400"
+  >
+    Salva preferenze
+  </button>
 </div>
 
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
