@@ -184,6 +184,7 @@ export default function SettingsPage() {
   const [addressResults, setAddressResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState("")
+  const [emailNewJobs, setEmailNewJobs] = useState(true)
 
   const [completedJobs, setCompletedJobs] = useState(0)
   const [activeJobs, setActiveJobs] = useState(0)
@@ -211,6 +212,7 @@ export default function SettingsPage() {
     setCity(profileData.city || "")
     setLocation(profileData.location || profileData.city || "")
     setAvatar(profileData.avatar_url || "")
+    setEmailNewJobs(profileData.email_new_jobs ?? true)
   }, [])
 
   const searchAddress = async (value) => {
@@ -388,7 +390,8 @@ export default function SettingsPage() {
         city: location || "",
         location: location || "",
         credits: userProfile?.credits ?? 50,
-        verified: userProfile?.verified ?? false
+        verified: userProfile?.verified ?? false,
+        email_new_jobs: emailNewJobs
       }
 
       const { data, error } = await supabase
