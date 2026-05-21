@@ -141,6 +141,22 @@ export default function CreateJob() {
         )
       }
 
+      try {
+  await fetch("/api/send-job-emails", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      title,
+      location,
+      job_date: date
+    })
+  })
+} catch (emailError) {
+  console.error("Errore invio email ai piloti:", emailError)
+}
+
       // 🚀 SCALA CREDITI
       await supabase
         .from("users")
