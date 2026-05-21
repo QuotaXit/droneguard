@@ -2,12 +2,12 @@ import Link from "next/link"
 import Navbar from "@/components/Navbar"
 
 export const metadata = {
-  title: "Pilota Drone Foggia | Trova Piloti Drone a Foggia | DroneGuard",
+  title: "Pilota Drone L'Aquila | Trova Piloti Drone a L'Aquila | DroneGuard",
   description:
-    "Cerchi un pilota drone a Foggia? Pubblica gratuitamente il tuo lavoro e ricevi candidature da piloti drone per riprese, ispezioni, eventi e servizi professionali."
+    "Cerchi un pilota drone a L'Aquila? Pubblica gratuitamente il tuo lavoro e ricevi candidature da piloti drone per riprese, ispezioni, eventi e servizi professionali."
 }
 
-export default function PilotaDroneFoggiaPage() {
+export default function PilotaDroneLAquilaPage() {
   return (
     <main className="min-h-screen bg-[#0B0F2A] text-white">
       <Navbar />
@@ -15,17 +15,17 @@ export default function PilotaDroneFoggiaPage() {
       <section className="mx-auto max-w-5xl px-6 py-20">
         <div className="space-y-6 mb-10 text-gray-300 leading-8">
   <p>
-    Cerchi un pilota drone a Foggia per riprese video professionali,
+    Cerchi un pilota drone a L'Aquila per riprese video professionali,
     fotografie aeree, ispezioni tecniche, monitoraggio cantieri,
     rilievi topografici o servizi specializzati con drone? Con
     DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-    candidature da piloti drone disponibili a Foggia e provincia.
+    candidature da piloti drone disponibili a L'Aquila e provincia.
   </p>
 
   <p>
     I droni professionali vengono oggi utilizzati in numerosi settori,
-    dall'agricoltura all'edilizia, dal settore immobiliare alle
-    attività industriali. Grazie alle moderne tecnologie è possibile
+    dall'edilizia all'agricoltura, dal settore immobiliare alla
+    promozione turistica. Grazie alle moderne tecnologie è possibile
     acquisire immagini, video e dati da prospettive difficilmente
     raggiungibili con strumenti tradizionali.
   </p>
@@ -34,107 +34,106 @@ export default function PilotaDroneFoggiaPage() {
     DroneGuard mette in contatto clienti e piloti drone attraverso una
     piattaforma semplice e veloce. Pubblica il tuo progetto e ricevi
     candidature da professionisti interessati a svolgere il lavoro
-    richiesto nella zona di Foggia.
+    richiesto nella zona di L'Aquila.
   </p>
 </div>
 
 <div className="mb-10">
   <h2 className="text-3xl font-bold mb-4">
-    Riprese video e fotografie aeree a Foggia
+    Riprese video e fotografie aeree a L'Aquila
   </h2>
 
   <div className="space-y-5 text-gray-300 leading-8">
     <p>
       Le riprese con drone sono particolarmente richieste per aziende,
-      attività commerciali, immobili, agriturismi, strutture ricettive,
-      eventi e iniziative promozionali.
+      attività commerciali, immobili, hotel, agriturismi, strutture
+      ricettive ed eventi organizzati sul territorio aquilano.
     </p>
 
     <p>
-      Le fotografie aeree consentono di valorizzare edifici, terreni,
-      aziende agricole e proprietà private mostrando prospettive uniche
-      e professionali.
+      Le fotografie aeree consentono di valorizzare edifici, proprietà,
+      paesaggi montani e luoghi di interesse storico mostrando
+      prospettive professionali e coinvolgenti.
     </p>
 
     <p>
-      Sempre più imprese utilizzano contenuti realizzati con drone per
-      siti web, social media e campagne pubblicitarie.
+      Sempre più imprese utilizzano immagini e video realizzati con
+      drone per siti web, social media e campagne pubblicitarie.
     </p>
   </div>
 </div>
 
 <div className="mb-10">
   <h2 className="text-3xl font-bold mb-4">
-    Agricoltura di precisione e monitoraggio colture
+    Monitoraggio cantieri e ricostruzione edilizia
   </h2>
 
   <div className="space-y-5 text-gray-300 leading-8">
     <p>
-      Il territorio foggiano è uno dei principali poli agricoli italiani
-      e i droni rappresentano uno strumento sempre più utilizzato per il
-      monitoraggio delle colture e la gestione dei terreni.
+      I droni vengono utilizzati per documentare lo stato di avanzamento
+      dei cantieri e monitorare opere edilizie, infrastrutture e
+      interventi di riqualificazione.
     </p>
 
     <p>
-      Attraverso immagini e rilevazioni dall'alto è possibile
-      individuare anomalie, monitorare lo stato delle coltivazioni e
-      raccogliere dati utili per migliorare l'efficienza produttiva.
+      Grazie alle immagini ad alta definizione è possibile ottenere una
+      visione completa delle aree interessate e raccogliere dati utili
+      per professionisti e imprese.
+    </p>
+
+    <p>
+      Le riprese periodiche consentono inoltre di creare report visivi e
+      documentazione tecnica aggiornata.
+    </p>
+  </div>
+</div>
+
+<div className="mb-10">
+  <h2 className="text-3xl font-bold mb-4">
+    Agricoltura di precisione e monitoraggio del territorio
+  </h2>
+
+  <div className="space-y-5 text-gray-300 leading-8">
+    <p>
+      I droni rappresentano uno strumento sempre più utilizzato per il
+      monitoraggio di terreni agricoli, colture e aree rurali.
+    </p>
+
+    <p>
+      Attraverso immagini e rilevazioni dall'alto è possibile raccogliere
+      informazioni utili per migliorare la gestione delle attività
+      agricole e controllare grandi superfici in tempi ridotti.
     </p>
 
     <p>
       Alcuni piloti drone offrono inoltre servizi di mappatura,
-      fotogrammetria e rilievi professionali dedicati al settore
-      agricolo.
+      fotogrammetria e rilievi professionali per aziende e consulenti
+      del settore.
     </p>
   </div>
 </div>
 
 <div className="mb-10">
   <h2 className="text-3xl font-bold mb-4">
-    Ispezioni tecniche e monitoraggio cantieri
+    Ispezioni tecniche, termografia e rilievi topografici
   </h2>
 
   <div className="space-y-5 text-gray-300 leading-8">
     <p>
-      I droni consentono di effettuare controlli visivi su tetti,
-      facciate, coperture industriali, impianti fotovoltaici e altre
-      strutture difficili da raggiungere.
+      I droni consentono di effettuare controlli su tetti, facciate,
+      impianti fotovoltaici, coperture industriali e strutture
+      difficili da raggiungere.
     </p>
 
     <p>
-      Grazie alle immagini ad alta definizione è possibile raccogliere
-      informazioni dettagliate riducendo tempi e costi rispetto ai
-      metodi tradizionali.
-    </p>
-
-    <p>
-      Le imprese possono inoltre utilizzare i droni per documentare lo
-      stato di avanzamento dei cantieri e monitorare le attività in
-      corso.
-    </p>
-  </div>
-</div>
-
-<div className="mb-10">
-  <h2 className="text-3xl font-bold mb-4">
-    Rilievi topografici, termografia e fotogrammetria
-  </h2>
-
-  <div className="space-y-5 text-gray-300 leading-8">
-    <p>
-      Alcuni piloti drone offrono servizi di rilievo topografico,
-      fotogrammetria, termografia e mappatura del territorio per studi
-      tecnici, aziende e professionisti.
+      Alcuni operatori offrono servizi di termografia, fotogrammetria,
+      rilievi topografici e mappatura del territorio per studi tecnici,
+      aziende e professionisti.
     </p>
 
     <p>
       Queste tecnologie consentono di acquisire dati precisi e
       supportare attività di progettazione, monitoraggio e controllo.
-    </p>
-
-    <p>
-      I droni rappresentano oggi una soluzione moderna ed efficiente
-      per numerose applicazioni professionali.
     </p>
   </div>
 </div>
@@ -172,13 +171,13 @@ export default function PilotaDroneFoggiaPage() {
 
 <div className="mb-10">
   <h2 className="text-3xl font-bold mb-4">
-    Trova un pilota drone a Foggia
+    Trova un pilota drone a L'Aquila
   </h2>
 
   <div className="space-y-5 text-gray-300 leading-8">
     <p>
-      Se hai bisogno di un pilota drone a Foggia per un evento,
-      un matrimonio, una ripresa promozionale, un'ispezione tecnica,
+      Se hai bisogno di un pilota drone a L'Aquila per un matrimonio,
+      un evento, una ripresa promozionale, un'ispezione tecnica,
       un rilievo professionale o qualsiasi altro servizio con drone,
       DroneGuard ti permette di pubblicare gratuitamente la tua
       richiesta.

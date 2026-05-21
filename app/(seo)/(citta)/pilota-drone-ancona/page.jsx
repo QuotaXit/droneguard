@@ -13,48 +13,128 @@ export default function PilotaDroneAnconaPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Pilota Drone Ancona
-        </h1>
+        <div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova un pilota drone ad Ancona per il tuo progetto
+  </h2>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Cerchi un pilota drone a Ancona per riprese video, fotografie aeree,
-          ispezioni tecniche, matrimoni, eventi o lavori professionali?
-          Con DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-          candidature dai piloti drone interessati.
-        </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    I servizi con drone vengono utilizzati sempre più spesso da aziende,
+    professionisti e privati che desiderano ottenere fotografie aeree,
+    riprese video, documentazione tecnica e contenuti professionali.
+    Attraverso DroneGuard puoi pubblicare una richiesta e raggiungere
+    piloti drone disponibili ad Ancona e nei comuni della provincia.
+  </p>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Servizi disponibili
-            </h2>
+  <p className="mb-5 leading-8 text-gray-300">
+    Che tu abbia bisogno di un servizio per un evento, un immobile, un
+    cantiere o un'attività commerciale, la piattaforma consente di ricevere
+    candidature da operatori interessati al lavoro.
+  </p>
 
-            <p className="text-gray-300 leading-7">
-              Riprese video, foto aeree, eventi, matrimoni, edilizia,
-              immobili, agricoltura, termografia, monitoraggio cantieri
-              e ispezioni professionali con drone.
-            </p>
-          </div>
+  <p className="leading-8 text-gray-300">
+    Potrai confrontare più professionisti e scegliere il pilota drone che
+    ritieni più adatto alle esigenze del progetto.
+  </p>
+</div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Come funziona
-            </h2>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Servizi drone ad Ancona
+    </h2>
 
-            <p className="text-gray-300 leading-7">
-              Pubblica il tuo lavoro, descrivi il servizio richiesto e
-              attendi le candidature dei piloti drone disponibili nella
-              zona di Ancona.
-            </p>
-          </div>
-        </div>
+    <p className="mb-5 leading-8 text-gray-300">
+      I piloti drone possono operare in numerosi settori, offrendo servizi
+      per aziende, agenzie immobiliari, strutture ricettive, studi tecnici,
+      imprese edili e organizzatori di eventi.
+    </p>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un pilota drone
-          </button>
-        </Link>
+    <p className="leading-8 text-gray-300">
+      Le attività possono includere riprese video, fotografie aeree,
+      monitoraggio cantieri, termografia, ispezioni tecniche e rilievi
+      professionali.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Attività più richieste
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Riprese video con drone</li>
+      <li>✅ Fotografie aeree professionali</li>
+      <li>✅ Matrimoni ed eventi</li>
+      <li>✅ Servizi per immobili</li>
+      <li>✅ Ispezioni di edifici e coperture</li>
+      <li>✅ Monitoraggio cantieri</li>
+      <li>✅ Termografia con drone</li>
+      <li>✅ Rilievi e fotogrammetria</li>
+    </ul>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    DroneGuard è una piattaforma che mette in contatto clienti e piloti
+    drone. Dopo la registrazione, i clienti ricevono 10 crediti gratuiti e
+    possono pubblicare richieste di lavoro utilizzando 5 crediti.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    I piloti drone registrati ricevono 50 crediti gratuiti e possono
+    candidarsi agli annunci disponibili utilizzando 5 crediti per ogni
+    candidatura inviata.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    Dopo l'utilizzo dei crediti gratuiti è possibile acquistare ulteriori
+    pacchetti crediti per continuare a utilizzare la piattaforma.
+  </p>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-8 text-3xl font-bold">
+    Domande frequenti
+  </h2>
+
+  <div className="space-y-5">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Come trovare un pilota drone ad Ancona?
+      </h3>
+      <p className="text-gray-300">
+        Pubblica una richiesta su DroneGuard e attendi le candidature dei
+        piloti interessati al lavoro.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Posso ricevere più proposte?
+      </h3>
+      <p className="text-gray-300">
+        Sì, più piloti possono candidarsi allo stesso annuncio permettendoti
+        di confrontare diverse soluzioni.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Quali servizi sono disponibili?
+      </h3>
+      <p className="text-gray-300">
+        Riprese video, fotografie aeree, eventi, immobili, termografia,
+        monitoraggio cantieri, ispezioni tecniche e rilievi professionali.
+      </p>
+    </div>
+  </div>
+</div>
       </section>
     </main>
   )

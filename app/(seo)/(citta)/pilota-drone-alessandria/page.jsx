@@ -13,48 +13,128 @@ export default function PilotaDroneAlessandriaPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Pilota Drone Alessandria
-        </h1>
+        <div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova operatori drone ad Alessandria e provincia
+  </h2>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Cerchi un pilota drone a Alessandria per riprese video, fotografie aeree,
-          ispezioni tecniche, matrimoni, eventi o lavori professionali?
-          Con DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-          candidature dai piloti drone interessati.
-        </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    I piloti drone possono supportare privati, aziende e professionisti in
+    numerose attività. Dalle riprese video agli eventi, fino a ispezioni
+    tecniche, monitoraggio cantieri, immobili, agricoltura e servizi
+    professionali, il drone rappresenta oggi uno strumento utilizzato in
+    molti settori.
+  </p>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Servizi disponibili
-            </h2>
+  <p className="mb-5 leading-8 text-gray-300">
+    Attraverso DroneGuard puoi pubblicare una richiesta specificando il tipo
+    di lavoro richiesto, la località e le informazioni principali del
+    progetto. I piloti interessati possono candidarsi direttamente tramite la
+    piattaforma.
+  </p>
 
-            <p className="text-gray-300 leading-7">
-              Riprese video, foto aeree, eventi, matrimoni, edilizia,
-              immobili, agricoltura, termografia, monitoraggio cantieri
-              e ispezioni professionali con drone.
-            </p>
-          </div>
+  <p className="leading-8 text-gray-300">
+    In questo modo puoi ricevere più candidature e confrontare diversi
+    professionisti disponibili nella zona di Alessandria senza dover
+    effettuare lunghe ricerche online.
+  </p>
+</div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Come funziona
-            </h2>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Servizi drone disponibili ad Alessandria
+    </h2>
 
-            <p className="text-gray-300 leading-7">
-              Pubblica il tuo lavoro, descrivi il servizio richiesto e
-              attendi le candidature dei piloti drone disponibili nella
-              zona di Alessandria.
-            </p>
-          </div>
-        </div>
+    <p className="mb-5 leading-8 text-gray-300">
+      I piloti drone possono offrire servizi dedicati a privati, imprese,
+      agenzie immobiliari, studi tecnici, aziende agricole e organizzatori
+      di eventi.
+    </p>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un pilota drone
-          </button>
-        </Link>
+    <p className="leading-8 text-gray-300">
+      Ogni progetto può richiedere competenze differenti, dalla produzione di
+      video promozionali fino a rilievi tecnici e controlli professionali.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Servizi più richiesti
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Riprese video aeree</li>
+      <li>✅ Fotografie con drone</li>
+      <li>✅ Eventi e matrimoni</li>
+      <li>✅ Immobili e strutture commerciali</li>
+      <li>✅ Ispezioni tecniche</li>
+      <li>✅ Monitoraggio cantieri</li>
+      <li>✅ Termografia con drone</li>
+      <li>✅ Agricoltura e rilievi topografici</li>
+    </ul>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    DroneGuard mette in contatto clienti e piloti drone. Dopo la
+    registrazione, i clienti ricevono 10 crediti gratuiti e possono
+    pubblicare una richiesta utilizzando 5 crediti.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    I piloti drone ricevono 50 crediti gratuiti e possono candidarsi ai
+    lavori disponibili utilizzando 5 crediti per ogni candidatura.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    Dopo aver esaurito i crediti gratuiti, è possibile acquistare nuovi
+    pacchetti crediti per continuare a utilizzare la piattaforma.
+  </p>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-8 text-3xl font-bold">
+    Domande frequenti
+  </h2>
+
+  <div className="space-y-5">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Come posso trovare un pilota drone ad Alessandria?
+      </h3>
+      <p className="text-gray-300">
+        Registrati su DroneGuard, pubblica il tuo lavoro e attendi le
+        candidature dei piloti interessati.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Posso ricevere più candidature?
+      </h3>
+      <p className="text-gray-300">
+        Sì, più piloti possono candidarsi alla tua richiesta permettendoti di
+        confrontare diverse proposte.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Quali servizi possono offrire i piloti drone?
+      </h3>
+      <p className="text-gray-300">
+        Riprese aeree, eventi, matrimoni, immobili, ispezioni, termografia,
+        monitoraggio cantieri, agricoltura e rilievi professionali.
+      </p>
+    </div>
+  </div>
+</div>
       </section>
     </main>
   )

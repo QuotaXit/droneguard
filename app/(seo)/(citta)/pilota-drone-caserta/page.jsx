@@ -13,48 +13,137 @@ export default function PilotaDroneCasertaPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Pilota Drone Caserta
-        </h1>
+        <div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova un pilota drone a Caserta
+  </h2>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Cerchi un pilota drone a Caserta per riprese video, fotografie aeree,
-          ispezioni tecniche, matrimoni, eventi o lavori professionali?
-          Con DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-          candidature dai piloti drone interessati.
-        </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    Se hai bisogno di un pilota drone a Caserta per riprese video,
+    fotografie aeree, eventi, immobili, ispezioni tecniche o lavori
+    professionali, DroneGuard ti permette di pubblicare una richiesta e
+    ricevere candidature da operatori interessati al tuo progetto.
+  </p>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Servizi disponibili
-            </h2>
+  <p className="mb-5 leading-8 text-gray-300">
+    I droni vengono oggi utilizzati in numerosi settori grazie alla loro
+    capacità di acquisire immagini e dati da prospettive uniche. Attraverso
+    la piattaforma puoi entrare in contatto con professionisti disponibili
+    a Caserta e in tutta la provincia.
+  </p>
 
-            <p className="text-gray-300 leading-7">
-              Riprese video, foto aeree, eventi, matrimoni, edilizia,
-              immobili, agricoltura, termografia, monitoraggio cantieri
-              e ispezioni professionali con drone.
-            </p>
-          </div>
+  <p className="leading-8 text-gray-300">
+    Una sola richiesta consente di raggiungere più piloti drone e confrontare
+    diverse candidature prima di scegliere il professionista più adatto alle
+    tue esigenze.
+  </p>
+</div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Come funziona
-            </h2>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Riprese aeree per eventi, immobili e aziende
+    </h2>
 
-            <p className="text-gray-300 leading-7">
-              Pubblica il tuo lavoro, descrivi il servizio richiesto e
-              attendi le candidature dei piloti drone disponibili nella
-              zona di Caserta.
-            </p>
-          </div>
-        </div>
+    <p className="mb-5 leading-8 text-gray-300">
+      Le fotografie e i video realizzati con drone sono sempre più richiesti
+      per matrimoni, eventi, strutture ricettive, immobili, attività
+      commerciali e contenuti promozionali. Le riprese dall'alto permettono
+      di valorizzare ambienti e location in modo professionale.
+    </p>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un pilota drone
-          </button>
-        </Link>
+    <p className="leading-8 text-gray-300">
+      Anche aziende e professionisti utilizzano i droni per documentare
+      progetti, realizzare contenuti marketing e migliorare la comunicazione
+      visiva dei propri servizi.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Servizi più richiesti
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Riprese video professionali</li>
+      <li>✅ Fotografie aeree</li>
+      <li>✅ Matrimoni ed eventi</li>
+      <li>✅ Immobili e strutture ricettive</li>
+      <li>✅ Monitoraggio cantieri</li>
+      <li>✅ Ispezioni tecniche</li>
+      <li>✅ Termografia con drone</li>
+      <li>✅ Rilievi topografici</li>
+    </ul>
+  </div>
+</div>
+
+<div className="mb-14 grid gap-6 md:grid-cols-3">
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Registrati gratuitamente
+    </h2>
+
+    <p className="text-gray-300">
+      Crea il tuo account e accedi ai servizi di DroneGuard.
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Pubblica la richiesta
+    </h2>
+
+    <p className="text-gray-300">
+      Descrivi il lavoro richiesto e specifica la località.
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Ricevi candidature
+    </h2>
+
+    <p className="text-gray-300">
+      I piloti interessati possono candidarsi direttamente all'annuncio.
+    </p>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    I clienti ricevono 10 crediti gratuiti dopo la registrazione e possono
+    pubblicare una richiesta utilizzando 5 crediti. I piloti drone ricevono
+    invece 50 crediti gratuiti e possono candidarsi agli annunci spendendo
+    5 crediti per ogni candidatura inviata.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    Questo sistema aiuta a mettere in contatto clienti e professionisti
+    realmente interessati ai lavori pubblicati sulla piattaforma.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    Terminati i crediti gratuiti, è possibile acquistare nuovi pacchetti
+    crediti per continuare a utilizzare DroneGuard.
+  </p>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Piloti drone disponibili a Caserta e provincia
+  </h2>
+
+  <p className="leading-8 text-gray-300">
+    Pubblica gratuitamente la tua richiesta e ricevi candidature da piloti
+    drone disponibili a Caserta per riprese aeree, eventi, immobili,
+    monitoraggio cantieri, termografia, rilievi e servizi professionali con
+    drone.
+  </p>
+</div>
       </section>
     </main>
   )

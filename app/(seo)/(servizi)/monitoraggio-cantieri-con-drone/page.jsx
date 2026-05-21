@@ -13,31 +13,68 @@ export default function MonitoraggioCantieriConDronePage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Monitoraggio cantieri con drone
-        </h1>
+        <div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Controlla l'avanzamento dei lavori dall'alto
+  </h2>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Trova piloti drone per monitorare lo stato di avanzamento dei
-          lavori e documentare il cantiere.
-        </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    Il monitoraggio dei cantieri con drone consente di seguire in modo
+    semplice e preciso tutte le fasi di un progetto. Le immagini aeree
+    permettono di ottenere una panoramica completa dell'area e di verificare
+    rapidamente lo stato di avanzamento dei lavori.
+  </p>
 
-        <div className="space-y-5 text-gray-300 leading-7 mb-10">
-          <p>
-            Le immagini aeree consentono controlli rapidi e una visione
-            completa dell'area interessata.
-          </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    Fotografie e video realizzati periodicamente possono essere utilizzati
+    per creare report, condividere aggiornamenti con clienti e collaboratori
+    e documentare l'evoluzione del cantiere nel tempo.
+  </p>
 
-          <p>
-            Ideale per imprese, studi tecnici e direzioni lavori.
-          </p>
-        </div>
+  <p className="leading-8 text-gray-300">
+    Grazie alla visuale dall'alto è possibile monitorare grandi aree,
+    controllare più facilmente le attività in corso e mantenere uno storico
+    completo dell'intero progetto.
+  </p>
+</div>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un professionista
-          </button>
-        </Link>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      A chi è rivolto il servizio
+    </h2>
+
+    <p className="mb-5 leading-8 text-gray-300">
+      Il monitoraggio cantieri con drone è utilizzato da imprese edili,
+      studi tecnici, geometri, architetti, ingegneri, direzioni lavori e
+      società che desiderano documentare l'avanzamento delle opere.
+    </p>
+
+    <p className="leading-8 text-gray-300">
+      Le riprese possono essere effettuate durante tutte le fasi del
+      cantiere, dalla preparazione dell'area fino al completamento dei
+      lavori, fornendo materiale utile per verifiche tecniche e
+      documentazione professionale.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Utilizzi più comuni
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Controllo avanzamento lavori</li>
+      <li>✅ Report fotografici periodici</li>
+      <li>✅ Video aerei del cantiere</li>
+      <li>✅ Documentazione tecnica</li>
+      <li>✅ Condivisione con clienti e investitori</li>
+      <li>✅ Monitoraggio infrastrutture e opere pubbliche</li>
+      <li>✅ Verifica dello stato delle lavorazioni</li>
+      <li>✅ Archivio storico delle attività</li>
+    </ul>
+  </div>
+</div>
       </section>
     </main>
   )

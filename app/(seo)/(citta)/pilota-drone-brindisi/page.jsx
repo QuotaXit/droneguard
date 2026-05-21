@@ -13,48 +13,137 @@ export default function PilotaDroneBrindisiPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Pilota Drone Brindisi
-        </h1>
+        <div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova un pilota drone a Brindisi
+  </h2>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Cerchi un pilota drone a Brindisi per riprese video, fotografie aeree,
-          ispezioni tecniche, matrimoni, eventi o lavori professionali?
-          Con DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-          candidature dai piloti drone interessati.
-        </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    DroneGuard ti permette di trovare piloti drone disponibili a Brindisi e
+    provincia per riprese video, fotografie aeree, eventi, immobili,
+    ispezioni tecniche e servizi professionali. Attraverso la piattaforma
+    puoi pubblicare una richiesta e ricevere candidature da operatori
+    interessati al tuo progetto.
+  </p>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Servizi disponibili
-            </h2>
+  <p className="mb-5 leading-8 text-gray-300">
+    Le tecnologie drone vengono oggi utilizzate in numerosi settori grazie
+    alla capacità di acquisire immagini e dati da prospettive uniche,
+    offrendo nuove opportunità sia per attività promozionali che per
+    applicazioni tecniche.
+  </p>
 
-            <p className="text-gray-300 leading-7">
-              Riprese video, foto aeree, eventi, matrimoni, edilizia,
-              immobili, agricoltura, termografia, monitoraggio cantieri
-              e ispezioni professionali con drone.
-            </p>
-          </div>
+  <p className="leading-8 text-gray-300">
+    Con una sola richiesta puoi raggiungere più professionisti e confrontare
+    diverse candidature prima di scegliere il pilota drone più adatto.
+  </p>
+</div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Come funziona
-            </h2>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Riprese aeree per turismo, eventi e aziende
+    </h2>
 
-            <p className="text-gray-300 leading-7">
-              Pubblica il tuo lavoro, descrivi il servizio richiesto e
-              attendi le candidature dei piloti drone disponibili nella
-              zona di Brindisi.
-            </p>
-          </div>
-        </div>
+    <p className="mb-5 leading-8 text-gray-300">
+      Le fotografie e i video realizzati con drone vengono spesso utilizzati
+      per valorizzare strutture turistiche, hotel, villaggi, attività
+      commerciali, eventi e immobili. Le immagini dall'alto permettono di
+      mostrare ambienti e location in modo più coinvolgente.
+    </p>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un pilota drone
-          </button>
-        </Link>
+    <p className="leading-8 text-gray-300">
+      Anche aziende e professionisti utilizzano sempre più spesso le riprese
+      aeree per promuovere servizi, strutture e progetti attraverso contenuti
+      visivi di alta qualità.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Servizi più richiesti
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Video promozionali</li>
+      <li>✅ Fotografie aeree professionali</li>
+      <li>✅ Eventi e matrimoni</li>
+      <li>✅ Hotel e strutture turistiche</li>
+      <li>✅ Immobili e terreni</li>
+      <li>✅ Ispezioni tecniche</li>
+      <li>✅ Termografia con drone</li>
+      <li>✅ Monitoraggio cantieri</li>
+    </ul>
+  </div>
+</div>
+
+<div className="mb-14 grid gap-6 md:grid-cols-3">
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Registrati gratuitamente
+    </h2>
+
+    <p className="text-gray-300">
+      Crea un account e accedi a tutti i servizi della piattaforma.
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Pubblica il lavoro
+    </h2>
+
+    <p className="text-gray-300">
+      Descrivi il progetto e indica la zona in cui deve essere svolto.
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Ricevi candidature
+    </h2>
+
+    <p className="text-gray-300">
+      I piloti drone interessati possono candidarsi direttamente.
+    </p>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    I clienti ricevono 10 crediti gratuiti dopo la registrazione e possono
+    pubblicare una richiesta utilizzando 5 crediti. I piloti drone ricevono
+    invece 50 crediti gratuiti e possono candidarsi agli annunci spendendo 5
+    crediti per ogni candidatura.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    Il sistema è progettato per mettere in contatto clienti e professionisti
+    realmente interessati ai lavori pubblicati sulla piattaforma.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    Una volta esauriti i crediti gratuiti, è possibile acquistare nuovi
+    pacchetti per continuare a utilizzare DroneGuard.
+  </p>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Piloti drone disponibili a Brindisi e provincia
+  </h2>
+
+  <p className="leading-8 text-gray-300">
+    Pubblica gratuitamente la tua richiesta e ricevi candidature da piloti
+    drone disponibili a Brindisi per riprese aeree, eventi, immobili,
+    turismo, termografia, monitoraggio cantieri e servizi professionali con
+    drone.
+  </p>
+</div>
       </section>
     </main>
   )

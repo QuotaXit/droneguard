@@ -2,9 +2,9 @@ import Link from "next/link"
 import Navbar from "@/components/Navbar"
 
 export const metadata = {
-  title: "Pilota Drone Agrigento | Trova Piloti Drone a Agrigento | DroneGuard",
+  title: "Pilota Drone Agrigento | DroneGuard",
   description:
-    "Cerchi un pilota drone a Agrigento? Pubblica gratuitamente il tuo lavoro e ricevi candidature da piloti drone per riprese, ispezioni, eventi e servizi professionali."
+    "Trova piloti drone ad Agrigento per riprese aeree, eventi, immobili, ispezioni, cantieri, agricoltura e lavori professionali."
 }
 
 export default function PilotaDroneAgrigentoPage() {
@@ -13,48 +13,150 @@ export default function PilotaDroneAgrigentoPage() {
       <Navbar />
 
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <h1 className="text-4xl font-bold mb-6">
-          Pilota Drone Agrigento
-        </h1>
+        <div className="mb-14 max-w-4xl">
+  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-green-400">
+    DroneGuard ad Agrigento
+  </p>
 
-        <p className="text-gray-300 text-lg leading-8 mb-8">
-          Cerchi un pilota drone a Agrigento per riprese video, fotografie aeree,
-          ispezioni tecniche, matrimoni, eventi o lavori professionali?
-          Con DroneGuard puoi pubblicare gratuitamente una richiesta e ricevere
-          candidature dai piloti drone interessati.
-        </p>
+  <h1 className="mb-6 text-4xl font-bold md:text-5xl">
+    Pilota Drone Agrigento
+  </h1>
 
-        <div className="grid gap-6 md:grid-cols-2 mb-10">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Servizi disponibili
-            </h2>
+  <p className="text-lg leading-8 text-gray-300">
+    Cerchi un pilota drone ad Agrigento per riprese video, fotografie aeree,
+    ispezioni tecniche, matrimoni, eventi, immobili, cantieri o lavori
+    professionali? Con DroneGuard puoi pubblicare una richiesta e ricevere
+    candidature dai piloti drone interessati nella zona di Agrigento e
+    provincia. La piattaforma ti permette di descrivere il servizio richiesto,
+    confrontare più professionisti e scegliere il pilota più adatto alle tue
+    esigenze.
+  </p>
 
-            <p className="text-gray-300 leading-7">
-              Riprese video, foto aeree, eventi, matrimoni, edilizia,
-              immobili, agricoltura, termografia, monitoraggio cantieri
-              e ispezioni professionali con drone.
-            </p>
-          </div>
+  <div className="mt-8">
+    <Link href="/register">
+      <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black">
+        Trova un pilota drone
+      </button>
+    </Link>
+  </div>
+</div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-xl font-semibold mb-3">
-              Come funziona
-            </h2>
+<div className="mb-14 grid gap-6 md:grid-cols-3">
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Riprese e fotografie
+    </h2>
+    <p className="text-gray-300">
+      Trova operatori drone per video aerei, fotografie professionali,
+      immobili, eventi e contenuti promozionali.
+    </p>
+  </div>
 
-            <p className="text-gray-300 leading-7">
-              Pubblica il tuo lavoro, descrivi il servizio richiesto e
-              attendi le candidature dei piloti drone disponibili nella
-              zona di Agrigento.
-            </p>
-          </div>
-        </div>
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Servizi tecnici
+    </h2>
+    <p className="text-gray-300">
+      Richiedi ispezioni, monitoraggio cantieri, termografia, rilievi e
+      attività professionali con drone.
+    </p>
+  </div>
 
-        <Link href="/register">
-          <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400">
-            Trova un pilota drone
-          </button>
-        </Link>
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Piloti nella tua zona
+    </h2>
+    <p className="text-gray-300">
+      Pubblica il lavoro e ricevi candidature da piloti drone disponibili ad
+      Agrigento e nei comuni vicini.
+    </p>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova operatori drone ad Agrigento
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    Un pilota drone può essere utile per molti tipi di lavori: riprese video,
+    fotografie aeree, eventi, matrimoni, ispezioni di tetti e facciate,
+    controlli su impianti fotovoltaici, monitoraggio cantieri, servizi per
+    immobili, agricoltura e attività aziendali.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    Su DroneGuard puoi pubblicare una richiesta indicando la zona, il tipo di
+    servizio, la data indicativa e le informazioni principali del progetto.
+    I piloti interessati possono candidarsi e proporti la propria
+    disponibilità.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    In questo modo puoi confrontare più professionisti senza dover cercare
+    manualmente ogni singolo operatore drone nella zona di Agrigento.
+  </p>
+</div>
+
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Servizi drone disponibili
+    </h2>
+
+    <p className="mb-5 leading-8 text-gray-300">
+      I piloti drone possono offrire servizi per privati, aziende, agenzie
+      immobiliari, imprese edili, strutture turistiche, organizzatori di
+      eventi, agricoltori e studi tecnici.
+    </p>
+
+    <p className="leading-8 text-gray-300">
+      Ogni lavoro può richiedere competenze diverse: alcune richieste sono
+      legate alla produzione di video e fotografie, altre riguardano
+      ispezioni tecniche, rilievi o monitoraggi professionali.
+    </p>
+  </div>
+
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Servizi più richiesti
+    </h3>
+
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Riprese video aeree</li>
+      <li>✅ Fotografie con drone</li>
+      <li>✅ Eventi e matrimoni</li>
+      <li>✅ Immobili e strutture ricettive</li>
+      <li>✅ Ispezioni tecniche</li>
+      <li>✅ Monitoraggio cantieri</li>
+      <li>✅ Termografia con drone</li>
+      <li>✅ Agricoltura e rilievi</li>
+    </ul>
+  </div>
+</div>
+
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    DroneGuard è una piattaforma che mette in contatto clienti e piloti
+    drone. Il cliente può registrarsi, ricevere 10 crediti gratuiti e
+    pubblicare una richiesta di lavoro utilizzando 5 crediti.
+  </p>
+
+  <p className="mb-5 leading-8 text-gray-300">
+    I piloti drone registrati ricevono 50 crediti gratuiti e possono
+    candidarsi agli annunci disponibili utilizzando 5 crediti per ogni
+    candidatura.
+  </p>
+
+  <p className="leading-8 text-gray-300">
+    Dopo aver terminato i crediti gratuiti, piloti e clienti possono
+    acquistare nuovi crediti per continuare a utilizzare la piattaforma.
+  </p>
+</div>
       </section>
     </main>
   )
