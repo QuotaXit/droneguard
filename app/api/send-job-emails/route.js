@@ -13,10 +13,11 @@ export async function POST(req) {
   try {
     const { title, location, job_date } = await req.json()
 
-    const { data: pilots, error } = await supabaseAdmin
-      .from("users")
-      .select("email")
-      .eq("role", "pilot")
+    const { data: pilots } = await supabaseAdmin
+  .from("users")
+  .select("email")
+  .eq("role", "pilot")
+  .eq("email_new_jobs", true)
 
     if (error) throw error
 

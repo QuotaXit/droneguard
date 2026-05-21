@@ -1001,6 +1001,24 @@ export default function SettingsPage() {
               </button>
             </div>
 
+            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
+  <h2 className="mb-4 text-2xl font-semibold">
+    Notifiche Email
+  </h2>
+
+  <label className="flex items-center gap-3">
+    <input
+      type="checkbox"
+      checked={emailNewJobs}
+      onChange={(e) => setEmailNewJobs(e.target.checked)}
+    />
+
+    <span>
+      Ricevi email quando vengono pubblicati nuovi lavori
+    </span>
+  </label>
+</div>
+
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
               <h2 className="mb-3 text-2xl font-semibold text-red-400">
                 Elimina account
