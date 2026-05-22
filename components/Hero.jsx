@@ -38,7 +38,7 @@ export default function Hero() {
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <h1 className="text-3xl font-bold leading-tight sm:text-4xl lg:text-6xl">
-          Where Drone Work Happens
+          Dove clienti e piloti drone si incontrano
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-300 sm:text-lg">
