@@ -4,213 +4,234 @@ import Navbar from "@/components/Navbar"
 export const metadata = {
   title: "Drone per infrastrutture | DroneGuard",
   description:
-    "Trova piloti drone per infrastrutture, ponti, viadotti, gallerie, opere pubbliche e monitoraggio strutturale."
+    "Trova operatori drone per ponti, viadotti, strade e infrastrutture."
 }
 
 export default function Page() {
   return (
     <main className="min-h-screen bg-[#0B0F2A] text-white">
-      <Navbar />
+  <Navbar />
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="mb-16 max-w-4xl">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-green-400">
-            DroneGuard per infrastrutture
-          </p>
+  <section className="mx-auto max-w-6xl px-6 py-20">
+    <div className="mb-14 max-w-4xl">
+  <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-green-400">
+    DroneGuard per infrastrutture
+  </p>
 
-          <h1 className="mb-6 text-4xl font-bold md:text-5xl">
-            Drone per infrastrutture
-          </h1>
+  <h1 className="mb-6 text-4xl font-bold md:text-5xl">
+    Drone per infrastrutture
+  </h1>
 
-          <p className="text-lg leading-8 text-gray-300">
-            I droni rappresentano uno strumento sempre più utilizzato per il
-            monitoraggio e la documentazione delle infrastrutture. Attraverso
-            immagini aeree e riprese ad alta definizione è possibile osservare
-            ponti, viadotti, gallerie, strade, ferrovie e opere pubbliche da
-            prospettive difficilmente raggiungibili con metodi tradizionali.
-            Su DroneGuard puoi pubblicare una richiesta e ricevere candidature
-            da piloti drone interessati a collaborare con aziende, enti,
-            professionisti e società di ingegneria.
-          </p>
+  <p className="text-lg leading-8 text-gray-300">
+    I droni rappresentano una soluzione moderna ed efficiente per l'ispezione,
+    il monitoraggio e la documentazione di infrastrutture civili e industriali.
+    Grazie alle riprese aeree ad alta definizione è possibile controllare
+    ponti, viadotti, strade, gallerie, ferrovie, dighe e altre opere senza
+    interrompere il traffico o le attività operative. Attraverso DroneGuard
+    puoi trovare piloti drone qualificati per rilievi, controlli visivi e
+    documentazione tecnica di infrastrutture di qualsiasi dimensione.
+  </p>
 
-          <div className="mt-8">
-            <Link href="/register">
-              <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black transition hover:bg-green-400">
-                Registrati gratis
-              </button>
-            </Link>
-          </div>
-        </div>
+  <div className="mt-8">
+    <Link href="/register">
+      <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black">
+        Registrati gratis
+      </button>
+    </Link>
+  </div>
+</div>
 
-        <div className="mb-16 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-3 text-xl font-semibold">
-              Monitoraggio strutture
-            </h2>
-            <p className="leading-7 text-gray-300">
-              Controllo visivo di infrastrutture e opere pubbliche.
-            </p>
-          </div>
+<div className="mb-14 grid gap-6 md:grid-cols-3">
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Ispezione ponti e viadotti
+    </h2>
+    <p className="text-gray-300">
+      Controlli dettagliati di strutture complesse con immagini ad alta
+      risoluzione e accesso alle aree più difficili da raggiungere.
+    </p>
+  </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-3 text-xl font-semibold">
-              Ispezioni aeree
-            </h2>
-            <p className="leading-7 text-gray-300">
-              Acquisizione di immagini dettagliate da punti difficili da
-              raggiungere.
-            </p>
-          </div>
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Monitoraggio infrastrutturale
+    </h2>
+    <p className="text-gray-300">
+      Verifiche periodiche per controllare lo stato delle opere e monitorarne
+      l'evoluzione nel tempo.
+    </p>
+  </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="mb-3 text-xl font-semibold">
-              Documentazione tecnica
-            </h2>
-            <p className="leading-7 text-gray-300">
-              Foto e video professionali per report e archiviazione.
-            </p>
-          </div>
-        </div>
+  <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+    <h2 className="mb-3 text-xl font-semibold">
+      Sicurezza e rapidità
+    </h2>
+    <p className="text-gray-300">
+      Riduzione dei rischi operativi e acquisizione di dati senza interventi
+      invasivi sulle infrastrutture.
+    </p>
+  </div>
+</div>
 
-        <div className="mb-16">
-          <h2 className="mb-4 text-3xl font-bold">
-            Perché utilizzare un drone per le infrastrutture
-          </h2>
+<div className="mb-14 grid gap-10 md:grid-cols-2">
+  <div>
+    <h2 className="mb-4 text-3xl font-bold">
+      Perché usare un drone per le infrastrutture
+    </h2>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Le infrastrutture richiedono controlli periodici e una
-            documentazione accurata del loro stato. Grazie ai droni è possibile
-            osservare grandi aree in tempi ridotti e raccogliere immagini utili
-            per valutazioni tecniche e monitoraggi nel tempo.
-          </p>
+    <p className="mb-5 leading-8 text-gray-300">
+      Le infrastrutture richiedono controlli periodici per verificare il loro
+      stato di conservazione e individuare eventuali criticità. L'utilizzo del
+      drone permette di ottenere rapidamente immagini dettagliate di aree
+      difficili da raggiungere, riducendo tempi e costi rispetto ai metodi
+      tradizionali.
+    </p>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Ponti, viadotti, cavalcavia, gallerie e reti infrastrutturali
-            possono essere documentati con maggiore rapidità rispetto a molte
-            tecniche tradizionali.
-          </p>
+    <p className="leading-8 text-gray-300">
+      Le riprese aeree consentono di osservare le opere da prospettive diverse,
+      facilitando la documentazione tecnica e la raccolta di materiale utile
+      per verifiche, manutenzioni e attività di monitoraggio.
+    </p>
+  </div>
 
-          <p className="leading-8 text-gray-300">
-            Le immagini aeree permettono inoltre di creare report dettagliati e
-            fornire una panoramica completa dell'opera.
-          </p>
-        </div>
+  <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
+    <h3 className="mb-5 text-2xl font-bold">
+      Applicazioni principali
+    </h3>
 
-        <div className="mb-16">
-          <h2 className="mb-4 text-3xl font-bold">
-            Ispezione di ponti e viadotti
-          </h2>
+    <ul className="space-y-4 text-gray-300">
+      <li>✅ Ispezione ponti e viadotti</li>
+      <li>✅ Monitoraggio gallerie</li>
+      <li>✅ Controllo infrastrutture ferroviarie</li>
+      <li>✅ Verifica strade e opere civili</li>
+      <li>✅ Documentazione tecnica</li>
+      <li>✅ Rilievi fotografici e video aerei</li>
+    </ul>
+  </div>
+</div>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            I ponti e i viadotti sono tra le strutture più frequentemente
-            monitorate tramite drone. Le riprese aeree consentono di osservare
-            l'intera infrastruttura da più angolazioni e acquisire immagini
-            dettagliate delle varie componenti.
-          </p>
+<div className="mb-14">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova professionisti per infrastrutture
+  </h2>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Grazie alla flessibilità operativa dei droni è possibile raggiungere
-            punti difficilmente accessibili e documentare aree che richiederebbero
-            interventi più complessi.
-          </p>
+  <p className="mb-5 leading-8 text-gray-300">
+    DroneGuard mette in contatto clienti e piloti drone attraverso una
+    piattaforma dedicata. Puoi pubblicare una richiesta specificando il tipo di
+    infrastruttura, la località e il servizio necessario.
+  </p>
 
-          <p className="leading-8 text-gray-300">
-            Questo approccio può contribuire a migliorare la raccolta delle
-            informazioni e la gestione delle attività di controllo.
-          </p>
-        </div>
+  <p className="mb-5 leading-8 text-gray-300">
+    I piloti interessati possono candidarsi e proporti la propria
+    disponibilità, permettendoti di confrontare diverse soluzioni prima di
+    scegliere il professionista più adatto.
+  </p>
 
-        <div className="mb-16">
-          <h2 className="mb-4 text-3xl font-bold">
-            Monitoraggio di opere pubbliche
-          </h2>
+  <p className="leading-8 text-gray-300">
+    Questo sistema è utile per enti pubblici, aziende, studi tecnici,
+    professionisti e organizzazioni che necessitano di ispezioni e controlli
+    effettuati con drone.
+  </p>
+</div>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Le opere pubbliche richiedono spesso una documentazione costante
-            dell'avanzamento dei lavori e dello stato delle infrastrutture.
-          </p>
+<div className="mb-14 rounded-3xl border border-green-500/20 bg-green-500/10 p-8">
+  <h2 className="mb-4 text-3xl font-bold">
+    Come funziona DroneGuard
+  </h2>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Attraverso voli programmati è possibile creare uno storico
-            fotografico utile per confronti nel tempo e aggiornamenti tecnici.
-          </p>
+  <div className="grid gap-6 md:grid-cols-4">
+    <div>
+      <h3 className="mb-2 font-semibold text-green-400">1. Registrati</h3>
+      <p className="text-sm leading-6 text-gray-300">
+        Crea un account come cliente o pilota drone.
+      </p>
+    </div>
 
-          <p className="leading-8 text-gray-300">
-            Le immagini raccolte possono essere utilizzate da enti pubblici,
-            imprese e società di progettazione.
-          </p>
-        </div>
+    <div>
+      <h3 className="mb-2 font-semibold text-green-400">2. Riscatta i crediti</h3>
+      <p className="text-sm leading-6 text-gray-300">
+        50 crediti per i piloti e 10 per i clienti.
+      </p>
+    </div>
 
-        <div className="mb-16">
-          <h2 className="mb-4 text-3xl font-bold">
-            Infrastrutture stradali e ferroviarie
-          </h2>
+    <div>
+      <h3 className="mb-2 font-semibold text-green-400">3. Pubblica il lavoro</h3>
+      <p className="text-sm leading-6 text-gray-300">
+        Descrivi l'infrastruttura e il servizio richiesto.
+      </p>
+    </div>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            I droni vengono utilizzati anche per documentare strade, linee
-            ferroviarie, svincoli, cavalcavia e altre infrastrutture di
-            trasporto.
-          </p>
+    <div>
+      <h3 className="mb-2 font-semibold text-green-400">4. Ricevi candidature</h3>
+      <p className="text-sm leading-6 text-gray-300">
+        I piloti interessati possono candidarsi.
+      </p>
+    </div>
+  </div>
+</div>
 
-          <p className="mb-5 leading-8 text-gray-300">
-            Le riprese aeree consentono di ottenere una visione completa delle
-            aree interessate e supportare attività di monitoraggio e
-            pianificazione.
-          </p>
+<div className="mb-14">
+  <h2 className="mb-8 text-3xl font-bold">
+    Domande frequenti
+  </h2>
 
-          <p className="leading-8 text-gray-300">
-            Questo tipo di servizio è richiesto da imprese, progettisti,
-            amministrazioni e società specializzate.
-          </p>
-        </div>
+  <div className="space-y-5">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Quali infrastrutture possono essere ispezionate?
+      </h3>
+      <p className="text-gray-300">
+        Ponti, viadotti, strade, gallerie, ferrovie, dighe e numerose altre opere.
+      </p>
+    </div>
 
-        <div className="mb-16 grid gap-10 md:grid-cols-2">
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-            <h2 className="mb-4 text-3xl font-bold">
-              Chi utilizza questi servizi
-            </h2>
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        DroneGuard esegue direttamente le ispezioni?
+      </h3>
+      <p className="text-gray-300">
+        No, DroneGuard mette in contatto clienti e piloti drone registrati.
+      </p>
+    </div>
 
-            <p className="leading-8 text-gray-300">
-              Società di ingegneria, studi tecnici, enti pubblici, imprese di
-              costruzione e aziende specializzate utilizzano frequentemente i
-              droni per monitorare e documentare infrastrutture.
-            </p>
-          </div>
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Posso richiedere monitoraggi periodici?
+      </h3>
+      <p className="text-gray-300">
+        Sì, puoi specificarlo direttamente nella richiesta pubblicata.
+      </p>
+    </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
-            <h2 className="mb-4 text-3xl font-bold">
-              Servizi più richiesti
-            </h2>
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+      <h3 className="mb-2 text-xl font-semibold">
+        Sono previsti crediti gratuiti?
+      </h3>
+      <p className="text-gray-300">
+        Sì, 50 crediti per i piloti e 10 crediti per i clienti.
+      </p>
+    </div>
+  </div>
+</div>
 
-            <ul className="space-y-4 text-gray-300">
-              <li>✅ Ispezione ponti</li>
-              <li>✅ Ispezione viadotti</li>
-              <li>✅ Monitoraggio infrastrutture</li>
-              <li>✅ Documentazione opere pubbliche</li>
-              <li>✅ Foto aeree professionali</li>
-              <li>✅ Video tecnici con drone</li>
-            </ul>
-          </div>
-        </div>
+<div className="rounded-3xl bg-white p-8 text-[#0B0F2A] md:p-10">
+  <h2 className="mb-4 text-3xl font-bold">
+    Trova un pilota drone per infrastrutture
+  </h2>
 
-        <div className="rounded-3xl bg-white p-8 text-[#0B0F2A] md:p-10">
-          <h2 className="mb-4 text-3xl font-bold">
-            Cerchi un pilota drone per infrastrutture?
-          </h2>
+  <p className="mb-6 max-w-3xl leading-8 text-gray-700">
+    Registrati su DroneGuard, pubblica la tua richiesta e ricevi candidature
+    da piloti drone interessati a ispezioni, monitoraggio e controlli di
+    infrastrutture civili e industriali.
+  </p>
 
-          <p className="mb-6 max-w-3xl leading-8 text-gray-700">
-            Registrati gratuitamente su DroneGuard e ricevi candidature da
-            piloti drone interessati a monitoraggio infrastrutturale,
-            documentazione tecnica e ispezioni aeree professionali.
-          </p>
-
-          <Link href="/register">
-            <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black transition hover:bg-green-400">
-              Registrati gratis
-            </button>
-          </Link>
-        </div>
-      </section>
-    </main>
+  <Link href="/register">
+    <button className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black">
+      Registrati gratis
+    </button>
+  </Link>
+</div>
+  </section>
+</main>
   )
 }
