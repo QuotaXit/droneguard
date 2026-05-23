@@ -259,6 +259,130 @@ export default function sitemap() {
   url: "https://droneguard.it/operatore-drone-per-eventi",
   lastModified: new Date(),
 },
+{
+  url: "https://droneguard.it/attestato-a1-a3-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/attestato-a2-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/certificazione-drone-enac",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/come-diventare-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/corso-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/lavorare-con-i-droni",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/patentino-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/pilota-drone-certificato",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/costo-ispezione-facciata-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/costo-ispezione-tetto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/costo-monitoraggio-cantiere-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/costo-riprese-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/prezzo-fotografie-aeree-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/prezzo-fotogrammetria-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/prezzo-ispezione-impianto-fotovoltaico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/prezzo-video-drone-matrimonio",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-costa-un-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-costa-un-rilievo-topografico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-costa-un-sopralluogo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-costa-una-ripresa-aerea-per-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-costa-una-termografia-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/cerca-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/lavoro-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/network-piloti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/operatore-drone-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/pilota-drone-vicino-a-me",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/professionisti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/quanto-guadagna-un-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/richiedi-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/servizi-drone-professionali",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/trova-operatore-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
