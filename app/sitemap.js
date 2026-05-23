@@ -383,6 +383,34 @@ export default function sitemap() {
   url: "https://droneguard.it/trova-operatore-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://droneguard.it/come-trovare-lavoro-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/lavora-come-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/lavori-con-drone-professionali",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/offerte-lavoro-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/opportunita-lavorative-droni",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/trova-pilota-drone-italia",
+  lastModified: new Date(),
+},
+{
+  url: "https://droneguard.it/richiedi-preventivo-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
