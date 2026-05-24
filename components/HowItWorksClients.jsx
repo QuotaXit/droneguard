@@ -53,7 +53,7 @@ export default function HowItWorksClients() {
               </p>
 
               {step.type === "publish" && (
-                <div className="absolute bottom-9 left-7 right-7 rounded-2xl bg-white p-5 text-black shadow-2xl sm:left-9 sm:right-9">
+                <div className="absolute top-[340px] left-7 right-7 rounded-2xl bg-white p-5 text-black shadow-2xl sm:left-9 sm:right-9">
                   <p className="text-sm font-bold uppercase tracking-wide text-green-600">
                     Nuova richiesta
                   </p>
@@ -80,7 +80,7 @@ export default function HowItWorksClients() {
               )}
 
               {step.type === "applications" && (
-                <div className="absolute bottom-9 left-7 right-7 rounded-2xl bg-white p-5 text-black shadow-2xl sm:left-9 sm:right-9">
+                <div className="absolute top-[340px] left-7 right-7 rounded-2xl bg-white p-5 text-black shadow-2xl sm:left-9 sm:right-9">
                   <p className="text-sm font-bold uppercase tracking-wide text-green-600">
                     Candidature ricevute
                   </p>
@@ -104,7 +104,7 @@ export default function HowItWorksClients() {
               )}
 
               {step.type === "choose" && (
-                <div className="absolute bottom-9 left-7 right-7 sm:left-9 sm:right-9">
+                <div className="absolute top-[340px] left-7 right-7 sm:left-9 sm:right-9">
                   <div className="relative">
                     <div className="absolute left-8 top-8 h-full w-full rounded-2xl bg-white/50 shadow-xl" />
                     <div className="absolute left-4 top-4 h-full w-full rounded-2xl bg-white/70 shadow-xl" />
