@@ -11,13 +11,13 @@ export default function HowItWorksClients() {
     {
       number: "2",
       title: "Ricevi candidature",
-      desc: "I piloti drone interessati possono candidarsi al tuo annuncio. Potrai valutare i professionisti disponibili, la zona, i servizi offerti e le informazioni del loro profilo.",
+      desc: "I piloti drone interessati possono candidarsi al tuo annuncio. Potrai valutare i professionisti disponibili, la città, i servizi offerti e le informazioni del loro profilo.",
       type: "applications",
     },
     {
       number: "3",
       title: "Scegli il pilota",
-      desc: "Quando trovi il professionista giusto, accetti la candidatura e ottieni i dati necessari per organizzare il lavoro direttamente con il pilota drone.",
+      desc: "Quando trovi il professionista giusto, accetti la candidatura e invii i dettagli precisi del lavoro. Il pilota riceverà le informazioni necessarie per organizzare e svolgere il servizio.",
       type: "choose",
     },
   ]
