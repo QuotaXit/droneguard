@@ -32,7 +32,7 @@ export default function HowItWorksClients() {
         </h2>
 
         <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-gray-300 md:text-xl">
-          Pubblica gratuitamente la tua richiesta e ricevi candidature da piloti drone professionisti in tutta Italia.
+          Pubblica la tua richiesta e ricevi candidature da piloti drone professionisti in tutta Italia.
         </p>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
