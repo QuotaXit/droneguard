@@ -22,7 +22,6 @@ export default function PilotCitiesStats() {
       }
 
       const cityData = data || []
-
       setCities(cityData)
 
       const total = cityData[0]?.total_pilots || 0
@@ -36,23 +35,27 @@ export default function PilotCitiesStats() {
 
   if (loading) {
     return (
-      <section className="bg-[#0B0F2A] px-4 py-10 text-center text-white">
-        Caricamento città piloti...
+      <section className="relative px-4 py-10 text-center text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+        <div className="relative z-10">Caricamento città piloti...</div>
       </section>
     )
   }
 
   if (cities.length === 0) {
     return (
-      <section className="bg-[#0B0F2A] px-4 py-10 text-center text-white">
-        Nessuna città pilota trovata.
+      <section className="relative px-4 py-10 text-center text-white">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+        <div className="relative z-10">Nessuna città pilota trovata.</div>
       </section>
     )
   }
 
   return (
-    <section className="bg-[#0B0F2A] px-4 py-16 text-white">
-      <div className="mx-auto max-w-5xl text-center">
+    <section className="relative px-4 py-16 text-white">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+
+      <div className="relative z-10 mx-auto max-w-5xl text-center">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-500/10 px-4 py-2 text-sm text-green-300">
           <Users size={16} />
           {totalPilots} piloti disponibili
@@ -73,10 +76,10 @@ export default function PilotCitiesStats() {
             onClick={() => {
               document.getElementById("cities-scroll")?.scrollBy({
                 left: -320,
-                behavior: "smooth"
+                behavior: "smooth",
               })
             }}
-            className="hidden md:flex absolute left-0 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20"
+            className="absolute left-0 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:flex"
           >
             ‹
           </button>
@@ -86,10 +89,10 @@ export default function PilotCitiesStats() {
             onClick={() => {
               document.getElementById("cities-scroll")?.scrollBy({
                 left: 320,
-                behavior: "smooth"
+                behavior: "smooth",
               })
             }}
-            className="hidden md:flex absolute right-0 top-1/2 z-20 h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20"
+            className="absolute right-0 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:flex"
           >
             ›
           </button>
