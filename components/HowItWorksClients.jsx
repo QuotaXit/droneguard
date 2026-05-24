@@ -39,7 +39,7 @@ export default function HowItWorksClients() {
           {steps.map((step, i) => (
             <div
               key={i}
-                   className="relative min-h-[780px] rounded-3xl border border-white/20 bg-[#10173E]/80 p-7 text-left backdrop-blur-md sm:p-9"            >
+                   className="relative min-h-[650px] rounded-3xl border border-white/20 bg-[#10173E]/80 p-7 text-left backdrop-blur-md sm:p-9"            >
               <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[#22C55E] to-[#14B8A6] text-xl font-bold shadow-lg">
                 {step.number}
               </div>
