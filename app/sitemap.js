@@ -412,7 +412,7 @@ export default function sitemap() {
   lastModified: new Date(),
 },
     ...cities.map((city) => ({
-      url: `https://droneguard.it/pilota-drone-${city}`,
+      url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
     })),
   ]
