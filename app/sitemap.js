@@ -411,6 +411,38 @@ export default function sitemap() {
   url: "https://www.droneguard.it/richiedi-preventivo-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-agricoltura",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-comuni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-industria",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-turismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-monitoraggio-ambientale",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
