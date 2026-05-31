@@ -583,6 +583,10 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-perizie-edili",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-perizie-immobiliari",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
