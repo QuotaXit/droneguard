@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar"
 export const metadata = {
   title: "Drone per vendere casa | DroneGuard",
   description:
-    "Usa foto e video con drone per valorizzare una casa in vendita. Trova piloti drone per immobili, ville, terreni, agenzie immobiliari e annunci professionali."
+    "Trova un pilota drone per vendere casa con foto e video aerei. Pubblica una richiesta per valorizzare ville, immobili, terreni, giardini, terrazzi e proprietà."
 }
 
 export default function Page() {
@@ -15,7 +15,7 @@ export default function Page() {
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="mb-14 max-w-4xl">
           <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-green-400">
-            Immobili in vendita con drone
+            Foto e video drone per immobili in vendita
           </p>
 
           <h1 className="mb-6 text-4xl font-bold md:text-5xl">
@@ -23,15 +23,15 @@ export default function Page() {
           </h1>
 
           <p className="text-lg leading-8 text-gray-300">
-            Vuoi vendere casa e presentarla in modo più professionale? Con
-            DroneGuard puoi trovare piloti drone disponibili per realizzare foto,
-            video e riprese aeree di immobili, ville, appartamenti con terrazzo,
-            casali, terreni, giardini, cortili, piscine, accessi e spazi esterni.
-            Le immagini dall’alto possono aiutare a raccontare meglio il valore
-            di una proprietà, mostrando non solo l’immobile, ma anche il contesto:
-            posizione, esposizione, aree verdi, strade vicine, distanza dal mare,
-            campagna circostante, parcheggi, pertinenze e caratteristiche che da
-            terra spesso non si vedono bene.
+            Vuoi vendere una casa, una villa, un terreno, un casale, un immobile
+            con giardino o una proprietà che merita di essere mostrata dall'alto?
+            Con DroneGuard puoi pubblicare una richiesta e trovare piloti drone
+            disponibili per realizzare foto e video aerei pensati per annunci
+            immobiliari, agenzie, privati, proprietari, investitori e
+            professionisti. Il drone può aiutare a valorizzare tetti, giardini,
+            terrazzi, piscine, cortili, terreni, accessi, vista panoramica,
+            posizione dell'immobile e contesto circostante, rendendo l'annuncio
+            più completo e più chiaro per chi guarda online.
           </p>
 
           <div className="mt-8">
@@ -46,21 +46,22 @@ export default function Page() {
         <div className="mb-14 grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="mb-3 text-xl font-semibold">
-              Annunci più completi
+              Foto aeree per annunci
             </h2>
             <p className="leading-7 text-gray-300">
-              Foto e video aerei possono rendere l’annuncio immobiliare più
-              chiaro, più ricco e più interessante per chi cerca casa online.
+              Richiedi immagini dall'alto per mostrare meglio casa, giardino,
+              terreno, terrazzi, piscina, accessi e posizione dell'immobile.
             </p>
           </div>
 
           <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
             <h2 className="mb-3 text-xl font-semibold">
-              Valorizza gli esterni
+              Video immobiliare
             </h2>
             <p className="leading-7 text-gray-300">
-              Il drone può mostrare giardino, piscina, terrazzi, accessi,
-              parcheggi, confini, panorama e contesto intorno all’immobile.
+              Il drone può realizzare video panoramici utili per presentare una
+              villa, un casale, una proprietà di pregio o un immobile con spazi
+              esterni importanti.
             </p>
           </div>
 
@@ -70,7 +71,8 @@ export default function Page() {
             </h2>
             <p className="leading-7 text-gray-300">
               Il servizio può essere richiesto da proprietari, agenzie
-              immobiliari, investitori, costruttori e professionisti del settore.
+              immobiliari, home stager, investitori, costruttori e professionisti
+              del settore casa.
             </p>
           </div>
         </div>
@@ -78,81 +80,86 @@ export default function Page() {
         <div className="mb-14 grid gap-10 md:grid-cols-2">
           <div>
             <h2 className="mb-4 text-3xl font-bold">
-              Perché usare il drone per vendere un immobile
+              Perché usare il drone per vendere casa
             </h2>
 
             <p className="mb-5 leading-8 text-gray-300">
-              Quando una persona guarda un annuncio immobiliare online, le prime
-              immagini fanno spesso la differenza. Una casa può avere spazi
-              esterni importanti, una buona posizione, un panorama interessante o
-              un terreno intorno, ma se tutto questo non viene mostrato bene,
-              l’annuncio rischia di sembrare incompleto. Il drone permette di
-              creare una presentazione più ampia e più emozionale, utile per
-              far capire subito il valore dell’immobile.
+              Quando una persona cerca casa online, le immagini sono spesso il
+              primo elemento che decide se aprire un annuncio o ignorarlo. Le foto
+              classiche mostrano gli interni e qualche dettaglio esterno, ma non
+              sempre riescono a far capire la posizione dell'immobile, la grandezza
+              del giardino, la distanza dalla strada, la vista, il contesto del
+              quartiere o il valore degli spazi esterni. Il drone può aggiungere
+              una prospettiva diversa e rendere l'annuncio più completo.
             </p>
 
             <p className="mb-5 leading-8 text-gray-300">
-              Le riprese dall’alto possono essere particolarmente utili per
-              ville, case indipendenti, casali, rustici, aziende agricole,
-              immobili di lusso, strutture ricettive, terreni edificabili,
-              appartamenti con grandi terrazzi e proprietà con piscina o giardino.
-              In questi casi non basta mostrare solo le stanze interne: è
-              importante far vedere anche ciò che circonda la casa.
+              Le riprese aeree sono particolarmente utili per ville, case
+              indipendenti, casali, rustici, immobili con terreno, proprietà con
+              piscina, agriturismi, case al mare, case in campagna, attici con
+              terrazzo, immobili panoramici e strutture con spazi esterni
+              importanti. In questi casi, mostrare solo una foto da terra può
+              ridurre il valore percepito dell'immobile.
             </p>
 
             <p className="leading-8 text-gray-300">
-              DroneGuard ti aiuta a pubblicare una richiesta e ricevere
-              candidature da piloti drone interessati. Potrai spiegare il tipo di
-              immobile, la zona, il materiale che ti serve e scegliere il
-              professionista più adatto.
+              Con DroneGuard puoi pubblicare una richiesta specificando il tipo di
+              immobile, la zona, il materiale che desideri ricevere e l'obiettivo
+              dell'annuncio. I piloti drone interessati possono candidarsi e
+              proporti la propria disponibilità per realizzare foto, video o un
+              pacchetto visivo più completo.
             </p>
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <h3 className="mb-5 text-2xl font-bold">
-              Cosa puoi mostrare con il drone
+              Cosa puoi valorizzare
             </h3>
 
             <ul className="space-y-4 text-gray-300">
-              <li>✅ Vista generale della casa</li>
-              <li>✅ Giardino, cortile e piscina</li>
-              <li>✅ Terrazzi, attici e coperture</li>
-              <li>✅ Accessi e strada di arrivo</li>
-              <li>✅ Confini e terreno circostante</li>
-              <li>✅ Panorama e contesto</li>
-              <li>✅ Distanza da mare, colline o servizi</li>
-              <li>✅ Facciate e spazi esterni</li>
-              <li>✅ Video emozionale per annuncio</li>
+              <li>✅ Villa in vendita</li>
+              <li>✅ Casa indipendente</li>
+              <li>✅ Giardino e spazi esterni</li>
+              <li>✅ Piscina e area relax</li>
+              <li>✅ Terreno e confini indicativi</li>
+              <li>✅ Terrazzo panoramico</li>
+              <li>✅ Vista mare, campagna o collina</li>
+              <li>✅ Accessi, cortili e parcheggi</li>
+              <li>✅ Contesto e posizione dell'immobile</li>
             </ul>
           </div>
         </div>
 
         <div className="mb-14">
           <h2 className="mb-4 text-3xl font-bold">
-            Foto e video con drone per annunci immobiliari
+            Foto drone per annunci immobiliari
           </h2>
 
           <p className="mb-5 leading-8 text-gray-300">
-            Un annuncio immobiliare ben costruito deve aiutare il potenziale
-            acquirente a capire subito cosa sta guardando. Le foto interne sono
-            importanti, ma spesso non bastano. Il drone può aggiungere una visione
-            esterna completa, utile per mostrare l’immobile nel suo insieme e per
-            far percepire meglio spazi, proporzioni e posizione.
+            Le foto con drone possono rendere un annuncio immobiliare più
+            interessante perché mostrano ciò che spesso non si riesce a spiegare
+            bene con le parole. Un potenziale acquirente può capire meglio dove
+            si trova la casa, quanto sono ampi gli spazi esterni, come è disposto
+            il giardino, se c'è una piscina, come si accede alla proprietà e quale
+            vista si può avere dall'immobile. Questo può essere molto utile quando
+            la proprietà ha caratteristiche esterne importanti.
           </p>
 
           <p className="mb-5 leading-8 text-gray-300">
-            Per una villa, ad esempio, le immagini aeree possono mostrare il
-            rapporto tra casa, giardino, piscina, parcheggio e ingresso. Per un
-            casale possono far vedere campi, strade bianche, alberi, colline e
-            terreno. Per un appartamento con terrazzo possono evidenziare la vista
-            e l’esposizione. Per un terreno edificabile possono aiutare a capire
-            confini, accessi, pendenze e contesto urbano.
+            Un pilota drone può realizzare immagini da diverse altezze e
+            angolazioni: foto frontali, laterali, panoramiche, dall'alto, dal
+            giardino verso la casa, dalla casa verso il panorama o da punti che
+            mostrano la posizione rispetto al territorio circostante. Queste
+            immagini possono essere usate su portali immobiliari, sito agenzia,
+            social, brochure, presentazioni o messaggi da inviare a potenziali
+            clienti.
           </p>
 
           <p className="leading-8 text-gray-300">
-            Il materiale realizzato dal pilota può essere utilizzato per portali
-            immobiliari, sito dell’agenzia, social network, brochure digitali,
-            presentazioni al cliente e campagne promozionali.
+            Se vuoi un risultato più commerciale, scrivilo nella richiesta. Puoi
+            indicare che il materiale serve per vendere casa e che vuoi immagini
+            ordinate, luminose, pulite e pensate per valorizzare l'immobile, non
+            solo per documentarlo.
           </p>
         </div>
 
@@ -167,38 +174,38 @@ export default function Page() {
                 1. Registrati
               </h3>
               <p className="text-sm leading-6 text-gray-300">
-                Crea un account come cliente, proprietario, agenzia immobiliare
-                o pilota drone.
+                Crea il tuo account come proprietario, agenzia immobiliare,
+                professionista, azienda o pilota drone.
               </p>
             </div>
 
             <div>
               <h3 className="mb-2 font-semibold text-green-400">
-                2. Pubblica il lavoro
+                2. Ottieni crediti
               </h3>
               <p className="text-sm leading-6 text-gray-300">
-                Descrivi l’immobile, la zona e il tipo di foto o video che vuoi
-                realizzare.
+                I clienti ricevono 10 crediti gratuiti e i piloti ricevono 50
+                crediti dopo la registrazione.
               </p>
             </div>
 
             <div>
               <h3 className="mb-2 font-semibold text-green-400">
-                3. Ricevi candidature
+                3. Pubblica la richiesta
               </h3>
               <p className="text-sm leading-6 text-gray-300">
-                I piloti interessati possono candidarsi e proporti la loro
-                disponibilità.
+                Descrivi l'immobile, la zona, gli spazi da valorizzare e il tipo
+                di foto o video che vuoi ottenere.
               </p>
             </div>
 
             <div>
               <h3 className="mb-2 font-semibold text-green-400">
-                4. Scegli il pilota
+                4. Ricevi candidature
               </h3>
               <p className="text-sm leading-6 text-gray-300">
-                Valuta il professionista più adatto in base al servizio che ti
-                serve.
+                I piloti interessati possono candidarsi e tu puoi scegliere il
+                professionista più adatto al servizio immobiliare.
               </p>
             </div>
           </div>
@@ -207,86 +214,161 @@ export default function Page() {
         <div className="mb-14 grid gap-10 md:grid-cols-2">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <h2 className="mb-4 text-3xl font-bold">
-              Ideale per ville e case indipendenti
+              Drone per villa in vendita
             </h2>
 
             <p className="mb-5 leading-8 text-gray-300">
-              Le ville e le case indipendenti hanno spesso elementi che meritano
-              di essere mostrati dall’alto: giardino, piscina, vialetto, ingresso,
-              parcheggi, esposizione, distanza dalle altre abitazioni e panorama.
-              Una ripresa con drone può rendere l’annuncio più completo e dare al
-              cliente una percezione immediata degli spazi.
+              Una villa spesso ha elementi che meritano di essere mostrati
+              dall'alto: giardino, piscina, viale d'ingresso, terrazzi, patio,
+              vista panoramica, terreno, alberi, zone relax, parcheggi e contesto
+              circostante. Il drone può aiutare a raccontare meglio la proprietà
+              e far capire all'acquirente il valore degli spazi esterni.
             </p>
 
             <p className="leading-8 text-gray-300">
-              Questo tipo di contenuto può essere utile anche per immobili di
-              pregio, seconde case, case al mare, casali in campagna e proprietà
-              con grandi esterni.
+              Le riprese possono essere utili per annunci di vendita, promozione
+              sui social, sito dell'agenzia, presentazioni private o materiale da
+              inviare a clienti interessati prima di una visita.
             </p>
           </div>
 
           <div className="rounded-3xl border border-white/10 bg-white/5 p-8">
             <h2 className="mb-4 text-3xl font-bold">
-              Utile per agenzie immobiliari
+              Drone per casa con terreno
             </h2>
 
             <p className="mb-5 leading-8 text-gray-300">
-              Per un’agenzia immobiliare, offrire foto e video con drone può
-              diventare un modo per distinguere gli annunci più importanti.
-              Presentare una proprietà con immagini curate aumenta la qualità
-              percepita del servizio e può aiutare il proprietario a vedere
-              l’immobile valorizzato in modo più professionale.
+              Se la casa ha un terreno, un giardino ampio, un uliveto, un vigneto,
+              una zona agricola o un'area esterna importante, il drone può
+              mostrare molto meglio la dimensione e la disposizione della
+              proprietà. Da terra, spesso, questi elementi non si capiscono bene.
             </p>
 
             <p className="leading-8 text-gray-300">
-              Puoi richiedere riprese singole per un immobile oppure cercare
-              piloti disponibili per collaborazioni ricorrenti nella tua zona.
+              Una ripresa aerea può aiutare a mostrare accessi, posizione, confini
+              indicativi, spazi liberi, distanza da altre abitazioni e rapporto
+              tra casa e terreno circostante.
             </p>
           </div>
         </div>
 
         <div className="mb-14">
           <h2 className="mb-4 text-3xl font-bold">
-            Come scrivere una richiesta efficace
+            Video drone per presentare una proprietà
           </h2>
 
           <p className="mb-5 leading-8 text-gray-300">
-            Quando pubblichi una richiesta su DroneGuard, indica il tipo di
-            immobile da fotografare: villa, appartamento, casale, terreno,
-            rustico, attico, capannone o struttura ricettiva. Specifica la città,
-            la zona, la presenza di spazi esterni e il risultato che vuoi
-            ottenere. Una descrizione chiara aiuta il pilota a valutare meglio il
-            lavoro.
+            Un video con drone può essere molto efficace quando si vuole
+            raccontare una proprietà in modo più emozionale e completo. Un
+            movimento lento dall'alto, una panoramica del giardino, un passaggio
+            intorno alla casa o una ripresa che mostra la vista possono aiutare
+            l'utente a immaginare meglio l'immobile prima ancora di visitarlo. Per
+            case di pregio, ville, casali, immobili turistici o proprietà con
+            panorama, il video può diventare un elemento importante
+            dell'annuncio.
           </p>
 
           <p className="mb-5 leading-8 text-gray-300">
-            Puoi indicare se ti servono solo foto, solo video, entrambi, riprese
-            panoramiche, immagini ravvicinate, video breve per social, materiale
-            per portali immobiliari o contenuti più emozionali per una
-            presentazione. Se hai già una scaletta, puoi scriverla direttamente
-            nella richiesta.
+            Il video può essere richiesto in formato semplice, come materiale
+            grezzo da montare successivamente, oppure come clip più ordinata da
+            utilizzare sui social, sul sito dell'agenzia o in una campagna
+            promozionale. Nella richiesta puoi specificare se ti serve un video
+            breve, un video panoramico, riprese verticali per social o materiale
+            orizzontale per portali e sito web.
           </p>
 
           <p className="leading-8 text-gray-300">
-            Ricorda che il volo deve essere sempre valutato dal pilota in base a
-            sicurezza, privacy, meteo, ostacoli, aree vicine e regole applicabili.
+            È importante spiegare al pilota quali elementi vuoi valorizzare:
+            facciata, ingresso, piscina, giardino, terreno, vista, strada di
+            accesso, terrazzo o posizione rispetto al quartiere. Più il messaggio
+            è chiaro, più sarà facile ottenere un risultato adatto alla vendita.
+          </p>
+        </div>
+
+        <div className="mb-14">
+          <h2 className="mb-4 text-3xl font-bold">
+            Come scrivere una richiesta drone per vendere casa
+          </h2>
+
+          <p className="mb-5 leading-8 text-gray-300">
+            Per ricevere candidature più precise, descrivi il tipo di immobile:
+            villa, casa indipendente, appartamento con terrazzo, casale, rustico,
+            attico, immobile con giardino, casa con terreno, agriturismo o
+            proprietà di pregio. Indica la città, la zona, le caratteristiche da
+            valorizzare e il tipo di materiale che vuoi ricevere. Puoi chiedere
+            foto, video, riprese verticali, riprese orizzontali o una selezione
+            di immagini adatte agli annunci.
+          </p>
+
+          <p className="mb-5 leading-8 text-gray-300">
+            Scrivi anche dove userai il materiale: portale immobiliare, sito
+            agenzia, social, brochure, presentazione a clienti, vendita privata o
+            campagna promozionale. Questo aiuta il pilota a capire se deve
+            concentrarsi su immagini più tecniche, più commerciali o più
+            emozionali. Se hai già foto interne, puoi chiedere solo riprese
+            esterne e panoramiche; se invece vuoi un servizio completo, puoi
+            descrivere tutte le aree da mostrare.
+          </p>
+
+          <p className="leading-8 text-gray-300">
+            Ricorda che il pilota dovrà valutare sicurezza, privacy, spazi di
+            volo, ostacoli, meteo, presenza di persone, edifici vicini e regole
+            applicabili. Se la proprietà si trova in centro abitato, vicino a
+            strade, vicino ad altri edifici o in una zona con limitazioni, è utile
+            indicarlo subito nella richiesta.
           </p>
         </div>
 
         <div className="mb-14 rounded-3xl border border-white/10 bg-white/5 p-8">
           <h2 className="mb-6 text-3xl font-bold">
-            Esempio di richiesta
+            Esempio di richiesta drone per vendere casa
           </h2>
 
           <div className="rounded-2xl border border-white/10 bg-[#0B0F2A] p-6">
             <p className="leading-8 text-gray-300">
-              “Cerco un pilota drone per realizzare foto e un breve video di una
-              villa in vendita in provincia di Roma. Vorrei mostrare la casa
-              dall’esterno, il giardino, la piscina, l’ingresso, la strada di
-              accesso e il contesto intorno all’immobile. Il materiale servirà per
-              un annuncio immobiliare online.”
+              “Cerco un pilota drone per realizzare foto e video di una villa in
+              vendita in provincia di Roma. Vorrei valorizzare il giardino, la
+              piscina, il viale d'ingresso, la vista e il terreno intorno alla
+              casa. Il materiale mi serve per un annuncio immobiliare e per una
+              breve clip da pubblicare sui social dell'agenzia.”
             </p>
           </div>
+
+          <p className="mt-6 leading-8 text-gray-300">
+            Una richiesta così permette al pilota di capire subito che il servizio
+            ha un obiettivo commerciale e che le immagini devono valorizzare
+            l'immobile, non solo documentarlo.
+          </p>
+        </div>
+
+        <div className="mb-14">
+          <h2 className="mb-4 text-3xl font-bold">
+            Quanto costa usare un drone per vendere casa?
+          </h2>
+
+          <p className="mb-5 leading-8 text-gray-300">
+            Il costo di un servizio drone per vendere casa può variare in base
+            alla città, al tipo di immobile, alla durata del lavoro, al numero di
+            foto richieste, alla presenza di video, al formato di consegna e alla
+            complessità del volo. Una semplice serie di foto esterne può avere un
+            costo diverso rispetto a un video immobiliare completo per una villa,
+            un casale o una proprietà con terreno.
+          </p>
+
+          <p className="mb-5 leading-8 text-gray-300">
+            Anche l'obiettivo del materiale può incidere. Se ti servono solo
+            immagini grezze, il lavoro può essere più semplice. Se invece vuoi
+            riprese curate, video per social, passaggi cinematografici, selezione
+            immagini o materiale pronto per un'agenzia, il pilota dovrà organizzare
+            il servizio in modo diverso.
+          </p>
+
+          <p className="leading-8 text-gray-300">
+            DroneGuard non impone un prezzo unico. La piattaforma permette di
+            pubblicare la richiesta e ricevere candidature da piloti drone
+            interessati. Cliente e professionista potranno poi accordarsi sui
+            dettagli del servizio.
+          </p>
         </div>
 
         <div className="mb-14">
@@ -300,24 +382,45 @@ export default function Page() {
                 Posso usare il drone per vendere casa?
               </h3>
               <p className="text-gray-300">
-                Sì, puoi cercare un pilota drone per realizzare foto e video
-                utili a valorizzare l’immobile in vendita.
+                Sì, su DroneGuard puoi trovare piloti drone disponibili per foto
+                e video aerei utili a valorizzare immobili in vendita.
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h3 className="mb-2 text-xl font-semibold">
-                Serve solo per ville?
+                È utile anche per appartamenti?
               </h3>
               <p className="text-gray-300">
-                No, può essere utile anche per appartamenti con terrazzo, casali,
-                terreni, rustici, capannoni, case vacanza e strutture ricettive.
+                Può essere utile soprattutto se l'appartamento ha terrazzo,
+                attico, vista panoramica, edificio particolare o posizione da
+                valorizzare.
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h3 className="mb-2 text-xl font-semibold">
-                Quanto costa pubblicare un lavoro?
+                Posso chiedere video per social?
+              </h3>
+              <p className="text-gray-300">
+                Sì, nella richiesta puoi specificare se vuoi materiale verticale,
+                orizzontale, video breve, clip promozionale o riprese grezze.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h3 className="mb-2 text-xl font-semibold">
+                Il pilota monta anche il video?
+              </h3>
+              <p className="text-gray-300">
+                Dipende dal professionista. Puoi scrivere nella richiesta se ti
+                serve solo materiale grezzo o anche un video montato.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h3 className="mb-2 text-xl font-semibold">
+                Quanto costa pubblicare la richiesta?
               </h3>
               <p className="text-gray-300">
                 Pubblicare un lavoro costa 5 crediti. I nuovi clienti ricevono
@@ -327,11 +430,21 @@ export default function Page() {
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
               <h3 className="mb-2 text-xl font-semibold">
-                DroneGuard fa direttamente le riprese?
+                I piloti pagano per candidarsi?
+              </h3>
+              <p className="text-gray-300">
+                Sì, rispondere o candidarsi a un annuncio costa 5 crediti. I
+                nuovi piloti ricevono 50 crediti gratuiti dopo la registrazione.
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+              <h3 className="mb-2 text-xl font-semibold">
+                DroneGuard esegue direttamente le riprese?
               </h3>
               <p className="text-gray-300">
                 No, DroneGuard mette in contatto clienti e piloti drone. Il
-                servizio viene svolto dal professionista scelto.
+                servizio viene svolto dal professionista scelto dal cliente.
               </p>
             </div>
           </div>
@@ -343,10 +456,10 @@ export default function Page() {
           </h2>
 
           <p className="mb-6 max-w-3xl leading-8 text-gray-700">
-            Pubblica una richiesta su DroneGuard e trova piloti drone disponibili
-            per realizzare foto e video immobiliari, riprese aeree di case,
-            ville, terreni, casali, attici, giardini, piscine e immobili in
-            vendita.
+            Registrati su DroneGuard, pubblica una richiesta e trova piloti drone
+            disponibili per realizzare foto e video aerei di case, ville,
+            immobili, terreni, giardini, terrazzi, piscine, proprietà di pregio e
+            spazi esterni da valorizzare negli annunci immobiliari.
           </p>
 
           <Link href="/register">
