@@ -443,6 +443,94 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-monitoraggio-ambientale",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-agenzie-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-amministratori-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-architetti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-geometri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/foto-immobiliari-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/video-immobiliare-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-condomini-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-grondaie-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-ponti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/calcolo-volumi-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ortofoto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ortomosaico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-3d-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-volumetrico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-cantiere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-immobiliare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-fotogrammetria-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-ispezione-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-riprese-aeree",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-video-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
