@@ -531,6 +531,58 @@ export default function sitemap() {
   url: "https://www.droneguard.it/preventivo-video-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-beb",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-agriturismi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-hotel",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-stabilimenti-balneari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ristoranti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-location-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-sale-ricevimenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-spiagge-e-lidi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-camping",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-direttori-lavori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-coordinatori-sicurezza",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-perizie-edili",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
