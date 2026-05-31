@@ -587,6 +587,62 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-perizie-immobiliari",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-bonifiche-amianto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-stato-avanzamento-lavori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ristrutturazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-demolizioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-coperture-condominiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-capannoni-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-magazzini-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-cave-e-miniere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-cantieri-navali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-porti-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-vigneti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-uliveti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-frane-e-smottamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-corsi-dacqua",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
