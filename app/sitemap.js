@@ -643,6 +643,102 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-corsi-dacqua",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/preventivo-ispezione-tetto-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-ispezione-grondaie-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/pilota-drone-per-sopralluogo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-capannone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-terreno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-vendere-casa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/preventivo-drone-danni-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-assicurazione-danni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-vendere-casa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-annunci-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ville-in-vendita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-case-vacanza",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-immobili-di-lusso",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-attici-e-terrazzi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-terreni-edificabili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-rustici-e-casali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-condomini-in-vendita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-capannoni-in-vendita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-hotel-in-vendita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-valutazione-immobile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-presentazione-immobile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-home-staging-esterno",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
