@@ -747,6 +747,58 @@ export default function sitemap() {
   url: "https://www.droneguard.it/ispezione-cornicioni-con-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/ispezione-canne-fumarie-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-terrazzi-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-lucernari-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-antenne-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-pensiline-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-pluviali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-parapetti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-vetrate-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-infiltrazioni-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-danni-maltempo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-tegole-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-pannelli-sandwich-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-coperture-in-lamiera-con-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
