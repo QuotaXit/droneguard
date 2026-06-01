@@ -979,6 +979,206 @@ export default function sitemap() {
   url: "https://www.droneguard.it/guadagnare-con-drone-clienti",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-logistica-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-centri-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-hub-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-interporti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-terminal-merci",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-scalo-merci",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-piazzali-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-aree-di-stoccaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-depositi-container",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-terminal-container",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-banchine-portuali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-zona-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-area-artigianale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-parchi-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-stabilimenti-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-produttivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-fabbriche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-officine-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-depositi-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-capannoni-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-capannoni-logistici-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-depositi-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-silos-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-camini-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-torri-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-impianti-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-coperture-capannoni-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-pannelli-copertura-industriale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-lucernari-industriali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-gronde-capannoni-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-danni-capannoni-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-capannoni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-aree-logistiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-documentazione-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-video-aziendali-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-presentazione-stabilimento",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-presentazione-polo-logistico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-monitoraggio-aree-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-piazzali-aziendali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-recinzioni-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-illuminazione-piazzali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-mappatura-aree-logistiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-rilievo-piazzali-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-fotogrammetria-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ortofoto-poli-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-layout-piazzali-logistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-autotrasporti-logistica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-depositi-merci",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-magazzini-esterni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-esterni-industriali",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
