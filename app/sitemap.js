@@ -5619,6 +5619,2006 @@ export default function sitemap() {
   url: "https://www.droneguard.it/soluzione-drone-per-riprese-drone-per-agriturismo-tecnico",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-tetto-dopo-vento-forte-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-grondaie-ostruite-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-facciate-alte-condominio-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-terrazzo-impermeabilizzato-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-rilievo-esterno-edificio-da-ristrutturare-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-lucernari-tetto-industriale-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ispezione-visiva-pensiline-ingresso-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-balconi-e-frontalini-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-tettoia-fotovoltaica-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-canne-fumarie-esterne-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-mappatura-piazzale-aziendale-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-banchine-di-carico-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-capannone-per-locazione-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-coperture-industriali-dopo-grandine-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-recinzioni-stabilimento-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-riprese-presentazione-polo-logistico-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-ortofoto-area-produttiva-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-controllo-silos-e-serbatoi-esterni-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-depositi-materiali-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-verifica-illuminazione-piazzali-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-confronto-fornitori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-urgenze-visive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-con-foto-dettagliate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-con-panoramica-completa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-archiviazione-stato-luoghi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-monitoraggio-avanzamento-cantiere-per-contenuti-social",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-professionale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-preventivo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-manutenzione-programmata",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-dopo-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-documentazione-tecnica",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-assicurazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-amministratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-privati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-report-fotografico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-con-video-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-sopralluogo-preliminare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-vendita-o-presentazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-controllo-periodico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-gestione-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/uso-drone-per-documentazione-scavo-e-movimento-terra-per-ufficio-tecnico",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
