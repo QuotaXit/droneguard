@@ -1179,6 +1179,166 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-impianti-esterni-industriali",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-ingegneri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-periti-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-studi-tecnici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-consulenti-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-consulenti-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-societa-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-property-manager",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-amministrazioni-stabili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-ristrutturazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-costruttori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-general-contractor",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-direzione-cantiere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-studi-geometri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-studi-ingegneria",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-manutenzione-edile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-lattoneria",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-coperture",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-installatori-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutentori-condominiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-societa-facility-management",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-gestori-patrimoni-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-uffici-tecnici-aziendali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-uffici-tecnici-comunali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-assicuratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-periti-assicurativi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-agenzie-servizi-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-valutatori-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-societa-di-perizie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-studi-di-progettazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-di-restauro",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-imprese-pulizia-facciate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ditte-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ditte-ponteggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-serramentisti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-carpentieri-metallici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ditte-impermeabilizzazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-tecnici-di-cantiere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-societa-di-manutenzione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-consorzi-immobiliari",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
