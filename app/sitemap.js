@@ -1339,6 +1339,366 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-consorzi-immobiliari",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-tetti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-coperture-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-facciate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-cornicioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-ponteggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-cantiere-ristrutturazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-documentazione-ristrutturazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-demolizioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-danni-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-edifici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-condomini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-lucernari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-manti-impermeabili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-guaina-bituminosa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-infiltrazioni-tetto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-fessurazioni-facciate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-distacchi-intonaco",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-coperture-industriali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-linee-vita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-parapetti-condominiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-balconi-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-terrazzi-condominiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-pluviali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-tettoie-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-pensiline-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-abbaini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-velux-lucernari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-diagnosi-visiva-edifici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-sopralluogo-manutenzione-edile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-preventivo-riparazione-tetto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-documentazione-danni-tetto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-dopo-grandine",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-dopo-vento",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-verifica-sicurezza-coperture",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-accessi-in-quota",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ispezione-cortili-condominiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-aree-esterne-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-manutenzione-stabili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-interventi-edili-in-quota",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-aerofotogrammetrico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-topografico-aereo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-terreno-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-catastale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-planimetrico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-altimetrico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-cantiere-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-stradale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-piazzale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-area-industriale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-area-logistica-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-discarica-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-cava-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-miniera-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-agricolo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-vigneto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-uliveto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-frana-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-smottamento-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-argini-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-corso-acqua-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-costiero-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-sito-produttivo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-capannone-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-copertura-industriale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-tetto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-facciata-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-impianto-fotovoltaico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-parco-fotovoltaico-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-lotto-edificabile-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-terreno-edificabile-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-opere-stradali-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-sbancamento-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-scavo-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-movimenti-terra-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-accumuli-materiale-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-volumi-inerti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-modello-digitale-terreno-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-dtm-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-dsm-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-nuvola-punti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-modello-3d-edificio-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-bim-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-as-built-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-stato-di-fatto-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-avanzamento-lavori-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-pre-post-intervento-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-ortofoto-cantiere-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-mappa-aerea-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/rilievo-documentazione-tecnica-con-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
