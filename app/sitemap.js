@@ -739,6 +739,14 @@ export default function sitemap() {
   url: "https://www.droneguard.it/drone-per-home-staging-esterno",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/ispezione-balconi-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/ispezione-cornicioni-con-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
