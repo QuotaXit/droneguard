@@ -1703,6 +1703,1126 @@ export default function sitemap() {
   url: "https://www.droneguard.it/ispezione-tetto-condominio-con-drone",
   lastModified: new Date(),
 },
+    {
+      url: "https://www.droneguard.it/drone-per-controllo-colture",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-monitoraggio-campi",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-irrigazione-agricola",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-stress-idrico-colture",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-danni-grandine-agricoltura",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-danni-siccita",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-mappatura-agricola",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-agronomi",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-aziende-agricole",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-consorzi-agrari",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-bonifica-terreni",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-erosione-suolo",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-dissesto-idrogeologico",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-monitoraggio-boschi",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-incendi-boschivi",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-rimboschimento",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-parchi-naturali",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-riserve-naturali",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-controllo-argini",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-monitoraggio-fiumi",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-allagamenti",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-zone-umide",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-coste-e-dune",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-controllo-cave-ambiente",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-discariche-abusive",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-rifiuti-abbandonati",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-monitoraggio-fauna",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-pascoli",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-frutteti",
+      lastModified: new Date(),
+    },
+    {
+      url: "https://www.droneguard.it/drone-per-serre-agricole",
+      lastModified: new Date(),
+    },
+    {
+  url: "https://www.droneguard.it/drone-per-sicurezza-cantieri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-controllo-strade",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-parcheggi-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-centri-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-stadi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-campi-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-scuole",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-universita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-ospedali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-cliniche-private",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-fiere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-concessionarie-auto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-autolavaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-rimessaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-campeggi-villaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-borghi-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-centri-storici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-comuni-controllo-territorio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-protezione-civile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-associazioni-volontariato",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-consorzi-stradali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-condotte-idriche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-reti-fognarie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-acquedotti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-eolici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-pale-eoliche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-dighe",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-bacini-idrici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-canali-irrigazione",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-pontili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-darsene",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-balneari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-piscine-e-parchi-acquatici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-centri-residenziali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-residence",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-luxury-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-aziende-vinicole",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-frantoi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-caseifici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-allevamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-maneggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-florovivaismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-vivai",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-serre-fotovoltaiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-biogas",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-impianti-compostaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-depuratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-aree-archeologiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/drone-per-musei-allaperto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-ispezione-tetto-privato",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-ispezione-tetto-condominiale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-verifica-facciata-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-sopralluogo-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-capannone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-documentazione-danni-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-perizia-assicurativa-visiva",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-sopralluogo-cantiere-edile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-monitoraggio-avanzamento-lavori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-rilievo-fotogrammetrico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-rilievo-topografico-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-ortofoto-terreno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-modello-3d-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-video-immobiliare-casa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-foto-aeree-immobile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-presentazione-villa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-riprese-case-vacanza",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-video-hotel-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-riprese-agriturismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-riprese-evento-aziendale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-video-matrimonio-esterno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-riprese-stabilimento-balneare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-riprese-camping-villaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-impianto-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-termografia-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-parco-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-pale-eoliche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-linee-elettriche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-tralicci-telecomunicazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-strade",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-ispezione-ponte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-argini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-monitoraggio-fiume",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-frane-smottamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-cave-miniere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-calcolo-volumi-materiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-depositi-container",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-piazzale-logistico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-magazzino-esterno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-presentazione-stabilimento",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-video-aziendale-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-recinzioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-controllo-piazzali-aziendali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-comuni-controllo-territorio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-protezione-civile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-rifiuti-abbandonati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-discariche-abusive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-monitoraggio-boschi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-incendi-boschivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-parchi-naturali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-agricoltura-controllo-colture",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-monitoraggio-campi-agricoli",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-vigneti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-uliveti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-frutteti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-serre-agricole",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-vivai-florovivaismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-allevamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-pascoli",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-maneggi-centri-equestri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-campi-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-stadi-impianti-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-centri-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-parcheggi-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-scuole-universita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-ospedali-cliniche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-fiere-padiglioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-concessionarie-auto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-autolavaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-rimessaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-porti-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-darsene-pontili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-dighe-bacini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-acquedotti-condotte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-depuratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-impianti-biogas",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-impianti-compostaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-aree-archeologiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-musei-allaperto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-borghi-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trova-pilota-drone-per-centri-storici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-ispezione-tetto-privato",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-ispezione-tetto-condominiale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-verifica-facciata-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-sopralluogo-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-capannone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-documentazione-danni-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-perizia-assicurativa-visiva",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-sopralluogo-cantiere-edile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-monitoraggio-avanzamento-lavori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-rilievo-fotogrammetrico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-rilievo-topografico-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-ortofoto-terreno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-modello-3d-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-video-immobiliare-casa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-foto-aeree-immobile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-presentazione-villa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-riprese-case-vacanza",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-video-hotel-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-riprese-agriturismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-riprese-evento-aziendale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-video-matrimonio-esterno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-riprese-stabilimento-balneare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-riprese-camping-villaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-impianto-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-termografia-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-parco-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-pale-eoliche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-linee-elettriche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-tralicci-telecomunicazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-strade",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-ispezione-ponte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-argini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-monitoraggio-fiume",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-frane-smottamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-cave-miniere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-calcolo-volumi-materiali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-depositi-container",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-piazzale-logistico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-magazzino-esterno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-presentazione-stabilimento",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-video-aziendale-industriale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-recinzioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-controllo-piazzali-aziendali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-comuni-controllo-territorio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-protezione-civile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-rifiuti-abbandonati",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-discariche-abusive",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-monitoraggio-boschi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-incendi-boschivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-parchi-naturali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-agricoltura-controllo-colture",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-monitoraggio-campi-agricoli",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-vigneti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-uliveti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-frutteti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-serre-agricole",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-vivai-florovivaismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-allevamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-pascoli",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-maneggi-centri-equestri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-campi-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-stadi-impianti-sportivi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-centri-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-parcheggi-commerciali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-scuole-universita",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-ospedali-cliniche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-fiere-padiglioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-concessionarie-auto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-autolavaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-rimessaggi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-porti-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-darsene-pontili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-dighe-bacini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-acquedotti-condotte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-depuratori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-impianti-biogas",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-impianti-compostaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-aree-archeologiche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-musei-allaperto",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-borghi-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/cerca-operatore-drone-per-centri-storici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-ispezione-tetto-privato",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-ispezione-tetto-condominiale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-controllo-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-verifica-facciata-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-sopralluogo-condominio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-controllo-capannone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-documentazione-danni-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-perizia-assicurativa-visiva",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-sopralluogo-cantiere-edile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-monitoraggio-avanzamento-lavori",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-rilievo-fotogrammetrico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-rilievo-topografico-aereo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-ortofoto-terreno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-modello-3d-edificio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-video-immobiliare-casa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-foto-aeree-immobile",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-presentazione-villa",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-riprese-case-vacanza",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-video-hotel-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-riprese-agriturismo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-riprese-evento-aziendale",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-video-matrimonio-esterno",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-riprese-stabilimento-balneare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-riprese-camping-villaggio",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-controllo-impianto-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-termografia-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-parco-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-pale-eoliche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-linee-elettriche",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-tralicci-telecomunicazioni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-controllo-strade",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-ispezione-ponte",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-controllo-argini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-monitoraggio-fiume",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-frane-smottamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richiedi-pilota-drone-per-cave-miniere",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
