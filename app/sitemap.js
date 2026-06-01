@@ -1699,6 +1699,10 @@ export default function sitemap() {
   url: "https://www.droneguard.it/rilievo-documentazione-tecnica-con-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/ispezione-tetto-condominio-con-drone",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
