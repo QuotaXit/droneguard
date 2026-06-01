@@ -51,16 +51,6 @@ export default function PrivacyPolicyPage() {
                   DroneGuard.it
                 </p>
                 <p>
-                  <strong className="text-white">Indirizzo:</strong>{" "}
-                  [Via Ferdinando Neri]
-                </p>
-                <p>
-                  <strong className="text-white">
-                    P.IVA / Codice Fiscale:
-                  </strong>{" "}
-                  [GVLSLV98C18H501B]
-                </p>
-                <p>
                   <strong className="text-white">Email privacy:</strong>{" "}
                   assistenza@droneguard.it
                 </p>
