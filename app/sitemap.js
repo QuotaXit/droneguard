@@ -799,6 +799,186 @@ export default function sitemap() {
   url: "https://www.droneguard.it/ispezione-coperture-in-lamiera-con-drone",
   lastModified: new Date(),
 },
+{
+  url: "https://www.droneguard.it/clienti-cercano-piloti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/incarichi-per-piloti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/annunci-lavoro-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-freelance",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/pilota-drone-per-aziende",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/collabora-come-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-edilizia",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-immobiliare",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-cantieri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavori-drone-agricoltura",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/candidature-pilota-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/trovare-clienti-con-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/piattaforma-lavoro-piloti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-tetti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-facciate",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-grondaie",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-condomini",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-capannoni",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-riprese-immobiliari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-video-promozionali",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-fotogrammetria",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-rilievi-topografici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-monitoraggio-cantieri",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-sopralluoghi-tecnici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-danni-maltempo",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-perizie-assicurative",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-ispezioni-fotovoltaico",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-turismo-hotel",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-agriturismi-resort",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-stabilimenti-balneari",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-comuni-ambiente",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-frane-smottamenti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-corsi-dacqua",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-cave-miniere",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-porti-turistici",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/lavoro-drone-vigneti-uliveti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/piloti-drone-per-lavori-edili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/piloti-drone-per-riprese-eventi",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/piloti-drone-per-foto-immobili",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/offerte-drone-per-freelance",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/incarichi-drone-per-professionisti",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/richieste-clienti-piloti-drone",
+  lastModified: new Date(),
+},
+{
+  url: "https://www.droneguard.it/guadagnare-con-drone-clienti",
+  lastModified: new Date(),
+},
     ...cities.map((city) => ({
       url: `https://www.droneguard.it/pilota-drone-${city}`,
       lastModified: new Date(),
