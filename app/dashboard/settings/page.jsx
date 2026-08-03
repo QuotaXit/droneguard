@@ -248,39 +248,14 @@ export default function SettingsPage() {
       return
     }
 
-    let profileData = data
+    const profileData = data
 
-    if (!profileData) {
-      const insertData = {
-        id: currentUser.id,
-        email: currentUser.email,
-        role: "pilot",
-        name: "",
-        surname: "",
-        bio: "",
-        drone: "",
-        city: "",
-        location: "",
-        services: "",
-        certifications: "",
-        experience: "",
-        credits: 50,
-        verified: false
-      }
-
-      const { data: createdUser, error: createError } = await supabase
-        .from("users")
-        .insert(insertData)
-        .select()
-        .single()
-
-      if (createError) {
-        toast.error("Errore creazione profilo")
-        return
-      }
-
-      profileData = createdUser
-    }
+if (!profileData) {
+  toast.error(
+    "Profilo non trovato. Contatta l'assistenza senza creare un nuovo account."
+  )
+  return
+}
 
     applyProfileState(profileData)
 
@@ -377,28 +352,24 @@ export default function SettingsPage() {
       }
 
       const updates = {
-        id: currentUser.id,
-        email: currentUser.email,
-        role: "pilot",
-        name: name?.trim() || "",
-        surname: surname?.trim() || "",
-        bio: bio?.trim() || "",
-        drone: drone.join(", "),
-        services: services.join(", "),
-        certifications: certifications.join(", "),
-        experience,
-        city: location || "",
-        location: location || "",
-        credits: userProfile?.credits ?? 50,
-        verified: userProfile?.verified ?? false,
-        email_new_jobs: emailNewJobs
-      }
+  name: name?.trim() || "",
+  surname: surname?.trim() || "",
+  bio: bio?.trim() || "",
+  drone: drone.join(", "),
+  services: services.join(", "),
+  certifications: certifications.join(", "),
+  experience,
+  city: location || "",
+  location: location || "",
+  email_new_jobs: emailNewJobs
+}
 
-      const { data, error } = await supabase
-        .from("users")
-        .upsert(updates, { onConflict: "id" })
-        .select()
-        .single()
+const { data, error } = await supabase
+  .from("users")
+  .update(updates)
+  .eq("id", currentUser.id)
+  .select()
+  .single()
 
       if (error) {
         console.error("Errore Supabase settings:", error)

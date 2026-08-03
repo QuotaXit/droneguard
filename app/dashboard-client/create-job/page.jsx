@@ -87,40 +87,51 @@ export default function CreateJob() {
 
       if (!user) return
 
-      // 🚀 PRENDE CREDITI
-      const { data: profile } = await supabase
-        .from("users")
-        .select("credits")
-        .eq("id", user.id)
-        .single()
-
-      if (profile.credits < 5) {
-        toast.error("Crediti insufficienti ❌")
-        return
-      }
 
       // 🚀 UPLOAD FOTO
       const imageUrls = await uploadImages(images)
 
-      // 🚀 CREA JOB
-      const { error } = await supabase.from("jobs").insert([
-        {
-          user_id: user.id,
-          title,
-          description,
-          location,
-          job_date: date,
-          image1: imageUrls[0] || null,
-          image2: imageUrls[1] || null,
-          image3: imageUrls[2] || null
-        }
-      ])
+      // Crea il lavoro e scala 5 crediti nella stessa transazione
+const requestId = crypto.randomUUID()
 
-      if (error) {
-        toast.error("Errore creazione lavoro ❌")
-        console.log(error)
-        return
-      }
+const { data: createdJobId, error: createError } = await supabase.rpc(
+  "create_job_with_credit",
+  {
+    p_request_id: requestId,
+    p_title: title,
+    p_description: description,
+    p_location: location,
+    p_job_date: date,
+    p_image1: imageUrls[0] || null,
+    p_image2: imageUrls[1] || null,
+    p_image3: imageUrls[2] || null
+  }
+)
+
+if (createError) {
+  console.error("Errore pubblicazione lavoro:", createError)
+
+  const errorMessage = createError.message?.toLowerCase() || ""
+
+  if (errorMessage.includes("crediti insufficienti")) {
+    toast.error("Crediti insufficienti ❌")
+  } else if (errorMessage.includes("solo i clienti")) {
+    toast.error("Solo i clienti possono pubblicare lavori ❌")
+  } else if (errorMessage.includes("data del lavoro")) {
+    toast.error("La data del lavoro non può essere nel passato ❌")
+  } else if (errorMessage.includes("account sospeso")) {
+    toast.error("Il tuo account è sospeso ❌")
+  } else {
+    toast.error("Errore durante la pubblicazione del lavoro ❌")
+  }
+
+  return
+}
+
+if (!createdJobId) {
+  toast.error("Il lavoro non è stato creato correttamente ❌")
+  return
+}
 
       const { error: notificationError } = await supabase
         .from("notifications")
@@ -157,12 +168,7 @@ export default function CreateJob() {
   console.error("Errore invio email ai piloti:", emailError)
 }
 
-      // 🚀 SCALA CREDITI
-      await supabase
-        .from("users")
-        .update({ credits: profile.credits - 5 })
-        .eq("id", user.id)
-
+    
       toast.success("Lavoro pubblicato 🚀")
       window.location.href = "/dashboard-client"
     } finally {
@@ -249,9 +255,9 @@ export default function CreateJob() {
               type="date"
               required
               value={date}
-              min={new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-                .toISOString()
-                .split("T")[0]}
+              min={new Date().toLocaleDateString("en-CA", {
+  timeZone: "Europe/Rome"
+})}
               onChange={(e) => setDate(e.target.value)}
               className="w-full p-3 rounded-lg bg-transparent border border-white/20 text-white"
             />

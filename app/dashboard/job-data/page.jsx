@@ -88,7 +88,6 @@ function JobDataContent() {
   const searchParams = useSearchParams()
   const jobId = searchParams.get("jobId")
 
-  const [userId, setUserId] = useState("")
   const [selectedAssignment, setSelectedAssignment] = useState(null)
   const [selectedJob, setSelectedJob] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -107,16 +106,11 @@ function JobDataContent() {
       data: { user }
     } = await supabase.auth.getUser()
 
-    console.log("JOB DATA USER:", user)
-    console.log("JOB DATA JOB ID PARAM:", jobId)
-
     if (!user) {
-      setUserId("")
       clearCurrentJob()
       return
     }
 
-    setUserId(user.id)
 
     let query = supabase
       .from("job_assignments")
@@ -134,9 +128,6 @@ function JobDataContent() {
 
     const { data: assignments, error: assignmentsError } = await query
 
-    console.log("JOB DATA ASSIGNMENTS RAW:", assignments)
-    console.log("JOB DATA ASSIGNMENTS ERROR:", assignmentsError)
-    console.log("PILOT ID:", user.id)
 
     if (assignmentsError) {
       console.error("Errore caricamento job assignments:", assignmentsError)
@@ -164,67 +155,37 @@ function JobDataContent() {
       return
     }
 
-    const { data: apps, error: appsError } = await supabase
-      .from("applications")
-      .select("*")
-      .eq("pilot_id", user.id)
-      .in("status", ACTIVE_STATUSES)
-      .order("created_at", { ascending: false })
-
-    console.log("JOB DATA FALLBACK APPLICATIONS:", apps)
-    console.log("JOB DATA FALLBACK APPLICATIONS ERROR:", appsError)
-
-    if (appsError) {
-      clearCurrentJob()
-      return
-    }
-
-    const activeApps = (apps || []).filter((application) => {
-      const appStatus = String(application?.status || "").trim().toLowerCase()
-      return ACTIVE_STATUSES.includes(appStatus) && !isClosedStatus(appStatus)
-    })
-
-    const selectedJobId =
-      jobId ||
-      activeApps?.find((application) => application.job_id)?.job_id ||
-      null
-
-    if (!selectedJobId) {
-      clearCurrentJob()
-      return
-    }
-
-    let fallbackQuery = supabase
-      .from("jobs")
-      .select("*")
-      .eq("id", selectedJobId)
-      .in("status", ACTIVE_STATUSES)
-
-    const { data: fallbackJob, error: jobError } = await fallbackQuery.maybeSingle()
-
-    console.log("JOB DATA FALLBACK SELECTED JOB:", fallbackJob)
-    console.log("JOB DATA FALLBACK JOB ERROR:", jobError)
-
-    if (jobError || !fallbackJob || isClosedStatus(fallbackJob?.status)) {
-      clearCurrentJob()
-      return
-    }
-
-    setSelectedAssignment(null)
-    setSelectedJob(fallbackJob)
-    setLoading(false)
+     /*
+     * Un lavoro può essere mostrato al pilota
+     * soltanto quando esiste una vera assegnazione
+     * collegata al suo account.
+     */
+    clearCurrentJob()
   }, [jobId])
 
   useEffect(() => {
     loadData()
   }, [loadData])
 
-  const completeJob = async () => {
-    const currentJob = selectedAssignment?.jobs || selectedJob || null
-    const activeJobId = selectedAssignment?.job_id || currentJob?.id
+    const completeJob = async () => {
+    if (completing) {
+      return
+    }
 
-    if (!activeJobId || !userId) {
-      toast.error("Errore: lavoro o utente non trovato")
+    const currentJob =
+      selectedAssignment?.jobs ||
+      selectedJob ||
+      null
+
+    const activeJobId =
+      selectedAssignment?.job_id ||
+      currentJob?.id
+
+    if (!activeJobId) {
+      toast.error(
+        "Errore: lavoro non trovato."
+      )
+
       return
     }
 
@@ -232,61 +193,156 @@ function JobDataContent() {
       "Confermi di aver completato questo lavoro con successo?"
     )
 
-    if (!confirmed) return
+    if (!confirmed) {
+      return
+    }
 
     setCompleting(true)
 
     try {
-      const completedAt = new Date().toISOString()
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "confirm_job_completion",
+        {
+          p_job_id:
+            activeJobId
+        }
+      )
 
-      const { error: jobsError } = await supabase
-        .from("jobs")
-        .update({
-          status: "completed",
-          completed_at: completedAt
-        })
-        .eq("id", activeJobId)
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
 
-      console.log("JOB COMPLETE ERROR:", jobsError)
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
 
-      if (jobsError) {
-        toast.error("Errore chiusura lavoro: " + jobsError.message)
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_CONFERMABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo lavoro non può essere confermato come completato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_PARTE_DI_QUESTO_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a confermare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "CANDIDATURA_ACCETTATA_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "La candidatura accettata collegata al lavoro non è stata trovata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_LAVORO_INCOERENTE"
+          )
+        ) {
+          throw new Error(
+            "I dati dell’assegnazione non sono coerenti. Contatta l’assistenza."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
+      }
+
+      if (data?.completed) {
+        setSelectedAssignment(null)
+        setSelectedJob(null)
+
+        toast.success(
+          data?.already_processed
+            ? "Il lavoro risultava già completato."
+            : "Lavoro completato e confermato da entrambe le parti ✅"
+        )
+
+        router.replace(
+          "/dashboard/jobs"
+        )
+
         return
       }
 
-      const { error: appError } = await supabase
-        .from("applications")
-        .update({
-          status: "completed",
-          completed_at: completedAt
-        })
-        .eq("job_id", activeJobId)
-        .eq("pilot_id", userId)
-
-      if (appError) {
-        toast.error("Errore aggiornamento applications: " + appError.message)
-        return
+      if (
+        data?.waiting_for === "client"
+      ) {
+        toast.success(
+          data?.already_processed
+            ? "La tua conferma era già stata registrata. Manca ancora la conferma del cliente."
+            : "Conferma registrata. Ora manca la conferma del cliente."
+        )
+      } else {
+        toast.success(
+          "Conferma registrata correttamente."
+        )
       }
 
-      const { error: assignmentError } = await supabase
-        .from("job_assignments")
-        .update({
-          status: "completed",
-          completed_at: completedAt
-        })
-        .eq("job_id", activeJobId)
-        .eq("pilot_id", userId)
+      /*
+       * Il lavoro rimane assegnato finché anche
+       * il cliente non conferma il completamento.
+       */
+      await loadData()
+    } catch (error) {
+      console.error(
+        "[confirm-job-completion] RPC failed:",
+        error
+      )
 
-      if (assignmentError) {
-        toast.error("Errore aggiornamento job_assignments: " + assignmentError.message)
-        return
-      }
+      toast.error(
+        error?.message ||
+        "Impossibile confermare il completamento del lavoro."
+      )
 
-      setSelectedAssignment(null)
-      setSelectedJob(null)
-
-      toast.success("Lavoro concluso con successo")
-      router.replace("/dashboard/jobs")
+      await loadData()
     } finally {
       setCompleting(false)
     }
@@ -294,6 +350,14 @@ function JobDataContent() {
 
   const job = selectedAssignment?.jobs || selectedJob || null
   const hasOperationalData = Boolean(selectedAssignment)
+
+   const pilotAlreadyConfirmed =
+    Boolean(job?.pilot_completed_at)
+
+  const waitingForClient =
+    pilotAlreadyConfirmed &&
+    !job?.client_completed_at &&
+    job?.status !== "completed"
 
   const location = selectedAssignment
     ? getAssignmentLocation(selectedAssignment)
@@ -384,16 +448,23 @@ function JobDataContent() {
                   </div>
 
                   {job?.status !== "completed" && (
-                    <button
-                      onClick={completeJob}
-                      disabled={completing}
-                      className="w-full rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400 disabled:opacity-60 lg:w-auto"
-                    >
-                      {completing
-                        ? "Chiusura in corso..."
-                        : "Concludi lavoro con successo"}
-                    </button>
-                  )}
+  waitingForClient ? (
+    <div className="w-full rounded-xl border border-amber-300/30 bg-amber-400/10 px-5 py-3 text-center text-sm font-bold text-amber-200 lg:w-auto">
+      Completamento confermato • In attesa del cliente
+    </div>
+  ) : (
+    <button
+      type="button"
+      onClick={completeJob}
+      disabled={completing}
+      className="w-full rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
+    >
+      {completing
+        ? "Conferma in corso..."
+        : "Conferma completamento lavoro"}
+    </button>
+  )
+)}
                 </div>
               </div>
 

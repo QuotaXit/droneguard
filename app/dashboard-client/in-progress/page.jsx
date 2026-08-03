@@ -21,6 +21,12 @@ export default function InProgressJobs() {
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [sentJobDetails, setSentJobDetails] = useState(null)
 
+    const [completingJobId, setCompletingJobId] =
+    useState(null)
+
+     const [cancellingJobId, setCancellingJobId] =
+    useState(null)
+
   const loadJobs = async () => {
     const {
       data: { user }
@@ -36,28 +42,46 @@ export default function InProgressJobs() {
       .order("created_at", { ascending: false })
 
     if (error) {
-      console.log(error)
-      return
-    }
+  console.error(
+    "[in-progress] Caricamento lavori fallito:",
+    error
+  )
+
+  toast.error(
+    "Impossibile caricare i lavori in corso."
+  )
+
+  setJobs([])
+  return
+}
 
     const jobsWithApplications = await Promise.all(
       (data || []).map(async (job) => {
-        const { count } = await supabase
-          .from("applications")
-          .select("*", { count: "exact", head: true })
-          .eq("job_id", job.id)
+        const {
+  count,
+  error: countError
+} = await supabase
+  .from("applications")
+  .select("*", {
+    count: "exact",
+    head: true
+  })
+  .eq("job_id", job.id)
 
-        const { data: app } = await supabase
-          .from("applications")
-          .select("pilot_id")
-          .eq("job_id", job.id)
-          .eq("status", "accepted")
-          .maybeSingle()
+if (countError) {
+  console.error(
+    `[in-progress] Conteggio candidature fallito per il lavoro ${job.id}:`,
+    countError
+  )
+}
 
-        return {
+                return {
           ...job,
           applications: count || 0,
-          pilot_id: app?.pilot_id || job.assigned_pilot
+          pilot_id:
+            job.assigned_pilot ||
+            job.pilot_id ||
+            null
         }
       })
     )
@@ -82,123 +106,313 @@ export default function InProgressJobs() {
   }, [])
 
   const cancelJob = async (jobId) => {
-    if (!confirm("Vuoi annullare ed eliminare il lavoro?")) return
-
-    const job = jobs.find((item) => item.id === jobId)
-    const pilotId = job?.pilot_id || job?.assigned_pilot
-
-    if (pilotId) {
-      await supabase.from("notifications").insert({
-        user_id: pilotId,
-        title: "Lavoro annullato",
-        message: `Il cliente ha annullato il lavoro "${job?.title || "assegnato"}".`,
-        type: "job_cancelled",
-        read: false
-      })
-    }
-
-    await supabase
-      .from("conversations")
-      .update({ status: "closed" })
-      .eq("job_id", jobId)
-
-    await supabase
-      .from("applications")
-      .delete()
-      .eq("job_id", jobId)
-
-    await supabase
-      .from("job_assignments")
-      .delete()
-      .eq("job_id", jobId)
-
-    const { error } = await supabase
-      .from("jobs")
-      .delete()
-      .eq("id", jobId)
-
-    if (error) {
-      console.log(error)
-      toast.error("Errore durante l'eliminazione del lavoro")
+    if (
+      cancellingJobId ||
+      !jobId
+    ) {
       return
     }
 
-    setJobs((prev) => prev.filter((job) => job.id !== jobId))
+    const confirmed = window.confirm(
+      "Vuoi annullare questo lavoro? Il lavoro resterà nello storico e il pilota verrà avvisato."
+    )
 
-    setStats((prev) => ({
-      ...prev,
-      active: Math.max(prev.active - 1, 0),
-      pilots: Math.max(prev.pilots - 1, 0)
-    }))
+    if (!confirmed) {
+      return
+    }
 
-    toast.success("Lavoro annullato e pilota notificato ✅")
+    setCancellingJobId(jobId)
+
+    try {
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "cancel_job",
+        {
+          p_job_id:
+            jobId
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato ad annullare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_GIA_COMPLETATO"
+          )
+        ) {
+          throw new Error(
+            "Un lavoro già completato non può essere annullato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_IN_ATTESA_DI_DOPPIA_CONFERMA"
+          )
+        ) {
+          throw new Error(
+            "Il completamento è già stato confermato da una delle parti. Il lavoro non può più essere annullato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_ANNULLABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo lavoro non può essere annullato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "DATI_COMPLETAMENTO_INCOERENTI"
+          )
+        ) {
+          throw new Error(
+            "I dati del completamento non sono coerenti. Contatta l’assistenza."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
+      }
+
+      toast.success(
+        data?.already_processed
+          ? "Il lavoro risultava già annullato."
+          : "Lavoro annullato e pilota notificato ✅"
+      )
+
+      /*
+       * Il caricamento rimuove dalla schermata
+       * il lavoro diventato cancelled e aggiorna
+       * i contatori con lo stato reale del database.
+       */
+      await loadJobs()
+    } catch (error) {
+      console.error(
+        "[cancel-job] RPC failed:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+        "Impossibile annullare il lavoro."
+      )
+
+      await loadJobs()
+    } finally {
+      setCancellingJobId(null)
+    }
   }
 
   const completeJob = async (jobId) => {
-    if (!confirm("Segnare come completato?")) return
-
-    const completedAt = new Date().toISOString()
-
-    const { data: jobData, error: jobReadError } = await supabase
-      .from("jobs")
-      .select("pilot_completed_at")
-      .eq("id", jobId)
-      .maybeSingle()
-
-    if (jobReadError) {
-      console.log(jobReadError)
-      toast.error("Errore caricamento lavoro")
+    if (
+      completingJobId ||
+      !jobId
+    ) {
       return
     }
 
-    const updateData = {
-      client_completed_at: completedAt
-    }
+    const confirmed = window.confirm(
+      "Confermi che il lavoro è stato completato?"
+    )
 
-    if (jobData?.pilot_completed_at) {
-      updateData.status = "completed"
-      updateData.completed_at = completedAt
-    }
-
-    const { error } = await supabase
-      .from("jobs")
-      .update(updateData)
-      .eq("id", jobId)
-
-    if (error) {
-      console.log(error)
-      toast.error("Errore durante il completamento del lavoro")
+    if (!confirmed) {
       return
     }
 
-    if (jobData?.pilot_completed_at) {
-      await supabase
-        .from("applications")
-        .update({ status: "completed", completed_at: completedAt })
-        .eq("job_id", jobId)
-        .eq("status", "accepted")
+    setCompletingJobId(jobId)
 
-      await supabase
-        .from("job_assignments")
-        .update({ status: "completed", completed_at: completedAt })
-        .eq("job_id", jobId)
+    try {
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "confirm_job_completion",
+        {
+          p_job_id:
+            jobId
+        }
+      )
 
-      await supabase
-        .from("conversations")
-        .update({ status: "closed" })
-        .eq("job_id", jobId)
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_CONFERMABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo lavoro non può essere confermato come completato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_PARTE_DI_QUESTO_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a confermare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "CANDIDATURA_ACCETTATA_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "La candidatura accettata collegata al lavoro non è stata trovata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_LAVORO_INCOERENTE"
+          )
+        ) {
+          throw new Error(
+            "I dati dell’assegnazione non sono coerenti. Contatta l’assistenza."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
+      }
+
+      if (data?.completed) {
+        toast.success(
+          data?.already_processed
+            ? "Il lavoro risultava già completato."
+            : "Lavoro completato e confermato da entrambe le parti ✅"
+        )
+      } else if (
+        data?.waiting_for === "pilot"
+      ) {
+        toast.success(
+          data?.already_processed
+            ? "La tua conferma era già registrata. Manca ancora quella del pilota."
+            : "Conferma registrata. Ora manca la conferma del pilota."
+        )
+      } else {
+        toast.success(
+          "Conferma registrata correttamente."
+        )
+      }
+
+      /*
+       * Ricarica sempre lo stato reale:
+       * il lavoro scompare solamente quando
+       * entrambe le parti hanno confermato.
+       */
+      await loadJobs()
+    } catch (error) {
+      console.error(
+        "[client-confirm-completion] RPC failed:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+        "Impossibile confermare il completamento."
+      )
+
+      await loadJobs()
+    } finally {
+      setCompletingJobId(null)
     }
-
-    setJobs((prev) => prev.filter((job) => job.id !== jobId))
-
-    setStats((prev) => ({
-      ...prev,
-      active: Math.max(prev.active - 1, 0),
-      pilots: Math.max(prev.pilots - 1, 0),
-      completed: prev.completed + 1
-    }))
-
-    toast.success("Conferma completamento registrata ✅")
   }
 
   const openPilotDetails = async (pilotId) => {
@@ -211,10 +425,17 @@ export default function InProgressJobs() {
       .maybeSingle()
 
     if (error) {
-      console.log(error)
-      toast.error("Errore caricamento pilota")
-      return
-    }
+  console.error(
+    "[in-progress] Caricamento profilo pilota fallito:",
+    error
+  )
+
+  toast.error(
+    "Impossibile caricare il profilo del pilota."
+  )
+
+  return
+}
 
     if (!data) {
       toast.error("Profilo pilota non trovato")
@@ -237,10 +458,17 @@ export default function InProgressJobs() {
       .maybeSingle()
 
     if (error) {
-      console.log(error)
-      toast.error("Errore caricamento dati")
-      return
-    }
+  console.error(
+    "[in-progress] Caricamento dati operativi fallito:",
+    error
+  )
+
+  toast.error(
+    "Impossibile caricare i dati operativi del lavoro."
+  )
+
+  return
+}
 
     setSentJobDetails(data || null)
     setShowDetailsModal(true)
@@ -350,19 +578,52 @@ export default function InProgressJobs() {
                           Vedi dati
                         </button>
 
-                        <button
-                          onClick={() => completeJob(job.id)}
-                          className="bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition"
-                        >
-                          Completato
-                        </button>
+                        {job.client_completed_at &&
+!job.pilot_completed_at ? (
+  <div className="rounded-lg border border-amber-300/30 bg-amber-400/10 px-4 py-2 text-center text-sm font-bold text-amber-200">
+    Conferma inviata • In attesa del pilota
+  </div>
+) : (
+  <button
+    type="button"
+    disabled={
+      completingJobId === job.id
+    }
+    onClick={() =>
+      completeJob(job.id)
+    }
+    className="rounded-lg bg-red-500 py-2 font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-60"
+  >
+    {completingJobId === job.id
+      ? "Conferma in corso..."
+      : job.pilot_completed_at
+        ? "Conferma e completa lavoro"
+        : "Conferma completamento"}
+  </button>
+)}
 
                         <button
-                          onClick={() => cancelJob(job.id)}
-                          className="bg-red-500 text-white py-2 rounded-lg font-semibold hover:bg-red-400 transition"
-                        >
-                          Annulla
-                        </button>
+  type="button"
+  disabled={
+    cancellingJobId === job.id ||
+    completingJobId === job.id ||
+    Boolean(
+      job.client_completed_at ||
+      job.pilot_completed_at
+    )
+  }
+  onClick={() =>
+    cancelJob(job.id)
+  }
+  className="rounded-lg bg-red-500 py-2 font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  {cancellingJobId === job.id
+    ? "Annullamento..."
+    : job.client_completed_at ||
+        job.pilot_completed_at
+      ? "Annullamento non disponibile"
+      : "Annulla"}
+</button>
                       </div>
                     </div>
                   </div>

@@ -1,6 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {
+  useCallback,
+  useEffect,
+  useState
+} from "react"
 import { useRouter } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
@@ -74,6 +78,20 @@ export default function RegisterPage() {
   const [searchDrone, setSearchDrone] = useState("")
   const [loading, setLoading] = useState(false)
   const [acceptedRules, setAcceptedRules] = useState(false)
+  const [
+    registrationStatusLoading,
+    setRegistrationStatusLoading
+  ] = useState(true)
+
+  const [
+    registrationsEnabled,
+    setRegistrationsEnabled
+  ] = useState(true)
+
+  const [
+    registrationBlockedMessage,
+    setRegistrationBlockedMessage
+  ] = useState("")
 
   const cities = [
     "Agrigento",
@@ -287,6 +305,104 @@ export default function RegisterPage() {
   const certificationsList = ["A1/A3", "A2", "SPECIFIC", "CERTIFIED"]
   const experienceList = ["0-1 anni", "1-2 anni", "2-3 anni", "3-5 anni", "5+ anni"]
 
+    const checkRegistrationAvailability =
+    useCallback(async ({
+      updateUi = true
+    } = {}) => {
+      try {
+        const response = await fetch(
+          "/api/platform-status",
+          {
+            method: "GET",
+            cache: "no-store",
+
+            headers: {
+              Accept:
+                "application/json"
+            }
+          }
+        )
+
+        const data =
+          await response
+            .json()
+            .catch(() => null)
+
+        if (
+          !response.ok ||
+          !data?.success ||
+          !data?.status
+        ) {
+          throw new Error(
+            "PLATFORM_STATUS_UNAVAILABLE"
+          )
+        }
+
+        const maintenanceActive =
+          Boolean(
+            data.status
+              .maintenanceActive
+          )
+
+        const allowed =
+          Boolean(
+            data.status
+              .registrationsEnabled
+          ) &&
+          !maintenanceActive
+
+        let message = ""
+
+        if (maintenanceActive) {
+          message =
+            data.status
+              .maintenanceMessage ||
+            "DroneGuard è temporaneamente in manutenzione."
+        } else if (!allowed) {
+          message =
+            "Le nuove registrazioni sono temporaneamente sospese."
+        }
+
+        if (updateUi) {
+          setRegistrationsEnabled(
+            allowed
+          )
+
+          setRegistrationBlockedMessage(
+            message
+          )
+        }
+
+        return {
+          allowed,
+          message
+        }
+      } catch (error) {
+        console.error(
+          "[register] Controllo registrazioni fallito:",
+          error
+        )
+
+        const message =
+          "Non è possibile verificare la disponibilità delle registrazioni. Riprova tra poco."
+
+        if (updateUi) {
+          setRegistrationsEnabled(
+            false
+          )
+
+          setRegistrationBlockedMessage(
+            message
+          )
+        }
+
+        return {
+          allowed: false,
+          message
+        }
+      }
+    }, [])
+
   const switchType = (newType) => {
     setType(newType)
     setCertificazioni([])
@@ -307,14 +423,70 @@ export default function RegisterPage() {
     return () => window.removeEventListener("click", closeAll)
   }, [])
 
+    useEffect(() => {
+    let active = true
+
+    async function loadAvailability() {
+      setRegistrationStatusLoading(
+        true
+      )
+
+      const result =
+        await checkRegistrationAvailability({
+          updateUi: false
+        })
+
+      if (!active) {
+        return
+      }
+
+      setRegistrationsEnabled(
+        result.allowed
+      )
+
+      setRegistrationBlockedMessage(
+        result.message
+      )
+
+      setRegistrationStatusLoading(
+        false
+      )
+    }
+
+    loadAvailability()
+
+    return () => {
+      active = false
+    }
+  }, [
+    checkRegistrationAvailability
+  ])
+
   const handleRegister = async (e) => {
     e.preventDefault()
 
     if (loading) return
 
-    try {
+        try {
       setLoading(true)
       setEmailError("")
+
+      /*
+       * Ricontrollo immediato:
+       * impedisce l'invio se il Team ha bloccato
+       * le registrazioni dopo l'apertura della pagina.
+       */
+      const availability =
+        await checkRegistrationAvailability()
+
+      if (!availability.allowed) {
+        toast.error(
+          availability.message ||
+          "Le nuove registrazioni sono temporaneamente sospese."
+        )
+
+        return
+      }
 
       if (!password || password.length < 6) {
         toast.error("La password deve contenere almeno 6 caratteri.")
@@ -414,14 +586,63 @@ export default function RegisterPage() {
             certifications: type === "pilot" ? certificazioni.join(", ") : "",
             experience: type === "pilot" ? esperienza : "",
             drone: type === "pilot" ? drone.join(", ") : "",
-            credits: type === "pilot" ? 50 : 0,
-            verified: false
           }
         }
       })
 
-      if (authError) {
-        toast.error(authError.message)
+            if (authError) {
+        /*
+         * La disponibilità potrebbe essere cambiata
+         * tra il controllo e l'inserimento in Auth.
+         */
+        const availabilityAfterError =
+          await checkRegistrationAvailability()
+
+        if (
+          !availabilityAfterError.allowed
+        ) {
+          toast.error(
+            availabilityAfterError
+              .message ||
+            "Le nuove registrazioni sono temporaneamente sospese."
+          )
+
+          return
+        }
+
+        const normalizedError =
+          String(
+            authError.message || ""
+          ).toUpperCase()
+
+        if (
+          normalizedError.includes(
+            "REGISTRATIONS_DISABLED"
+          ) ||
+          normalizedError.includes(
+            "REGISTRATION_CONTROL_UNAVAILABLE"
+          )
+        ) {
+          setRegistrationsEnabled(
+            false
+          )
+
+          setRegistrationBlockedMessage(
+            "Le nuove registrazioni sono temporaneamente sospese."
+          )
+
+          toast.error(
+            "Le nuove registrazioni sono temporaneamente sospese."
+          )
+
+          return
+        }
+
+        toast.error(
+          authError.message ||
+          "Impossibile completare la registrazione."
+        )
+
         return
       }
 
@@ -446,6 +667,23 @@ export default function RegisterPage() {
           onSubmit={handleRegister}
           className="relative z-10 w-full max-w-sm space-y-4 rounded-2xl border border-white/20 bg-white/5 p-6 sm:p-8"
         >
+          {registrationStatusLoading ? (
+            <div className="rounded-xl border border-blue-400/30 bg-blue-400/10 p-4 text-sm leading-6 text-blue-100">
+              Controllo disponibilità delle registrazioni...
+            </div>
+          ) : !registrationsEnabled ? (
+            <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4">
+              <p className="font-bold text-yellow-200">
+                Registrazioni temporaneamente sospese
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-yellow-100/80">
+                {registrationBlockedMessage ||
+                  "Al momento non è possibile creare un nuovo account. Riprova più tardi."}
+              </p>
+            </div>
+          ) : null}
+
           <div className="flex gap-3">
             <button
               type="button"
@@ -610,8 +848,26 @@ export default function RegisterPage() {
             </label>
           )}
 
-          <button disabled={loading || (type === "pilot" && !acceptedRules)} className="w-full rounded-lg bg-green-500 py-3 text-black disabled:opacity-60">
-            {loading ? "Registrazione..." : "Registrati"}
+                    <button
+            type="submit"
+            disabled={
+              loading ||
+              registrationStatusLoading ||
+              !registrationsEnabled ||
+              (
+                type === "pilot" &&
+                !acceptedRules
+              )
+            }
+            className="w-full rounded-lg bg-green-500 py-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {loading
+              ? "Registrazione..."
+              : registrationStatusLoading
+                ? "Controllo disponibilità..."
+                : !registrationsEnabled
+                  ? "Registrazioni sospese"
+                  : "Registrati"}
           </button>
         </form>
       </div>

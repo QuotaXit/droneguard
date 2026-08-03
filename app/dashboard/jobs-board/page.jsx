@@ -1,6 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {
+  useEffect,
+  useRef,
+  useState
+} from "react"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
@@ -24,9 +28,184 @@ function isAssignedExpired(job) {
   return new Date() > expiresAt
 }
 
+function getApplicationErrorMessage(error) {
+  const errorText = [
+    error?.message,
+    error?.details,
+    error?.hint,
+    error?.code
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toUpperCase()
+
+  if (
+    errorText.includes(
+      "CANDIDATURE_SOSPESE"
+    )
+  ) {
+    return "Le candidature sono temporaneamente sospese."
+  }
+
+  if (
+    errorText.includes(
+      "PIATTAFORMA_IN_MANUTENZIONE"
+    )
+  ) {
+    return "DroneGuard è temporaneamente in manutenzione."
+  }
+
+  if (
+    errorText.includes(
+      "CREDITI_INSUFFICIENTI"
+    )
+  ) {
+    return "Non hai abbastanza crediti per candidarti."
+  }
+
+  if (
+    errorText.includes(
+      "CANDIDATURA_GIA_PRESENTE"
+    ) ||
+    errorText.includes(
+      "APPLICATIONS_JOB_PILOT_UNIQUE"
+    ) ||
+    errorText.includes(
+      "DUPLICATE KEY"
+    )
+  ) {
+    return "Ti sei già candidato a questo lavoro."
+  }
+
+  if (
+    errorText.includes(
+      "NUMERO_MASSIMO_CANDIDATURE_RAGGIUNTO"
+    )
+  ) {
+    return "Questo lavoro ha già raggiunto il numero massimo di candidature."
+  }
+
+  if (
+    errorText.includes(
+      "LAVORO_NON_PIU_DISPONIBILE"
+    )
+  ) {
+    return "Questo lavoro non è più disponibile."
+  }
+
+  if (
+    errorText.includes(
+      "LAVORO_NON_TROVATO"
+    )
+  ) {
+    return "Il lavoro non è più disponibile."
+  }
+
+  if (
+    errorText.includes(
+      "SOLO_I_PILOTI_POSSONO_CANDIDARSI"
+    )
+  ) {
+    return "Solo gli account pilota possono inviare candidature."
+  }
+
+  if (
+    errorText.includes(
+      "NON_PUOI_CANDIDARTI_AL_TUO_LAVORO"
+    )
+  ) {
+    return "Non puoi candidarti a un lavoro pubblicato dal tuo account."
+  }
+
+  if (
+    errorText.includes(
+      "ACCOUNT_SOSPESO"
+    )
+  ) {
+    return "Il tuo account è sospeso."
+  }
+
+  if (
+    errorText.includes(
+      "PREZZO_OBBLIGATORIO"
+    )
+  ) {
+    return "Inserisci il prezzo della tua offerta."
+  }
+
+  if (
+    errorText.includes(
+      "PREZZO_NON_VALIDO"
+    )
+  ) {
+    return "Inserisci un prezzo valido e maggiore di zero."
+  }
+
+  if (
+    errorText.includes(
+      "PREZZO_TROPPO_ELEVATO"
+    )
+  ) {
+    return "Il prezzo inserito è troppo elevato."
+  }
+
+  if (
+    errorText.includes(
+      "PREZZO_MASSIMO_DUE_DECIMALI"
+    )
+  ) {
+    return "Il prezzo può contenere al massimo due decimali."
+  }
+
+  if (
+    errorText.includes(
+      "UTENTE_NON_AUTENTICATO"
+    ) ||
+    errorText.includes(
+      "JWT"
+    )
+  ) {
+    return "La sessione è scaduta. Effettua nuovamente l'accesso."
+  }
+
+  if (
+    errorText.includes(
+      "CONTROLLO_PIATTAFORMA_NON_DISPONIBILE"
+    )
+  ) {
+    return "Non è possibile verificare lo stato della piattaforma. Riprova tra poco."
+  }
+
+  if (
+    errorText.includes(
+      "REQUEST_ID_IN_CONFLITTO"
+    )
+  ) {
+    return "La richiesta non è più valida. Riprova."
+  }
+
+  return (
+    error?.message ||
+    "Impossibile inviare la candidatura."
+  )
+}
+
+
 export default function JobsBoardPage() {
   const [jobs, setJobs] = useState([])
   const [offers, setOffers] = useState({})
+
+  const [
+    submittingJobs,
+    setSubmittingJobs
+  ] = useState({})
+
+  /*
+   * Conserva lo stesso request ID quando una chiamata
+   * deve essere ripetuta dopo un errore di rete.
+   */
+  const applicationRequestIds =
+    useRef({})
 
   const [activeJobs, setActiveJobs] = useState(0)
   const [completedJobs, setCompletedJobs] = useState(0)
@@ -34,6 +213,20 @@ export default function JobsBoardPage() {
 
   const [cityFilter, setCityFilter] = useState("")
   const [workTypeFilter, setWorkTypeFilter] = useState("")
+
+  const [
+  applicationsEnabled,
+  setApplicationsEnabled
+] = useState(true)
+
+const [
+  maintenanceActive,
+  setMaintenanceActive
+] = useState(false)
+
+  const applicationsUnavailable =
+    maintenanceActive ||
+    !applicationsEnabled
 
   const filteredJobs = jobs.filter((job) => {
     const cityMatch =
@@ -59,208 +252,335 @@ export default function JobsBoardPage() {
   })
 
   const loadJobs = async () => {
-    const { data, error } = await supabase
-      .from("jobs")
-      .select("*")
-      .order("created_at", { ascending: false })
+  const {
+    data,
+    error
+  } = await supabase.rpc(
+    "get_jobs_board_snapshot"
+  )
 
-    if (error) {
-      console.log(error)
-      return
-    }
-
-    const visibleJobs = (data || []).filter((job) => {
-      if (job.status === "completed") return false
-      if (job.status === "assigned") return false
-      if (isAssignedExpired(job)) return false
-      return true
-    })
-
-    const jobsWithApplications = await Promise.all(
-      visibleJobs.map(async (job) => {
-        const { count } = await supabase
-          .from("applications")
-          .select("*", { count: "exact", head: true })
-          .eq("job_id", job.id)
-
-        return {
-          ...job,
-          applications: count || 0
-        }
-      })
+  if (error) {
+    console.error(
+      "[jobs-board] Caricamento bacheca fallito:",
+      error
     )
 
-    setJobs(jobsWithApplications)
-    setActiveJobs(jobsWithApplications.length)
+    toast.error(
+      "Impossibile caricare la bacheca lavori."
+    )
 
-    const { count: completed } = await supabase
-      .from("jobs")
-      .select("*", { count: "exact", head: true })
-      .eq("status", "completed")
-
-    setCompletedJobs(completed || 0)
-
-    const { count: totalApplications } = await supabase
-      .from("applications")
-      .select("*", {
-        count: "exact",
-        head: true
-      })
-
-    setPilotsCount(totalApplications || 0)
+    return
   }
 
-  useEffect(() => {
+  const boardJobs =
+    Array.isArray(data?.jobs)
+      ? data.jobs
+      : []
+
+  setJobs(boardJobs)
+
+  setActiveJobs(
+    Number(
+      data?.stats?.activeJobs || 0
+    )
+  )
+
+  setCompletedJobs(
+    Number(
+      data?.stats?.completedJobs || 0
+    )
+  )
+
+  setPilotsCount(
+    Number(
+      data?.stats?.totalApplications || 0
+    )
+  )
+
+  setApplicationsEnabled(
+    Boolean(
+      data?.applicationsEnabled
+    )
+  )
+
+  setMaintenanceActive(
+    Boolean(
+      data?.maintenanceActive
+    )
+  )
+}
+
+useEffect(() => {
     loadJobs()
   }, [])
 
-  const applyToJob = async (jobId) => {
-    const price = offers[jobId]
-
-    if (!price) {
-      toast.error("Inserisci il tuo prezzo ❌")
+      const applyToJob = async (jobId) => {
+    if (submittingJobs[jobId]) {
       return
     }
 
-    const {
-      data: { user }
-    } = await supabase.auth.getUser()
+     if (applicationsUnavailable) {
+    toast.error(
+      maintenanceActive
+        ? "DroneGuard è temporaneamente in manutenzione."
+        : "Le candidature sono temporaneamente sospese."
+    )
 
-    if (!user) return
+    return
+  }
 
-    let targetJob = jobs.find((job) => job.id === jobId)
+    const rawPrice = String(
+      offers[jobId] ?? ""
+    )
+      .trim()
+      .replace(",", ".")
 
-    if (!targetJob) {
-      const { data: fetchedJob } = await supabase
-        .from("jobs")
-        .select("id, title, user_id, status")
-        .eq("id", jobId)
-        .single()
-
-      targetJob = fetchedJob || null
-    }
-
-    if (targetJob?.status === "assigned" || targetJob?.status === "completed") {
-      toast.error("Questo lavoro non è più disponibile ❌")
-      loadJobs()
-      return
-    }
-
-    const { data: profile } = await supabase
-      .from("users")
-      .select("credits")
-      .eq("id", user.id)
-      .single()
-
-    if (!profile || profile.credits < 5) {
-      toast.error("Crediti insufficienti ❌")
-      return
-    }
-
-    const { count } = await supabase
-      .from("applications")
-      .select("*", { count: "exact", head: true })
-      .eq("job_id", jobId)
-
-    if (count >= 10) {
-      toast.error("Numero massimo candidature raggiunto ❌")
-      return
-    }
-
-    const { data: existing } = await supabase
-      .from("applications")
-      .select("*")
-      .eq("job_id", jobId)
-      .eq("pilot_id", user.id)
-      .maybeSingle()
-
-    if (existing) {
-      toast.error("Ti sei già candidato ❌")
-      return
-    }
-
-    const applicationData = {
-      job_id: jobId,
-      pilot_id: user.id,
-      pilot_email: user.email || "",
-      price,
-      offer_price: price,
-      message: "",
-      status: "pending"
-    }
-
-    let { data: createdApplication, error } = await supabase
-      .from("applications")
-      .insert([applicationData])
-      .select()
-      .single()
-
-    if (
-      error &&
-      String(error.message || "").toLowerCase().includes("pilot_email")
-    ) {
-      const fallbackPayload = {
-        job_id: jobId,
-        pilot_id: user.id,
-        price,
-        offer_price: price,
-        message: "",
-        status: "pending"
-      }
-
-      ;({ data: createdApplication, error } = await supabase
-        .from("applications")
-        .insert([fallbackPayload])
-        .select()
-        .single())
-    }
-
-    if (error) {
-      console.error("[applications] create failed:", error)
+    if (!rawPrice) {
       toast.error(
-        "Errore candidatura: " +
-          (error?.message || error?.details || error?.code || "errore sconosciuto")
+        "Inserisci il tuo prezzo."
       )
       return
     }
 
-    const { error: creditsError } = await supabase
-      .from("users")
-      .update({
-        credits: profile.credits - 5
-      })
-      .eq("id", user.id)
-
-    if (creditsError) {
-      console.error("[applications] credits update failed:", creditsError)
+    /*
+     * Accetta soltanto numeri positivi
+     * con massimo due cifre decimali.
+     */
+    if (
+      !/^\d+(?:\.\d{1,2})?$/.test(
+        rawPrice
+      )
+    ) {
+      toast.error(
+        "Inserisci un prezzo valido con massimo due decimali."
+      )
+      return
     }
 
-    const notificationsToInsert = [
-      {
-        user_id: user.id,
-        title: "Candidatura inviata",
-        message: `La tua candidatura per "${targetJob?.title || "questo lavoro"}" è stata inviata.`,
-        type: "application_submitted",
-        read: false
+    const normalizedPrice =
+      Number(rawPrice)
+
+    if (
+      !Number.isFinite(
+        normalizedPrice
+      ) ||
+      normalizedPrice <= 0
+    ) {
+      toast.error(
+        "Il prezzo deve essere maggiore di zero."
+      )
+      return
+    }
+
+    if (
+      normalizedPrice >
+      10000000
+    ) {
+      toast.error(
+        "Il prezzo inserito è troppo elevato."
+      )
+      return
+    }
+
+    const requestKey =
+      String(jobId)
+
+    const previousRequest =
+      applicationRequestIds.current[
+        requestKey
+      ]
+
+    let requestId
+
+    /*
+     * Conserva lo stesso UUID se l'utente
+     * ripete la stessa candidatura dopo
+     * un errore di rete.
+     */
+    if (
+      previousRequest &&
+      previousRequest.price ===
+        normalizedPrice
+    ) {
+      requestId =
+        previousRequest.requestId
+    } else {
+      requestId =
+        crypto.randomUUID()
+
+      applicationRequestIds.current[
+        requestKey
+      ] = {
+        requestId,
+        price: normalizedPrice
       }
-    ]
-
-    if (targetJob?.user_id && targetJob.user_id !== user.id) {
-      notificationsToInsert.push({
-        user_id: targetJob.user_id,
-        title: "Nuovo candidato",
-        message: `Un pilota si è candidato al lavoro "${targetJob.title || "senza titolo"}".`,
-        type: "new_candidate",
-        read: false
-      })
     }
 
-    await supabase.from("notifications").insert(notificationsToInsert)
+    setSubmittingJobs(
+      (current) => ({
+        ...current,
+        [jobId]: true
+      })
+    )
 
-    console.log("[applications] created:", createdApplication)
+    try {
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "apply_to_job_with_credit",
+        {
+          p_request_id:
+            requestId,
 
-    toast.success("Candidatura inviata 🚀")
-    loadJobs()
+          p_job_id:
+            jobId,
+
+          p_offer_price:
+            normalizedPrice,
+
+          p_message:
+            ""
+        }
+      )
+
+      if (error) {
+        const normalizedError = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        /*
+         * Un request ID in conflitto non
+         * deve essere riutilizzato.
+         */
+        if (
+          normalizedError.includes(
+            "REQUEST_ID_IN_CONFLITTO"
+          )
+        ) {
+          delete applicationRequestIds
+            .current[requestKey]
+        }
+
+        throw error
+      }
+
+      /*
+       * La RPC ha completato insieme:
+       * candidatura, addebito, ledger
+       * e notifiche.
+       */
+      delete applicationRequestIds
+        .current[requestKey]
+
+      setOffers(
+        (current) => ({
+          ...current,
+          [jobId]: ""
+        })
+      )
+
+      if (
+        data?.already_processed
+      ) {
+        toast.success(
+          "Candidatura già elaborata correttamente."
+        )
+      } else {
+        toast.success(
+          "Candidatura inviata 🚀"
+        )
+      }
+
+      await loadJobs()
+    } catch (error) {
+      console.error(
+        "[applications] RPC failed:",
+        error
+      )
+
+      toast.error(
+        getApplicationErrorMessage(
+          error
+        )
+      )
+
+      const normalizedError = [
+        error?.message,
+        error?.details,
+        error?.hint,
+        error?.code
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toUpperCase()
+
+      /*
+       * Per questi errori il tentativo
+       * è concluso e al prossimo clic
+       * verrà generato un nuovo UUID.
+       */
+      const terminalErrors = [
+        "CANDIDATURA_GIA_PRESENTE",
+        "NUMERO_MASSIMO_CANDIDATURE_RAGGIUNTO",
+        "LAVORO_NON_PIU_DISPONIBILE",
+        "LAVORO_NON_TROVATO",
+        "CANDIDATURE_SOSPESE",
+        "PIATTAFORMA_IN_MANUTENZIONE",
+        "CREDITI_INSUFFICIENTI",
+        "SOLO_I_PILOTI_POSSONO_CANDIDARSI",
+        "NON_PUOI_CANDIDARTI_AL_TUO_LAVORO",
+        "ACCOUNT_SOSPESO",
+        "PREZZO_"
+      ]
+
+      if (
+        terminalErrors.some(
+          (terminalError) =>
+            normalizedError.includes(
+              terminalError
+            )
+        )
+      ) {
+        delete applicationRequestIds
+          .current[requestKey]
+      }
+
+      /*
+       * Aggiorna subito la bacheca quando
+       * il lavoro o il numero di candidature
+       * potrebbero essere cambiati.
+       */
+      if (
+        normalizedError.includes(
+          "LAVORO_NON_PIU_DISPONIBILE"
+        ) ||
+        normalizedError.includes(
+          "LAVORO_NON_TROVATO"
+        ) ||
+        normalizedError.includes(
+          "NUMERO_MASSIMO_CANDIDATURE_RAGGIUNTO"
+        ) ||
+        normalizedError.includes(
+          "CANDIDATURA_GIA_PRESENTE"
+        )
+      ) {
+        await loadJobs()
+      }
+    } finally {
+      setSubmittingJobs(
+        (current) => ({
+          ...current,
+          [jobId]: false
+        })
+      )
+    }
   }
 
   return (
@@ -318,6 +638,22 @@ export default function JobsBoardPage() {
                 Esplora i lavori pubblicati dai clienti DroneGuard.
               </p>
             </div>
+
+            {applicationsUnavailable ? (
+  <div className="mb-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-5">
+    <h2 className="font-bold text-yellow-200">
+      {maintenanceActive
+        ? "DroneGuard è in manutenzione"
+        : "Candidature temporaneamente sospese"}
+    </h2>
+
+    <p className="mt-2 text-sm leading-6 text-yellow-100/80">
+      {maintenanceActive
+        ? "In questo momento non è possibile inviare nuove candidature. I lavori pubblicati restano visibili."
+        : "Il Team ha sospeso temporaneamente l’invio di nuove candidature. Riprova più tardi."}
+    </p>
+  </div>
+) : null}
 
             <div className="mb-8 rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-6">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -421,24 +757,54 @@ export default function JobsBoardPage() {
 
                     <div className="w-full lg:w-[300px]">
                       <input
-                        type="number"
-                        placeholder="La tua offerta €"
-                        value={offers[job.id] || ""}
-                        onChange={(e) =>
-                          setOffers({
-                            ...offers,
-                            [job.id]: e.target.value
-                          })
-                        }
-                        className="w-full mb-4 p-4 rounded-xl bg-[#1d1250] border border-white/10 text-lg"
-                      />
+  type="number"
+  min="0.01"
+  max="10000000"
+  step="0.01"
+  inputMode="decimal"
+  placeholder="La tua offerta €"
+  value={offers[job.id] || ""}
+  disabled={
+  applicationsUnavailable ||
+  Boolean(
+    submittingJobs[job.id]
+  ) ||
+  job.applications >= 10
+}
+  onChange={(e) =>
+    setOffers((current) => ({
+      ...current,
+      [job.id]:
+        e.target.value
+    }))
+  }
+  className="mb-4 w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-lg disabled:cursor-not-allowed disabled:opacity-60"
+/>
 
                       <button
-                        onClick={() => applyToJob(job.id)}
-                        className="w-full py-4 rounded-xl bg-green-500 text-black font-bold text-lg hover:bg-green-400 transition"
-                      >
-                        Candidati • 5 crediti
-                      </button>
+  type="button"
+  disabled={
+  applicationsUnavailable ||
+  Boolean(
+    submittingJobs[job.id]
+  ) ||
+  job.applications >= 10
+}
+  onClick={() =>
+    applyToJob(job.id)
+  }
+  className="w-full rounded-xl bg-green-500 py-4 text-lg font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {submittingJobs[job.id]
+  ? "Invio candidatura..."
+  : maintenanceActive
+    ? "Piattaforma in manutenzione"
+    : !applicationsEnabled
+      ? "Candidature sospese"
+      : job.applications >= 10
+        ? "Candidature complete"
+        : "Candidati • 5 crediti"}
+</button>
 
                       <div className="mt-5 bg-white/5 rounded-xl p-5 border border-white/10">
                         <div className="flex items-center gap-2 mb-3">

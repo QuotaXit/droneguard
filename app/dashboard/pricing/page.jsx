@@ -17,7 +17,6 @@ export default function PricingPage() {
   const [credits, setCredits] = useState(0)
   const [pilots, setPilots] = useState(0)
   const [userData, setUserData] = useState(null)
-  const [claimLoading, setClaimLoading] = useState(false)
   const [checkoutLoading, setCheckoutLoading] = useState(null)
   const [emailVerified, setEmailVerified] = useState(false)
 
@@ -80,9 +79,8 @@ export default function PricingPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          packageId,
-          userId: user.id
-        })
+  packageId
+})
       })
 
       const data = await res.json()
@@ -101,43 +99,6 @@ export default function PricingPage() {
     }
   }
 
-  const claimFreeCredits = async () => {
-  if (claimLoading) return
-  if (!userData) return
-
-  if (!isPilot) {
-    toast.error("I 50 crediti gratuiti sono riservati solo ai piloti.")
-    return
-  }
-
-  try {
-    setClaimLoading(true)
-
-    const { data, error } = await supabase.rpc("claim_free_pilot_credits")
-
-    if (error || !data?.length) {
-      toast.error("Hai già riscattato i crediti ❌")
-      return
-    }
-
-    const updated = data[0]
-
-    setCredits(updated.credits)
-
-    setUserData((prev) => ({
-      ...prev,
-      credits: updated.credits,
-      free_credits_claimed: true
-    }))
-
-    toast.success("50 crediti aggiunti 🚀")
-  } catch (error) {
-    console.error(error)
-    toast.error("Errore durante il riscatto")
-  } finally {
-    setClaimLoading(false)
-  }
-}
 
   const sendVerificationEmail = async () => {
     const {
@@ -175,8 +136,8 @@ export default function PricingPage() {
             </h1>
 
             <p className="text-gray-400">
-              Acquista crediti o riscatta il bonus iniziale.
-            </p>
+  Acquista crediti per candidarti ai lavori disponibili.
+</p>
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
@@ -222,41 +183,19 @@ export default function PricingPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <div
-              className={`rounded-2xl p-6 text-center border ${
-                isPilot
-                  ? "bg-[#140a3a] border-green-400/30"
-                  : "bg-white/5 border-white/10 opacity-60"
-              }`}
-            >
-              <h3 className="text-xl font-bold mb-2">
-                Starter pilota
-              </h3>
+            <div className="rounded-2xl border border-green-400/30 bg-[#140a3a] p-6 text-center">
+  <h3 className="mb-2 text-xl font-bold">
+    Bonus iniziale pilota
+  </h3>
 
-              <p className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
-                50 crediti
-              </p>
+  <p className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
+    50 crediti
+  </p>
 
-              {!isPilot && (
-                <p className="text-sm text-gray-400 mb-4">
-                  Riservato solo ai piloti.
-                </p>
-              )}
-
-              <button
-                onClick={claimFreeCredits}
-                disabled={!isPilot || userData?.free_credits_claimed || claimLoading}
-                className="w-full py-3 rounded-lg bg-green-500 text-black font-semibold disabled:opacity-40"
-              >
-                {!isPilot
-                  ? "Solo piloti"
-                  : userData?.free_credits_claimed
-                    ? "Già riscattati"
-                    : claimLoading
-                      ? "Caricamento..."
-                      : "Gratis"}
-              </button>
-            </div>
+  <p className="text-sm leading-6 text-gray-400">
+    Assegnati automaticamente una sola volta alla prima registrazione.
+  </p>
+</div>
 
             <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6 text-center">
               <h3 className="text-xl font-bold mb-2">

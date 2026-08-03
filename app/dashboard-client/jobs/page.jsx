@@ -9,12 +9,9 @@ import Link from "next/link"
 import {
   Briefcase,
   Users,
-  CheckCircle2,
   Bell,
   Eye,
-  Trash2,
   Pencil,
-  Clock3,
   X,
   Lock
 } from "lucide-react"
@@ -65,12 +62,14 @@ export default function ClientJobs() {
 
   const [selectedJob, setSelectedJob] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
-  const [showCloseModal, setShowCloseModal] = useState(false)
 
   const [editTitle, setEditTitle] = useState("")
   const [editDescription, setEditDescription] = useState("")
   const [editLocation, setEditLocation] = useState("")
   const [editDate, setEditDate] = useState("")
+
+   const [savingJob, setSavingJob] =
+    useState(false)
 
   const loadJobs = async () => {
     const {
@@ -142,69 +141,6 @@ export default function ClientJobs() {
     loadJobs()
   }, [])
 
-  const deleteJob = async (id) => {
-    const confirmDelete = window.confirm("Vuoi eliminare questo lavoro?")
-
-    if (!confirmDelete) return
-
-    await supabase.from("jobs").delete().eq("id", id)
-
-    toast.success("Lavoro eliminato ✅")
-
-    loadJobs()
-  }
-
-  const cancelJob = async (job) => {
-    const confirmCancel = window.confirm("Vuoi annullare questo lavoro?")
-
-    if (!confirmCancel) return
-
-    await supabase
-      .from("jobs")
-      .update({
-        status: "cancelled",
-        close_reason: "cancelled"
-      })
-      .eq("id", job.id)
-
-    await supabase
-      .from("conversations")
-      .update({
-        status: "closed"
-      })
-      .eq("job_id", job.id)
-
-    toast.success("Lavoro annullato ✅")
-
-    loadJobs()
-  }
-
-  const completeJobSuccess = async (job) => {
-    const confirmComplete = window.confirm(
-      "Vuoi segnare questo lavoro come terminato con successo?"
-    )
-
-    if (!confirmComplete) return
-
-    await supabase
-      .from("jobs")
-      .update({
-        status: "completed",
-        close_reason: "success"
-      })
-      .eq("id", job.id)
-
-    await supabase
-      .from("conversations")
-      .update({
-        status: "closed"
-      })
-      .eq("job_id", job.id)
-
-    toast.success("Lavoro terminato con successo ✅")
-
-    loadJobs()
-  }
 
   const openEditModal = (job) => {
     setSelectedJob(job)
@@ -217,66 +153,222 @@ export default function ClientJobs() {
     setShowEditModal(true)
   }
 
-  const saveJobChanges = async () => {
-    if (!selectedJob) return
-
-    if (selectedJob.status === "assigned") {
-      toast.error("Non puoi modificare un annuncio dopo aver assegnato il pilota.")
+    const saveJobChanges = async () => {
+    if (
+      savingJob ||
+      !selectedJob?.id
+    ) {
       return
     }
 
-    const { error } = await supabase
-      .from("jobs")
-      .update({
-        title: editTitle,
-        description: editDescription,
-        location: editLocation,
-        job_date: editDate
-      })
-      .eq("id", selectedJob.id)
+    if (
+      selectedJob.status !== "open"
+    ) {
+      toast.error(
+        "Puoi modificare soltanto un lavoro ancora aperto."
+      )
 
-    if (error) {
-      console.log(error)
-      toast.error("Errore salvataggio")
       return
     }
 
-    toast.success("Annuncio aggiornato ✅")
+    const normalizedTitle =
+      editTitle.trim()
 
-    setShowEditModal(false)
+    const normalizedDescription =
+      editDescription.trim()
 
-    loadJobs()
+    const normalizedLocation =
+      editLocation.trim()
+
+    if (!normalizedTitle) {
+      toast.error(
+        "Inserisci il titolo del lavoro."
+      )
+
+      return
+    }
+
+    if (!normalizedDescription) {
+      toast.error(
+        "Inserisci la descrizione del lavoro."
+      )
+
+      return
+    }
+
+    if (!normalizedLocation) {
+      toast.error(
+        "Inserisci la località del lavoro."
+      )
+
+      return
+    }
+
+    if (!editDate) {
+      toast.error(
+        "Inserisci la data del lavoro."
+      )
+
+      return
+    }
+
+    setSavingJob(true)
+
+    try {
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "update_open_job",
+        {
+          p_job_id:
+            selectedJob.id,
+
+          p_title:
+            normalizedTitle,
+
+          p_description:
+            normalizedDescription,
+
+          p_location:
+            normalizedLocation,
+
+          p_job_date:
+            editDate
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a modificare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "SOLO_I_LAVORI_APERTI_POSSONO_ESSERE_MODIFICATI"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più aperto e non può essere modificato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "DATA_LAVORO_NEL_PASSATO"
+          )
+        ) {
+          throw new Error(
+            "La data del lavoro non può essere nel passato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "TITOLO_TROPPO_LUNGO"
+          )
+        ) {
+          throw new Error(
+            "Il titolo può contenere massimo 150 caratteri."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "DESCRIZIONE_TROPPO_LUNGA"
+          )
+        ) {
+          throw new Error(
+            "La descrizione può contenere massimo 5000 caratteri."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LOCALITA_TROPPO_LUNGA"
+          )
+        ) {
+          throw new Error(
+            "La località inserita è troppo lunga."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
+      }
+
+      toast.success(
+        data?.already_processed
+          ? "L’annuncio conteneva già questi dati."
+          : "Annuncio aggiornato ✅"
+      )
+
+      setShowEditModal(false)
+      setSelectedJob(null)
+
+      await loadJobs()
+    } catch (error) {
+      console.error(
+        "[update-open-job] RPC failed:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+        "Impossibile aggiornare l’annuncio."
+      )
+
+      await loadJobs()
+    } finally {
+      setSavingJob(false)
+    }
   }
 
-  const openCloseModal = (job) => {
-    setSelectedJob(job)
-    setShowCloseModal(true)
-  }
-
-  const closeJob = async (reason) => {
-    if (!selectedJob) return
-
-    await supabase
-      .from("jobs")
-      .update({
-        status: "completed",
-        close_reason: reason
-      })
-      .eq("id", selectedJob.id)
-
-    await supabase
-      .from("conversations")
-      .update({
-        status: "closed"
-      })
-      .eq("job_id", selectedJob.id)
-
-    toast.success("Lavoro chiuso con successo ✅")
-
-    setShowCloseModal(false)
-
-    loadJobs()
-  }
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -500,53 +592,22 @@ export default function ClientJobs() {
                 </button>
               ) : (
                 <button
-                  onClick={saveJobChanges}
-                  className="w-full bg-green-500 text-black py-4 rounded-2xl font-bold hover:bg-green-400 transition"
-                >
-                  Salva modifiche
-                </button>
+  type="button"
+  onClick={saveJobChanges}
+  disabled={savingJob}
+  className="w-full rounded-2xl bg-green-500 py-4 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {savingJob
+    ? "Salvataggio..."
+    : "Salva modifiche"}
+</button>
               )}
             </div>
           </div>
         </div>
       )}
 
-      {showCloseModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-          <div className="relative max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:max-w-xl sm:p-8">
-            <button
-              onClick={() => setShowCloseModal(false)}
-              className="absolute top-5 right-5 text-gray-400 hover:text-white transition"
-            >
-              <X size={24} />
-            </button>
-
-            <h2 className="mb-4 pr-10 text-2xl font-bold leading-tight sm:text-4xl">
-              Sei sicuro di voler chiudere il lavoro?
-            </h2>
-
-            <p className="text-gray-400 text-lg mb-8">
-              Seleziona il motivo della chiusura.
-            </p>
-
-            <div className="space-y-5">
-              <button
-                onClick={() => closeJob("found_pilot")}
-                className="w-full rounded-2xl bg-green-500 py-4 text-lg font-bold text-black transition hover:bg-green-400 sm:py-5 sm:text-2xl"
-              >
-                Trovato pilota
-              </button>
-
-              <button
-                onClick={() => closeJob("cancelled")}
-                className="w-full rounded-2xl bg-red-500 py-4 text-lg font-bold text-white transition hover:bg-red-400 sm:py-5 sm:text-2xl"
-              >
-                Annulla il lavoro
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
     </div>
   )
 }

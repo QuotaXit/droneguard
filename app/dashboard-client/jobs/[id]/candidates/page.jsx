@@ -318,107 +318,224 @@ export default function CandidatesPage() {
     }
   }
 
-  const sendJobDetails = async () => {
-    if (sendingDetails) return
+    const sendJobDetails = async () => {
+    if (sendingDetails) {
+      return
+    }
+
+    if (
+      !selectedPilot?.pilot_id ||
+      !params?.id
+    ) {
+      toast.error(
+        "Pilota o lavoro non valido."
+      )
+
+      return
+    }
+
+    if (!exactLocation.trim()) {
+      toast.error(
+        "Inserisci la posizione precisa."
+      )
+
+      return
+    }
+
+    if (!meetingPoint.trim()) {
+      toast.error(
+        "Inserisci il punto di ritrovo."
+      )
+
+      return
+    }
+
+    if (!phone.trim()) {
+      toast.error(
+        "Inserisci il telefono."
+      )
+
+      return
+    }
+
+    if (!email.trim()) {
+      toast.error(
+        "Inserisci l'email."
+      )
+
+      return
+    }
+
+    setSendingDetails(true)
 
     try {
-      if (!selectedPilot) {
-        toast.error("Pilota non selezionato")
-        return
-      }
-
-      if (!exactLocation.trim()) {
-        toast.error("Inserisci la posizione precisa")
-        return
-      }
-
-      if (!meetingPoint.trim()) {
-        toast.error("Inserisci il punto di ritrovo")
-        return
-      }
-
-      if (!phone.trim()) {
-        toast.error("Inserisci il telefono")
-        return
-      }
-
-      if (!email.trim()) {
-        toast.error("Inserisci l'email")
-        return
-      }
-
-      setSendingDetails(true)
-
       const {
-        data: { user },
-        error: userError
-      } = await supabase.auth.getUser()
-
-      if (userError) {
-        console.log("USER ERROR:", userError)
-        alert("Errore utente: sessione non valida")
-        return
-      }
-
-      if (!user) {
-        alert("Devi effettuare il login")
-        return
-      }
-
-      const payload = {
-        job_id: params.id,
-        pilot_id: selectedPilot.pilot_id,
-        client_id: user.id,
-        exact_location: exactLocation.trim(),
-        meeting_point: meetingPoint.trim(),
-        phone: phone.trim(),
-        email: email.trim(),
-        arrival_time: arrivalTime,
-        priority,
-        notes: notes.trim(),
-        has_authorization: hasAuthorization,
-        has_parking: hasParking,
-        has_power: hasPower,
-        urban_flight: urbanFlight,
-        people_present: peoplePresent,
-        status: "details_sent"
-      }
-
-      console.log("SEND JOB DATA PAYLOAD:", payload)
-
-      // 🔥 UPSERT - Se esiste aggiorna, se non esiste inserisce
-      // Evita duplicate key error su (job_id, pilot_id)
-      const { data: upsertResult, error: upsertError } = await supabase
-        .from("job_assignments")
-        .upsert([payload], {
-          onConflict: "job_id,pilot_id"
-        })
-        .select()
-
-      console.log("UPSERT RESULT:", upsertResult)
-      console.log("UPSERT ERROR:", upsertError)
-
-      if (upsertError) {
-        console.log("UPSERT ERROR:", upsertError)
-        toast.error(`Errore invio dati: ${upsertError.message}`)
-        return
-      }
-
-      const { error: notificationError } = await supabase.from("notifications").insert([
+        data,
+        error
+      } = await supabase.rpc(
+        "save_job_assignment_details",
         {
-          user_id: selectedPilot.pilot_id,
-          title: "Dati lavoro ricevuti",
-          message: "Il cliente ha inviato le informazioni operative del lavoro.",
-          type: "job_details",
-          read: false
-        }
-      ])
+          p_job_id:
+            params.id,
 
-      if (notificationError) {
-        console.log("NOTIFICATION ERROR:", notificationError)
+          p_pilot_id:
+            selectedPilot.pilot_id,
+
+          p_exact_location:
+            exactLocation.trim(),
+
+          p_meeting_point:
+            meetingPoint.trim(),
+
+          p_phone:
+            phone.trim(),
+
+          p_email:
+            email.trim(),
+
+          p_arrival_time:
+            arrivalTime || "",
+
+          p_priority:
+            priority || "normal",
+
+          p_notes:
+            notes.trim(),
+
+          p_has_authorization:
+            Boolean(hasAuthorization),
+
+          p_has_parking:
+            Boolean(hasParking),
+
+          p_has_power:
+            Boolean(hasPower),
+
+          p_urban_flight:
+            Boolean(urbanFlight),
+
+          p_people_present:
+            Boolean(peoplePresent)
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_ASSEGNATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non risulta assegnato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "PILOTA_NON_ASSEGNATO_AL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Il pilota selezionato non è assegnato a questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "L’assegnazione del lavoro non è stata trovata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          ) ||
+          errorText.includes(
+            "ASSEGNAZIONE_NON_AUTORIZZATA"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a modificare i dati di questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "TELEFONO_NON_VALIDO"
+          )
+        ) {
+          throw new Error(
+            "Inserisci un numero di telefono valido."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "EMAIL_NON_VALIDA"
+          )
+        ) {
+          throw new Error(
+            "Inserisci un indirizzo email valido."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NOTE_TROPPO_LUNGHE"
+          )
+        ) {
+          throw new Error(
+            "Le note possono contenere massimo 3000 caratteri."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
       }
 
-      toast.success("Dati lavoro inviati ✅")
+      if (data?.already_processed) {
+        toast.success(
+          "I dati erano già stati salvati correttamente."
+        )
+      } else {
+        toast.success(
+          "Dati lavoro inviati ✅"
+        )
+      }
+
       setShowDetailsModal(false)
       setMeetingPoint("")
       setExactLocation("")
@@ -428,147 +545,187 @@ export default function CandidatesPage() {
       setAddressResults([])
 
       await loadCandidates()
-    } catch (err) {
-      console.log("SEND JOB DETAILS GENERAL ERROR:", err)
-      toast.error("Errore generale invio dati lavoro")
+    } catch (error) {
+      console.error(
+        "[job-details] RPC failed:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+        "Impossibile salvare i dati del lavoro."
+      )
     } finally {
       setSendingDetails(false)
     }
   }
 
-  const acceptPilot = async (application) => {
+    const acceptPilot = async (application) => {
+    if (
+      loadingAssign ||
+      !application?.id ||
+      !params?.id
+    ) {
+      return
+    }
+
+    const confirmAccept = window.confirm(
+      "Vuoi assegnare il lavoro a questo pilota?"
+    )
+
+    if (!confirmAccept) {
+      return
+    }
+
+    setLoadingAssign(application.id)
+
     try {
-      const confirmAccept = window.confirm("Vuoi assegnare il lavoro a questo pilota?")
-
-      if (!confirmAccept) return
-
-      setLoadingAssign(application.id)
-
       const {
-        data: { user }
-      } = await supabase.auth.getUser()
+        data,
+        error
+      } = await supabase.rpc(
+        "assign_job_to_pilot",
+        {
+          p_job_id:
+            params.id,
 
-      if (!user) {
-        alert("Utente non trovato")
-        return
+          p_application_id:
+            application.id
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PIATTAFORMA_IN_MANUTENZIONE"
+          )
+        ) {
+          throw new Error(
+            "DroneGuard è temporaneamente in manutenzione."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_GIA_ASSEGNATO_AD_ALTRO_PILOTA"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro è già stato assegnato a un altro pilota."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_ASSEGNABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo lavoro non può più essere assegnato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "CANDIDATURA_NON_ASSEGNABILE"
+          )
+        ) {
+          throw new Error(
+            "Questa candidatura non può più essere accettata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "CANDIDATURA_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "La candidatura selezionata non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato ad assegnare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "PILOTA_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il pilota selezionato è sospeso e non può ricevere il lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "CONVERSAZIONE_LAVORO_INCOERENTE"
+          )
+        ) {
+          throw new Error(
+            "La conversazione collegata al lavoro non è coerente. Contatta l’assistenza."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_SOSPESO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account è sospeso."
+          )
+        }
+
+        throw error
       }
 
-      const { data: updatedJob, error: jobError } = await supabase
-        .from("jobs")
-        .update({
-          status: "assigned",
-          assigned_pilot: application.pilot_id
-        })
-        .eq("id", params.id)
-        .eq("user_id", user.id)
-        .select("id,status,assigned_pilot,user_id")
-        .maybeSingle()
-
-      if (jobError || !updatedJob) {
-        alert("Errore: assegnazione non salvata su jobs")
-        return
-      }
-
-      const { data: acceptedRows, error: acceptError } = await supabase
-        .from("applications")
-        .update({ status: "accepted" })
-        .eq("id", application.id)
-        .select("id,job_id,pilot_id,status")
-
-      if (acceptError || !acceptedRows || acceptedRows.length === 0) {
-        alert("Errore candidatura: Supabase ha aggiornato 0 righe")
-        return
-      }
-
-      const { error: rejectError } = await supabase
-        .from("applications")
-        .update({ status: "rejected" })
-        .eq("job_id", params.id)
-        .neq("id", application.id)
-
-      if (rejectError) {
-        alert("Errore aggiornamento altre candidature")
-        return
-      }
-
-      const { data: assignment, error: assignmentError } = await supabase
-        .from("job_assignments")
-        .upsert(
-          {
-            job_id: params.id,
-            pilot_id: application.pilot_id,
-            client_id: user.id,
-            status: "assigned"
-          },
-          { onConflict: "job_id,pilot_id" }
+      if (data?.already_processed) {
+        toast.success(
+          "Il lavoro era già stato assegnato correttamente."
         )
-        .select("id,job_id,pilot_id,client_id,status")
-        .maybeSingle()
-
-      if (assignmentError || !assignment) {
-        alert("Errore creazione assegnazione lavoro")
-        return
-      }
-
-      let conversationId = null
-
-      const { data: existingConversation } = await supabase
-        .from("conversations")
-        .select("*")
-        .eq("job_id", params.id)
-        .maybeSingle()
-
-      if (existingConversation) {
-        conversationId = existingConversation.id
       } else {
-        const { data: newConversation, error: convError } = await supabase
-          .from("conversations")
-          .insert([
-            {
-              client_id: user.id,
-              pilot_id: application.pilot_id,
-              job_id: params.id,
-              status: "active"
-            }
-          ])
-          .select()
-          .single()
-
-        if (convError || !newConversation) {
-          toast.error("Errore creazione chat")
-          return
-        }
-
-        conversationId = newConversation.id
+        toast.success(
+          "Lavoro assegnato con successo ✅"
+        )
       }
 
-      await supabase
-        .from("applications")
-        .update({ conversation_id: conversationId })
-        .eq("id", application.id)
-
-      await supabase.from("notifications").insert([
-        {
-          user_id: application.pilot_id,
-          title: "Candidatura accettata",
-          message: `La tua candidatura per "${job?.title || "questo lavoro"}" è stata accettata.`,
-          type: "application_accepted",
-          read: false
-        },
-        {
-          user_id: application.pilot_id,
-          title: "Nuovo lavoro assegnato",
-          message: `Ti è stato assegnato il lavoro "${job?.title || "questo lavoro"}"`,
-          type: "job_assigned",
-          read: false
-        }
-      ])
-
-      toast.success("Lavoro assegnato con successo ✅")
       await loadCandidates()
-    } catch (err) {
-      console.log("ASSIGN GENERAL ERROR:", err)
-      toast.error("Errore generale assegnazione")
+    } catch (error) {
+      console.error(
+        "[assign-job] RPC failed:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+        "Impossibile assegnare il lavoro."
+      )
+
+      /*
+       * Ricarica lo stato reale perché il lavoro
+       * potrebbe essere stato assegnato da un’altra
+       * scheda o richiesta contemporanea.
+       */
+      await loadCandidates()
     } finally {
       setLoadingAssign(null)
     }

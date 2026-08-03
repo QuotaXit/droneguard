@@ -13,7 +13,6 @@ export default function CreditsPage() {
   const [credits, setCredits] = useState(0)
   const [loading, setLoading] = useState(true)
   const [checkoutLoading, setCheckoutLoading] = useState(null)
-  const [claimLoading, setClaimLoading] = useState(false)
   const [userData, setUserData] = useState(null)
 
   const userRole = normalizeRole(userData?.role)
@@ -53,55 +52,6 @@ export default function CreditsPage() {
     load()
   }, [])
 
-  const claimClientFreeCredits = async () => {
-    if (!userData) return
-
-    if (!isClient) {
-      toast.error("I 10 crediti gratuiti sono riservati solo ai clienti.")
-      return
-    }
-
-    if (userData.free_credits_claimed) {
-      toast.error("Hai già riscattato i crediti gratuiti ❌")
-      return
-    }
-
-    try {
-      setClaimLoading(true)
-
-      const newCredits = Number(userData.credits || 0) + 10
-
-      const { data, error } = await supabase
-        .from("users")
-        .update({
-          credits: newCredits,
-          free_credits_claimed: true
-        })
-        .eq("id", userData.id)
-        .in("role", ["client", "cliente"])
-        .select()
-        .maybeSingle()
-
-      if (error || !data) {
-        console.error(error)
-        toast.error("Bonus disponibile solo per account cliente ❌")
-        return
-      }
-
-      setCredits(newCredits)
-
-      setUserData((prev) => ({
-        ...prev,
-        credits: newCredits,
-        free_credits_claimed: true
-      }))
-
-      toast.success("10 crediti aggiunti 🚀")
-    } finally {
-      setClaimLoading(false)
-    }
-  }
-
   const buyCredits = async (packageId) => {
     try {
       setCheckoutLoading(packageId)
@@ -121,9 +71,8 @@ export default function CreditsPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          packageId,
-          userId: user.id
-        })
+  packageId
+})
       })
 
       const data = await res.json()
@@ -163,44 +112,19 @@ export default function CreditsPage() {
           </div>
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            <div
-              className={`border rounded-2xl p-8 text-center ${
-                isClient
-                  ? "bg-white/5 border-green-400/30"
-                  : "bg-white/5 border-white/20 opacity-60"
-              }`}
-            >
-              <h3 className="text-2xl mb-2 font-semibold">
-                Starter cliente
-              </h3>
+           <div className="rounded-2xl border border-green-400/30 bg-white/5 p-8 text-center">
+  <h3 className="mb-2 text-2xl font-semibold">
+    Bonus iniziale cliente
+  </h3>
 
-              <p className="text-gray-400 mb-4">
-                Bonus iniziale
-              </p>
+  <p className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
+    10 crediti
+  </p>
 
-              <h2 className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
-                Gratis
-              </h2>
-
-              <p className="mb-6">
-                10 crediti
-              </p>
-
-              <button
-                onClick={claimClientFreeCredits}
-                disabled={!isClient || userData?.free_credits_claimed || claimLoading}
-                className="w-full py-3 bg-green-500 text-black rounded-lg font-medium hover:scale-105 transition disabled:opacity-40"
-              >
-                {!isClient
-                  ? "Solo clienti"
-                  : userData?.free_credits_claimed
-                    ? "Già riscattati"
-                    : claimLoading
-                      ? "Caricamento..."
-                      : "Riscatta"}
-              </button>
-            </div>
-
+  <p className="text-sm leading-6 text-gray-400">
+    Assegnati automaticamente una sola volta alla prima registrazione.
+  </p>
+</div> 
             <div className="bg-white/5 border border-white/20 rounded-2xl p-8 text-center">
               <h3 className="text-2xl mb-2 font-semibold">
                 Basic
