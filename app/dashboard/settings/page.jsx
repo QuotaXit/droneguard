@@ -459,15 +459,79 @@ const { data, error } = await supabase
   }
 
   const deleteAccount = async () => {
-    const confirmDelete = window.confirm("Vuoi davvero eliminare l'account?")
+  const confirmation = window.prompt(
+    "Questa operazione disattiverà definitivamente il tuo account e rimuoverà i dati personali.\n\nScrivi ELIMINA per confermare."
+  )
 
-    if (!confirmDelete) return
+  if (confirmation === null) {
+    return
+  }
 
-    await supabase.from("users").delete().eq("id", user.id)
+  if (
+    confirmation
+      .trim()
+      .toUpperCase() !== "ELIMINA"
+  ) {
+    toast.error(
+      "Conferma non valida. Devi scrivere ELIMINA."
+    )
+    return
+  }
+
+  try {
+    const response = await fetch(
+      "/api/account",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          confirmation: "ELIMINA"
+        })
+      }
+    )
+
+    let result = null
+
+    try {
+      result = await response.json()
+    } catch {
+      result = null
+    }
+
+    /*
+     * Se la RPC ha già disattivato l’account,
+     * l’utente deve comunque essere disconnesso,
+     * anche in caso di errore successivo su Auth.
+     */
+    if (
+      !response.ok &&
+      !result?.accountDeactivated
+    ) {
+      throw new Error(
+        result?.error ||
+          "Non è stato possibile disattivare l’account."
+      )
+    }
+
     await supabase.auth.signOut()
 
-    window.location.href = "/"
+    window.location.replace("/")
+  } catch (error) {
+    console.error(
+      "[pilot-settings] account deactivation failed:",
+      error
+    )
+
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Errore durante la disattivazione dell’account."
+    )
   }
+}
 
   const fullName = getFullName(name, surname)
   const displayPosition = getDisplayPosition(city, location)

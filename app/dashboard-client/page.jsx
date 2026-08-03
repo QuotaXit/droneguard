@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import ActiveAnnouncements from "@/components/dashboard/ActiveAnnouncements"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { getDashboardPath, isClient } from "@/lib/auth-utils"
@@ -298,7 +299,10 @@ window.location.href = "/"
 
 
           {/* DASHBOARD */}
-          <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8 lg:col-span-6">
+<div className="space-y-6 lg:col-span-6">
+  <ActiveAnnouncements />
+
+  <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
 
             <h2 className="mb-1 text-xl font-semibold sm:text-2xl">
               Dashboard Cliente
@@ -366,9 +370,13 @@ window.location.href = "/"
 
             </div>
 
-          </div>
+                    </div>
 
         </div>
+
+      </div>
+
+    </div>
       </div>
     </div>
   )

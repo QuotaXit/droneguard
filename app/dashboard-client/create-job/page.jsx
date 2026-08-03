@@ -133,25 +133,6 @@ if (!createdJobId) {
   return
 }
 
-      const { error: notificationError } = await supabase
-        .from("notifications")
-        .insert([
-          {
-            user_id: user.id,
-            title: "Lavoro pubblicato 🚀",
-            message: "Il tuo annuncio è stato pubblicato con successo.",
-            type: "job_published",
-            read: false
-          }
-        ])
-
-      if (notificationError) {
-        console.error(
-          "[notifications] job_published failed:",
-          notificationError
-        )
-      }
-
       try {
   await fetch("/api/send-job-emails", {
     method: "POST",

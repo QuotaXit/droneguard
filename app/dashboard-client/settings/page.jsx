@@ -407,23 +407,80 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
   }
 
   // 🔥 DELETE ACCOUNT
-  const deleteAccount = async () => {
+const deleteAccount = async () => {
+  const confirmation = window.prompt(
+    "Questa operazione disattiverà definitivamente il tuo account e rimuoverà i dati personali.\n\nScrivi ELIMINA per confermare."
+  )
 
-    const confirmDelete = window.confirm(
-      "Vuoi davvero eliminare il tuo account?"
+  if (confirmation === null) {
+    return
+  }
+
+  if (
+    confirmation
+      .trim()
+      .toUpperCase() !== "ELIMINA"
+  ) {
+    toast.error(
+      "Conferma non valida. Devi scrivere ELIMINA."
+    )
+    return
+  }
+
+  try {
+    const response = await fetch(
+      "/api/account",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          confirmation: "ELIMINA"
+        })
+      }
     )
 
-    if (!confirmDelete) return
+    let result = null
 
-    await supabase
-      .from("users")
-      .delete()
-      .eq("id", user.id)
+    try {
+      result = await response.json()
+    } catch {
+      result = null
+    }
+
+    /*
+     * Anche quando la disattivazione database
+     * è riuscita ma il blocco Auth ha restituito
+     * un errore, l’utente deve essere disconnesso.
+     */
+    if (
+      !response.ok &&
+      !result?.accountDeactivated
+    ) {
+      throw new Error(
+        result?.error ||
+          "Non è stato possibile disattivare l’account."
+      )
+    }
 
     await supabase.auth.signOut()
 
-    window.location.href = "/"
+    window.location.replace("/")
+  } catch (error) {
+    console.error(
+      "[client-settings] account deactivation failed:",
+      error
+    )
+
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Errore durante la disattivazione dell’account."
+    )
   }
+}
 
   return (
     <div className="min-h-screen flex flex-col text-white">

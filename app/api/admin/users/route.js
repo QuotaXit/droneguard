@@ -95,10 +95,11 @@ export async function GET(request) {
   ])
 
   const allowedStatuses = new Set([
-    "all",
-    "active",
-    "banned"
-  ])
+  "all",
+  "active",
+  "banned",
+  "deactivated"
+])
 
   if (!allowedRoles.has(role)) {
     return jsonError(
@@ -120,24 +121,24 @@ export async function GET(request) {
 
   let query = adminSupabase
     .from("users")
-    .select(
-      `
-        id,
-        email,
-        role,
-        name,
-        surname,
-        city,
-        credits,
-        banned,
-        verified,
-        free_credits_claimed,
-        created_at
-      `,
-      {
-        count: "exact"
-      }
-    )
+    .select(`
+  id,
+  email,
+  role,
+  name,
+  surname,
+  city,
+  credits,
+  banned,
+  verified,
+  free_credits_claimed,
+  account_status,
+  deactivated_at,
+  created_at
+`,
+{
+  count: "exact"
+})
     .neq("role", "team")
     .order("created_at", {
       ascending: false
@@ -158,13 +159,24 @@ export async function GET(request) {
     ])
   }
 
-  if (status === "active") {
-    query = query.eq("banned", false)
-  }
+ if (status === "active") {
+  query = query
+    .eq("banned", false)
+    .eq("account_status", "active")
+}
 
-  if (status === "banned") {
-    query = query.eq("banned", true)
-  }
+if (status === "banned") {
+  query = query
+    .eq("banned", true)
+    .eq("account_status", "active")
+}
+
+if (status === "deactivated") {
+  query = query.eq(
+    "account_status",
+    "deactivated"
+  )
+}
 
   if (search) {
     const pattern = `%${search}%`
@@ -225,9 +237,16 @@ export async function GET(request) {
           currentUser.verified
         ),
         freeCreditsClaimed: Boolean(
-          currentUser.free_credits_claimed
-        ),
-        createdAt: currentUser.created_at
+  currentUser.free_credits_claimed
+),
+accountStatus:
+  currentUser.account_status ||
+  "active",
+deactivatedAt:
+  currentUser.deactivated_at ||
+  null,
+createdAt:
+  currentUser.created_at
       })),
       pagination: {
         page,
@@ -343,13 +362,15 @@ export async function PATCH(request) {
   } = await adminSupabase
     .from("users")
     .select(`
-      id,
-      email,
-      role,
-      name,
-      surname,
-      banned
-    `)
+  id,
+  email,
+  role,
+  name,
+  surname,
+  banned,
+  account_status,
+  deactivated_at
+`)
     .eq("id", targetUserId)
     .maybeSingle()
 
@@ -386,6 +407,30 @@ export async function PATCH(request) {
       400
     )
   }
+
+  const accountStatus = String(
+  targetUser.account_status || "active"
+)
+  .trim()
+  .toLowerCase()
+
+const isDeactivated =
+  accountStatus === "deactivated"
+
+/*
+ * Un account disattivato dall’utente è stato
+ * anonimizzato e non può essere riattivato
+ * tramite il normale comando di sospensione.
+ */
+if (
+  isDeactivated &&
+  banned === false
+) {
+  return jsonError(
+    "Questo account è stato disattivato definitivamente e non può essere riattivato.",
+    409
+  )
+}
 
   const previousBanned = Boolean(
     targetUser.banned
@@ -455,29 +500,47 @@ export async function PATCH(request) {
   /*
    * Aggiorna anche il profilo pubblico.
    */
-  const {
-    data: updatedUser,
-    error: profileUpdateError
-  } = await adminSupabase
+let profileUpdateQuery =
+  adminSupabase
     .from("users")
     .update({
       banned
     })
     .eq("id", targetUserId)
-    .select(`
-      id,
-      email,
-      role,
-      name,
-      surname,
-      city,
-      credits,
-      banned,
-      verified,
-      free_credits_claimed,
-      created_at
-    `)
-    .single()
+
+/*
+ * Protezione aggiuntiva contro una disattivazione
+ * che avvenga tra la lettura iniziale e
+ * l’aggiornamento del profilo.
+ */
+if (banned === false) {
+  profileUpdateQuery =
+    profileUpdateQuery.eq(
+      "account_status",
+      "active"
+    )
+}
+
+const {
+  data: updatedUser,
+  error: profileUpdateError
+} = await profileUpdateQuery
+  .select(`
+    id,
+    email,
+    role,
+    name,
+    surname,
+    city,
+    credits,
+    banned,
+    verified,
+    free_credits_claimed,
+    account_status,
+    deactivated_at,
+    created_at
+  `)
+  .single()
 
   if (profileUpdateError) {
     console.error(
@@ -611,9 +674,16 @@ export async function PATCH(request) {
         updatedUser.verified
       ),
       freeCreditsClaimed: Boolean(
-        updatedUser.free_credits_claimed
-      ),
-      createdAt: updatedUser.created_at
+  updatedUser.free_credits_claimed
+),
+accountStatus:
+  updatedUser.account_status ||
+  "active",
+deactivatedAt:
+  updatedUser.deactivated_at ||
+  null,
+createdAt:
+  updatedUser.created_at
     }
   })
 }

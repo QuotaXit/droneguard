@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import ActiveAnnouncements from "@/components/dashboard/ActiveAnnouncements"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
 import { getDashboardPath, isPilot } from "@/lib/auth-utils"
@@ -302,11 +303,13 @@ export default function Dashboard() {
   const fullName = getFullName(userData)
   const displayPosition = getDisplayPosition(userData)
 
-  const handleCertificationRequest = async (e) => {
-  e.preventDefault()
+  const handleCertificationRequest = async (event) => {
+  event.preventDefault()
 
   if (!certFile) {
-    setCertMessage("Carica una foto o un PDF della certificazione.")
+    setCertMessage(
+      "Carica una foto o un PDF della certificazione."
+    )
     return
   }
 
@@ -315,35 +318,69 @@ export default function Dashboard() {
     setCertMessage("")
 
     const formData = new FormData()
-    formData.append("name", fullName)
-    formData.append("email", userData?.email || "")
-    formData.append("certification", userData?.certifications || "Non indicata")
+
+    /*
+     * Il server ricava nome, email, ruolo e
+     * certificazioni direttamente dalla sessione
+     * e dal profilo dell'utente.
+     */
     formData.append("file", certFile)
 
-    const response = await fetch("/api/certification-request", {
-      method: "POST",
-      body: formData
-    })
+    const response = await fetch(
+      "/api/certification-request",
+      {
+        method: "POST",
+        body: formData
+      }
+    )
 
-    if (!response.ok) {
-      throw new Error("Errore invio richiesta")
+    let result = null
+
+    try {
+      result = await response.json()
+    } catch {
+      result = null
     }
 
-    await supabase
-  .from("users")
-  .update({ cert_request_sent: true })
-  .eq("id", userData.id)
+    if (!response.ok) {
+      throw new Error(
+        result?.error ||
+          "Errore durante l'invio della richiesta."
+      )
+    }
 
-setUserData((prev) => ({
-  ...prev,
-  cert_request_sent: true
-}))
+    /*
+     * Aggiorniamo soltanto lo stato locale della pagina.
+     * Il database è già stato aggiornato dall'API server.
+     */
+    setUserData((currentUserData) => {
+      if (!currentUserData) {
+        return currentUserData
+      }
 
-    setCertMessage("Richiesta inviata. Attendi fino a 24h per la verifica.")
+      return {
+        ...currentUserData,
+        cert_request_sent: true
+      }
+    })
+
+    setCertMessage(
+      "Richiesta inviata. Il Team DroneGuard controllerà il documento."
+    )
+
     setCertFile(null)
+    setShowCertRequest(false)
   } catch (error) {
-    console.error(error)
-    setCertMessage("Errore durante l'invio. Riprova più tardi.")
+    console.error(
+      "[dashboard] certification request failed:",
+      error
+    )
+
+    setCertMessage(
+      error instanceof Error
+        ? error.message
+        : "Errore durante l'invio. Riprova più tardi."
+    )
   } finally {
     setCertSending(false)
   }
@@ -741,7 +778,9 @@ const hasVerifiedCertification =
           </div>
 
           <div className="space-y-6 lg:col-span-6 lg:order-2">
-            <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
+  <ActiveAnnouncements />
+
+  <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
               <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
                 Dashboard Pilota
               </h2>
