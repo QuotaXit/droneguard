@@ -378,6 +378,5 @@ window.location.href = "/"
 
     </div>
       </div>
-    </div>
   )
 }
