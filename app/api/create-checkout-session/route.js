@@ -5,7 +5,7 @@ import {
 } from "@/lib/platform/status"
 
 import {
-  createClient as createServerSupabaseClient
+  createServerSupabaseClient
 } from "@/lib/supabase/server"
 
 import {

@@ -828,7 +828,6 @@ const submitStatusChange = async () => {
 </div>
             </div>
           </div>
-        </div>
       )}
 
 {statusActionUser && (
