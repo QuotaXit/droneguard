@@ -94,16 +94,6 @@ function jsonError(message, status = 400) {
   )
 }
 
-function passwordIsSecure(password) {
-  return (
-    password.length >= 12 &&
-    /[a-z]/.test(password) &&
-    /[A-Z]/.test(password) &&
-    /[0-9]/.test(password) &&
-    /[^a-zA-Z0-9]/.test(password)
-  )
-}
-
 /*
  * Supabase Auth e PostgreSQL non condividono una singola transazione.
  * Se un passaggio successivo fallisce, rimuoviamo l'utente appena creato.
