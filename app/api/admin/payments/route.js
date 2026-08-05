@@ -157,6 +157,90 @@ function normalizePayment(payment) {
   }
 }
 
+function normalizeRefundRequest(refundRequest) {
+  if (!refundRequest) {
+    return null
+  }
+
+  return {
+    id:
+      refundRequest.id,
+
+    requestId:
+      refundRequest.request_id,
+
+    paymentId:
+      refundRequest.payment_id,
+
+    userId:
+      refundRequest.user_id,
+
+    actorUserId:
+      refundRequest.actor_user_id,
+
+    stripeRefundId:
+      refundRequest.stripe_refund_id ||
+      null,
+
+    amountCents:
+      Number(
+        refundRequest.amount_cents || 0
+      ),
+
+    currency:
+      refundRequest.currency ||
+      "eur",
+
+    creditsReversed:
+      Number(
+        refundRequest
+          .credits_reversed || 0
+      ),
+
+    status:
+      refundRequest.status,
+
+    stripeStatus:
+      refundRequest.stripe_status ||
+      null,
+
+    reason:
+      refundRequest.reason || "",
+
+    failureCode:
+      refundRequest.failure_code ||
+      null,
+
+    failureMessage:
+      refundRequest.failure_message ||
+      null,
+
+    livemode:
+      typeof refundRequest.livemode ===
+      "boolean"
+        ? refundRequest.livemode
+        : null,
+
+    createdAt:
+      refundRequest.created_at,
+
+    updatedAt:
+      refundRequest.updated_at,
+
+    completedAt:
+      refundRequest.completed_at ||
+      null,
+
+    failedAt:
+      refundRequest.failed_at ||
+      null,
+
+    cancelledAt:
+      refundRequest.cancelled_at ||
+      null
+  }
+}
+
 export async function GET(request) {
   const {
     user,
@@ -445,8 +529,9 @@ export async function GET(request) {
   ]
 
   let relatedUsers = []
-  let relatedPackages = []
-  let relatedEvents = []
+let relatedPackages = []
+let relatedEvents = []
+let relatedRefunds = []
 
   if (userIds.length > 0) {
     const {
@@ -550,6 +635,63 @@ export async function GET(request) {
     }
   }
 
+  if (paymentIds.length > 0) {
+  const {
+    data,
+    error
+  } = await adminSupabase
+    .from(
+      "payment_refund_requests"
+    )
+    .select(`
+      id,
+      request_id,
+      payment_id,
+      user_id,
+      actor_user_id,
+      stripe_refund_id,
+      amount_cents,
+      currency,
+      credits_reversed,
+      status,
+      stripe_status,
+      reason,
+      failure_code,
+      failure_message,
+      livemode,
+      created_at,
+      updated_at,
+      completed_at,
+      failed_at,
+      cancelled_at
+    `)
+    .in(
+      "payment_id",
+      paymentIds
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    )
+
+  if (error) {
+    console.error(
+      "[admin-payments] Errore rimborsi collegati:",
+      error
+    )
+
+    return jsonError(
+      "Impossibile caricare le richieste di rimborso.",
+      500
+    )
+  }
+
+  relatedRefunds =
+    data || []
+}
+
   const {
     data: summaryData,
     error: summaryError
@@ -607,6 +749,29 @@ export async function GET(request) {
     }
   }
 
+  /*
+ * Conserva la richiesta di rimborso più recente
+ * per ciascun pagamento.
+ */
+const refundsMap = new Map()
+
+for (
+  const refundRequest
+  of relatedRefunds
+) {
+  if (
+    refundRequest.payment_id &&
+    !refundsMap.has(
+      refundRequest.payment_id
+    )
+  ) {
+    refundsMap.set(
+      refundRequest.payment_id,
+      refundRequest
+    )
+  }
+}
+
   const total = count || 0
 
   const payments = paymentRows.map(
@@ -624,6 +789,9 @@ export async function GET(request) {
 
       const latestEvent =
         eventsMap.get(payment.id)
+
+        const latestRefund =
+  refundsMap.get(payment.id)
 
       return {
         ...normalized,
@@ -663,7 +831,7 @@ export async function GET(request) {
             }
           : null,
 
-        latestEvent: latestEvent
+                latestEvent: latestEvent
           ? {
               id:
                 latestEvent.id,
@@ -686,7 +854,12 @@ export async function GET(request) {
               processedAt:
                 latestEvent.processed_at
             }
-          : null
+          : null,
+
+        latestRefund:
+          normalizeRefundRequest(
+            latestRefund
+          )
       }
     }
   )
@@ -769,6 +942,13 @@ export async function GET(request) {
         search,
         status,
         mode
+      },
+
+      permissions: {
+        canRefund:
+          permissions.includes(
+            "payments.refund"
+          )
       }
     },
     {

@@ -9,7 +9,11 @@ import {
 import { toast } from "sonner"
 
 export default function TeamMembersClient({
-  canInvite
+  canInvite,
+  canUpdate,
+  canManageOwner,
+  canDeactivate,
+  canSendEmail
 }) {
   const [members, setMembers] = useState([])
   const [roles, setRoles] = useState([])
@@ -20,21 +24,38 @@ export default function TeamMembersClient({
   const [editingUserId, setEditingUserId] = useState(null)
 const [editDisplayName, setEditDisplayName] = useState("")
 const [editRoleKey, setEditRoleKey] = useState("")
-const [editActive, setEditActive] = useState(true)
-const [savingMember, setSavingMember] = useState(false)
+const [editActive, setEditActive] =
+  useState(true)
 
-  const [displayName, setDisplayName] = useState(
-    "Assistenza DroneGuard"
-  )
+const [editReason, setEditReason] =
+  useState("")
 
-  const [email, setEmail] = useState(
-    "assistenza@droneguard.it"
-  )
+const [savingMember, setSavingMember] =
+  useState(false)
 
-  const [roleKey, setRoleKey] = useState("owner")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] =
-    useState("")
+  const [
+  passwordResetMember,
+  setPasswordResetMember
+] = useState(null)
+
+const [
+  passwordResetReason,
+  setPasswordResetReason
+] = useState("")
+
+const [
+  sendingPasswordReset,
+  setSendingPasswordReset
+] = useState(false)
+
+  const [displayName, setDisplayName] =
+  useState("")
+
+const [email, setEmail] =
+  useState("")
+
+const [roleKey, setRoleKey] =
+  useState("")
 
   const loadMembers = useCallback(async () => {
     try {
@@ -79,15 +100,40 @@ const [savingMember, setSavingMember] = useState(false)
     loadMembers()
   }, [loadMembers])
 
+  useEffect(() => {
+  if (roles.length === 0) {
+    setRoleKey("")
+    return
+  }
+
+  setRoleKey((currentRoleKey) => {
+    const roleStillAvailable =
+      roles.some(
+        (role) =>
+          role.role_key ===
+          currentRoleKey
+      )
+
+    if (roleStillAvailable) {
+      return currentRoleKey
+    }
+
+    return roles[0].role_key
+  })
+}, [roles])
+
   const createMember = async (event) => {
     event.preventDefault()
 
     if (creating) return
 
-    if (password !== confirmPassword) {
-      toast.error("Le password non coincidono.")
-      return
-    }
+    if (!roleKey) {
+  toast.error(
+    "Seleziona un ruolo Team valido."
+  )
+
+  return
+}
 
     try {
       setCreating(true)
@@ -100,11 +146,10 @@ const [savingMember, setSavingMember] = useState(false)
             "Content-Type": "application/json"
           },
           body: JSON.stringify({
-            displayName,
-            email,
-            roleKey,
-            password
-          })
+  displayName,
+  email,
+  roleKey
+})
         }
       )
 
@@ -119,15 +164,24 @@ const [savingMember, setSavingMember] = useState(false)
         return
       }
 
-      toast.success(
-        `Account ${data.member.email} creato correttamente.`
-      )
+      if (data.recoveryEmailSent) {
+  toast.success(
+    data.message ||
+      "Account Team creato e invito password inviato."
+  )
+} else {
+  toast.warning(
+    data.message ||
+      "Account creato, ma l'invito password non è stato inviato."
+  )
+}
 
       setDisplayName("")
-      setEmail("")
-      setRoleKey("owner")
-      setPassword("")
-      setConfirmPassword("")
+setEmail("")
+
+setRoleKey(
+  roles[0]?.role_key || ""
+)
 
       await loadMembers()
     } catch (error) {
@@ -145,10 +199,35 @@ const [savingMember, setSavingMember] = useState(false)
   }
 
   const startEditingMember = (member) => {
-  setEditingUserId(member.userId)
-  setEditDisplayName(member.displayName || "")
-  setEditRoleKey(member.roleKey || "")
-  setEditActive(Boolean(member.active))
+  if (
+    !canUpdate ||
+    !member ||
+    (
+      member.roleKey === "owner" &&
+      !canManageOwner
+    )
+  ) {
+    return
+  }
+
+  setEditingUserId(
+    member.userId
+  )
+
+  setEditDisplayName(
+    member.displayName || ""
+  )
+
+  setEditRoleKey(
+    member.roleKey || ""
+  )
+
+  setEditActive(
+    Boolean(member.active)
+  )
+
+  setEditReason("")
+
 }
 
 const cancelEditingMember = () => {
@@ -156,6 +235,7 @@ const cancelEditingMember = () => {
   setEditDisplayName("")
   setEditRoleKey("")
   setEditActive(true)
+  setEditReason("")
 }
 
 const saveMemberChanges = async (member) => {
@@ -165,6 +245,20 @@ const saveMemberChanges = async (member) => {
     toast.error("Inserisci il nome del membro.")
     return
   }
+
+  const normalizedReason =
+  editReason.trim()
+
+if (
+  normalizedReason.length < 10 ||
+  normalizedReason.length > 500
+) {
+  toast.error(
+    "La motivazione deve contenere da 10 a 500 caratteri."
+  )
+
+  return
+}
 
   try {
     setSavingMember(true)
@@ -176,12 +270,22 @@ const saveMemberChanges = async (member) => {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          userId: member.userId,
-          displayName: editDisplayName.trim(),
-          roleKey: editRoleKey,
-          active: editActive
-        })
+       body: JSON.stringify({
+  userId:
+    member.userId,
+
+  displayName:
+    editDisplayName.trim(),
+
+  roleKey:
+    editRoleKey,
+
+  active:
+    editActive,
+
+  reason:
+    normalizedReason
+})
       }
     )
 
@@ -219,9 +323,115 @@ const saveMemberChanges = async (member) => {
   }
 }
 
+const openPasswordReset = (member) => {
+  if (
+    !member ||
+    !canUpdate ||
+    !canSendEmail ||
+    !member.active ||
+    (
+      member.roleKey === "owner" &&
+      !canManageOwner
+    )
+  ) {
+    return
+  }
+
+  setPasswordResetMember(member)
+  setPasswordResetReason("")
+}
+
+const closePasswordReset = () => {
+  if (sendingPasswordReset) {
+    return
+  }
+
+  setPasswordResetMember(null)
+  setPasswordResetReason("")
+}
+
+const sendPasswordReset = async () => {
+  if (
+    !passwordResetMember ||
+    sendingPasswordReset
+  ) {
+    return
+  }
+
+  const normalizedReason =
+    passwordResetReason.trim()
+
+  if (
+    normalizedReason.length < 10 ||
+    normalizedReason.length > 500
+  ) {
+    toast.error(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+
+    return
+  }
+
+  try {
+    setSendingPasswordReset(true)
+
+    const response = await fetch(
+      "/api/admin/team-members/password-reset",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          userId:
+            passwordResetMember.userId,
+
+          reason:
+            normalizedReason
+        })
+      }
+    )
+
+    const data =
+      await response.json()
+
+    if (!response.ok) {
+      toast.error(
+        data.error ||
+          "Impossibile inviare il recupero password."
+      )
+
+      return
+    }
+
+    toast.success(
+      data.message ||
+        "Email di recupero password inviata."
+    )
+
+    setPasswordResetMember(null)
+    setPasswordResetReason("")
+  } catch (error) {
+    console.error(
+      "Errore recupero password Team:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante l'invio del recupero password."
+    )
+  } finally {
+    setSendingPasswordReset(false)
+  }
+}
+
   return (
     <div className="grid grid-cols-1 gap-6 xl:grid-cols-[420px_1fr]">
-      {canInvite && (
+      {canInvite &&
+  canSendEmail && (
         <section className="rounded-2xl border border-white/10 bg-[#0B1028] p-6">
           <div>
             <h2 className="text-xl font-bold">
@@ -229,9 +439,9 @@ const saveMemberChanges = async (member) => {
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-gray-400">
-              L’account verrà creato direttamente
-              in Supabase Auth e sarà subito confermato.
-            </p>
+  Crea l’account Team e invia automaticamente
+  un link sicuro per scegliere la password.
+</p>
           </div>
 
           <form
@@ -282,6 +492,10 @@ const saveMemberChanges = async (member) => {
                 onChange={(event) =>
                   setRoleKey(event.target.value)
                 }
+                disabled={
+  creating ||
+  roles.length === 0
+}
                 required
                 className="w-full rounded-xl border border-white/10 bg-[#111735] p-3 outline-none focus:border-green-400/50"
               >
@@ -296,57 +510,18 @@ const saveMemberChanges = async (member) => {
               </select>
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm text-gray-400">
-                Password
-              </label>
-
-              <input
-                type="password"
-                value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
-                required
-                minLength={12}
-                autoComplete="new-password"
-                className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none focus:border-green-400/50"
-              />
-
-              <p className="mt-2 text-xs leading-5 text-gray-500">
-                Minimo 12 caratteri, con maiuscola,
-                minuscola, numero e simbolo.
-              </p>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-sm text-gray-400">
-                Conferma password
-              </label>
-
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(event) =>
-                  setConfirmPassword(
-                    event.target.value
-                  )
-                }
-                required
-                minLength={12}
-                autoComplete="new-password"
-                className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none focus:border-green-400/50"
-              />
-            </div>
-
             <button
               type="submit"
-              disabled={creating}
+              disabled={
+  creating ||
+  !roleKey ||
+  roles.length === 0
+}
               className="w-full rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {creating
-                ? "Creazione account..."
-                : "Crea account Team"}
+  ? "Creazione e invio..."
+  : "Crea account e invia invito"}
             </button>
           </form>
         </section>
@@ -445,7 +620,10 @@ const saveMemberChanges = async (member) => {
             <input
               type="checkbox"
               checked={editActive}
-              disabled={member.isCurrentUser}
+              disabled={
+  member.isCurrentUser ||
+  !canDeactivate
+}
               onChange={(event) =>
                 setEditActive(event.target.checked)
               }
@@ -456,13 +634,57 @@ const saveMemberChanges = async (member) => {
             </span>
           </label>
 
+          {!member.isCurrentUser &&
+  !canDeactivate && (
+    <p className="text-xs text-yellow-300">
+      Non hai il permesso di disattivare o riattivare questo account.
+    </p>
+  )}
+
+          <div>
+  <label className="mb-2 block text-sm text-gray-400">
+    Motivazione amministrativa
+  </label>
+
+  <textarea
+    value={editReason}
+    onChange={(event) =>
+      setEditReason(
+        event.target.value.slice(
+          0,
+          500
+        )
+      )
+    }
+    disabled={savingMember}
+    minLength={10}
+    maxLength={500}
+    required
+    placeholder="Spiega il motivo della modifica..."
+    className="h-24 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none focus:border-green-400/50 disabled:opacity-60"
+  />
+
+  <div className="mt-2 flex justify-between gap-4 text-xs text-gray-500">
+    <span>
+      Da 10 a 500 caratteri
+    </span>
+
+    <span>
+      {editReason.length}/500
+    </span>
+  </div>
+</div>
+
           <div className="flex flex-col gap-2 sm:flex-row">
             <button
               type="button"
               onClick={() =>
                 saveMemberChanges(member)
               }
-              disabled={savingMember}
+              disabled={
+  savingMember ||
+  editReason.trim().length < 10
+}
               className="rounded-lg bg-green-500 px-4 py-2 text-sm font-semibold text-black disabled:opacity-50"
             >
               {savingMember
@@ -521,15 +743,39 @@ const saveMemberChanges = async (member) => {
                 : "Disattivato"}
             </span>
 
-            <button
-              type="button"
-              onClick={() =>
-                startEditingMember(member)
-              }
-              className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 transition hover:bg-white/10"
-            >
-              Modifica
-            </button>
+            {canUpdate &&
+  (
+    member.roleKey !== "owner" ||
+    canManageOwner
+  ) && (
+    <button
+      type="button"
+      onClick={() =>
+        startEditingMember(member)
+      }
+      className="rounded-lg border border-white/10 px-3 py-2 text-xs font-semibold text-gray-300 transition hover:bg-white/10"
+    >
+      Modifica
+    </button>
+  )}
+
+  {canUpdate &&
+  canSendEmail &&
+  member.active &&
+  (
+    member.roleKey !== "owner" ||
+    canManageOwner
+  ) && (
+    <button
+      type="button"
+      onClick={() =>
+        openPasswordReset(member)
+      }
+      className="rounded-lg border border-blue-400/30 bg-blue-400/10 px-3 py-2 text-xs font-semibold text-blue-300 transition hover:bg-blue-400/20"
+    >
+      Recupera password
+    </button>
+  )}
           </div>
         </div>
       )}
@@ -539,6 +785,99 @@ const saveMemberChanges = async (member) => {
           )}
         </div>
       </section>
+
+{passwordResetMember && (
+  <div
+    className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 p-4"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="password-reset-title"
+  >
+    <div className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#0B1028] p-6 shadow-2xl">
+      <h2
+        id="password-reset-title"
+        className="text-xl font-bold"
+      >
+        Invia recupero password
+      </h2>
+
+      <p className="mt-3 text-sm leading-6 text-gray-400">
+        Verrà inviata un’email di recupero a:
+      </p>
+
+      <div className="mt-3 rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="font-semibold">
+          {passwordResetMember.displayName}
+        </p>
+
+        <p className="mt-1 break-all text-sm text-gray-400">
+          {passwordResetMember.email}
+        </p>
+      </div>
+
+      <div className="mt-5">
+        <label className="mb-2 block text-sm text-gray-400">
+          Motivazione amministrativa
+        </label>
+
+        <textarea
+          value={passwordResetReason}
+          onChange={(event) =>
+            setPasswordResetReason(
+              event.target.value.slice(
+                0,
+                500
+              )
+            )
+          }
+          disabled={sendingPasswordReset}
+          minLength={10}
+          maxLength={500}
+          required
+          placeholder="Spiega perché stai inviando il recupero password..."
+          className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none focus:border-blue-400/50 disabled:opacity-60"
+        />
+
+        <div className="mt-2 flex justify-between gap-4 text-xs text-gray-500">
+          <span>
+            Da 10 a 500 caratteri
+          </span>
+
+          <span>
+            {passwordResetReason.length}/500
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={closePasswordReset}
+          disabled={sendingPasswordReset}
+          className="rounded-xl border border-white/10 px-5 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/10 disabled:opacity-50"
+        >
+          Annulla
+        </button>
+
+        <button
+          type="button"
+          onClick={sendPasswordReset}
+          disabled={
+            sendingPasswordReset ||
+            passwordResetReason.trim()
+              .length < 10
+          }
+          className="rounded-xl bg-blue-500 px-5 py-3 text-sm font-bold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {sendingPasswordReset
+            ? "Invio in corso..."
+            : "Invia recupero"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

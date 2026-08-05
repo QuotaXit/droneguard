@@ -134,19 +134,52 @@ if (!createdJobId) {
 }
 
       try {
-  await fetch("/api/send-job-emails", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      title,
-      location,
-      job_date: date
-    })
-  })
+  const emailResponse =
+    await fetch(
+      "/api/send-job-emails",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          jobId:
+            createdJobId
+        })
+      }
+    )
+
+  let emailData = null
+
+  try {
+    emailData =
+      await emailResponse.json()
+  } catch {
+    emailData = null
+  }
+
+  if (!emailResponse.ok) {
+    console.error(
+      "Errore invio email ai piloti:",
+      emailData?.error ||
+        "Risposta email non valida"
+    )
+  } else if (
+    Number(
+      emailData?.failed || 0
+    ) > 0
+  ) {
+    console.warn(
+      "Alcune email ai piloti non sono state inviate:",
+      emailData
+    )
+  }
 } catch (emailError) {
-  console.error("Errore invio email ai piloti:", emailError)
+  console.error(
+    "Errore imprevisto invio email ai piloti:",
+    emailError
+  )
 }
 
     

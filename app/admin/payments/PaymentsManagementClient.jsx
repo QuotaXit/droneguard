@@ -93,6 +93,36 @@ function getUserName(user) {
   )
 }
 
+function createRequestId() {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID ===
+      "function"
+  ) {
+    return crypto.randomUUID()
+  }
+
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+    .replace(
+      /[xy]/g,
+      (character) => {
+        const randomValue =
+          Math.floor(
+            Math.random() * 16
+          )
+
+        const value =
+          character === "x"
+            ? randomValue
+            : (
+                randomValue & 0x3
+              ) | 0x8
+
+        return value.toString(16)
+      }
+    )
+}
+
 function SummaryCard({
   label,
   value,
@@ -151,6 +181,137 @@ function ProcessingStatusBadge({
       {getProcessingStatusLabel(status)}
     </span>
   )
+}
+
+const refundStatusLabels = {
+  pending_stripe:
+    "In attesa di Stripe",
+
+  succeeded:
+    "Rimborso completato",
+
+  failed:
+    "Rimborso fallito",
+
+  cancelled:
+    "Rimborso annullato"
+}
+
+function getRefundStatusLabel(status) {
+  return (
+    refundStatusLabels[status] ||
+    status ||
+    "Stato non disponibile"
+  )
+}
+
+function RefundStatusBadge({
+  status
+}) {
+  const classes = {
+    pending_stripe:
+      "bg-yellow-400/10 text-yellow-300",
+
+    succeeded:
+      "bg-purple-400/10 text-purple-300",
+
+    failed:
+      "bg-red-400/10 text-red-300",
+
+    cancelled:
+      "bg-gray-400/10 text-gray-300"
+  }
+
+  return (
+    <span
+      className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${
+        classes[status] ||
+        "bg-white/5 text-gray-300"
+      }`}
+    >
+      {getRefundStatusLabel(status)}
+    </span>
+  )
+}
+
+function isRefundActionAvailable(
+  payment,
+  canRefund
+) {
+  if (!canRefund || !payment) {
+    return false
+  }
+
+  const latestRefund =
+    payment.latestRefund
+
+  /*
+   * Una richiesta pendente può essere ripresa
+   * usando lo stesso requestId.
+   */
+  if (
+    latestRefund?.status ===
+      "pending_stripe" &&
+    latestRefund?.requestId
+  ) {
+    return true
+  }
+
+  /*
+   * Un rimborso riuscito è definitivo.
+   */
+  if (
+    latestRefund?.status ===
+      "succeeded" ||
+    payment.processingStatus ===
+      "refunded"
+  ) {
+    return false
+  }
+
+  /*
+   * Dopo un tentativo fallito o annullato
+   * può essere avviata una nuova richiesta.
+   */
+  return (
+    payment.processingStatus ===
+      "processed" &&
+    payment.paymentStatus ===
+      "paid" &&
+    Boolean(
+      payment.paymentIntentId
+    ) &&
+    Number.isSafeInteger(
+      Number(payment.amountCents)
+    ) &&
+    Number(payment.amountCents) > 0 &&
+    Number.isInteger(
+      Number(payment.credits)
+    ) &&
+    Number(payment.credits) > 0 &&
+    typeof payment.livemode ===
+      "boolean"
+  )
+}
+
+function getRefundActionLabel(payment) {
+  if (
+    payment?.latestRefund?.status ===
+      "pending_stripe"
+  ) {
+    return "Riprendi rimborso"
+  }
+
+  if (
+    payment?.latestRefund?.status ===
+      "failed" ||
+    payment?.latestRefund?.status ===
+      "cancelled"
+  ) {
+    return "Riprova rimborso"
+  }
+
+  return "Rimborsa pagamento"
 }
 
 function ModeBadge({ livemode }) {
@@ -215,6 +376,34 @@ export default function PaymentsManagementClient() {
     selectedPayment,
     setSelectedPayment
   ] = useState(null)
+
+  const [canRefund, setCanRefund] =
+  useState(false)
+
+  const [
+  refundPayment,
+  setRefundPayment
+] = useState(null)
+
+const [
+  refundReason,
+  setRefundReason
+] = useState("")
+
+const [
+  refundConfirmation,
+  setRefundConfirmation
+] = useState("")
+
+const [
+  refundRequestId,
+  setRefundRequestId
+] = useState("")
+
+const [
+  refunding,
+  setRefunding
+] = useState(false)
 
   const [
     searchInput,
@@ -299,12 +488,20 @@ export default function PaymentsManagementClient() {
               "Impossibile caricare i pagamenti."
           )
 
+          setCanRefund(false)
+
           return
         }
 
         setPayments(
           data.payments || []
         )
+
+        setCanRefund(
+  Boolean(
+    data.permissions?.canRefund
+  )
+)
 
         setSummary(
           data.summary || {
@@ -369,6 +566,177 @@ export default function PaymentsManagementClient() {
     setModeFilter("all")
     setPage(1)
   }
+
+  const openRefundModal = (payment) => {
+  if (
+    !canRefund ||
+    !payment ||
+    refunding
+  ) {
+    return
+  }
+
+  const existingRefund =
+    payment.latestRefund
+
+  const canResume =
+    existingRefund?.status ===
+      "pending_stripe" &&
+    existingRefund?.requestId
+
+  setRefundPayment(payment)
+  setRefundConfirmation("")
+
+  setRefundReason(
+    canResume
+      ? existingRefund.reason || ""
+      : ""
+  )
+
+  setRefundRequestId(
+    canResume
+      ? existingRefund.requestId
+      : createRequestId()
+  )
+}
+
+const closeRefundModal = () => {
+  if (refunding) {
+    return
+  }
+
+  setRefundPayment(null)
+  setRefundReason("")
+  setRefundConfirmation("")
+  setRefundRequestId("")
+}
+
+const submitRefund = async () => {
+  if (
+    !canRefund ||
+    !refundPayment ||
+    refunding
+  ) {
+    return
+  }
+
+  const normalizedReason =
+    refundReason.trim()
+
+  if (
+    normalizedReason.length < 10 ||
+    normalizedReason.length > 500
+  ) {
+    toast.error(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+
+    return
+  }
+
+  if (
+  refundConfirmation
+    .trim()
+    .toUpperCase() !==
+  "RIMBORSA"
+) {
+  toast.error(
+    "Scrivi RIMBORSA per confermare l’operazione."
+  )
+
+  return
+}
+
+  if (!refundRequestId) {
+    toast.error(
+      "Identificativo della richiesta non disponibile."
+    )
+
+    return
+  }
+
+  try {
+    setRefunding(true)
+
+    const response = await fetch(
+      "/api/admin/payments/refund",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          paymentId:
+            refundPayment.id,
+
+          requestId:
+            refundRequestId,
+
+          reason:
+            normalizedReason
+        })
+      }
+    )
+
+    const data =
+      await response.json()
+
+    if (!response.ok) {
+      toast.error(
+        data.error ||
+          "Impossibile completare il rimborso."
+      )
+
+      /*
+       * L'esito Stripe potrebbe essere incerto.
+       * Aggiorna il registro senza creare
+       * una seconda richiesta.
+       */
+      if (data.refundPending) {
+  setRefundPayment(null)
+  setRefundReason("")
+  setRefundConfirmation("")
+  setRefundRequestId("")
+  setSelectedPayment(null)
+
+  await loadPayments()
+}
+
+      return
+    }
+
+    toast.success(
+      data.message ||
+        (
+          data.pending
+            ? "Rimborso in attesa di conferma Stripe."
+            : "Pagamento rimborsato correttamente."
+        )
+    )
+
+    setRefundPayment(null)
+setRefundReason("")
+setRefundConfirmation("")
+setRefundRequestId("")
+setSelectedPayment(null)
+
+    await loadPayments()
+  } catch (error) {
+    console.error(
+      "Errore richiesta rimborso:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante il rimborso."
+    )
+  } finally {
+    setRefunding(false)
+  }
+}
 
   return (
     <div className="space-y-6">
@@ -1055,6 +1423,185 @@ export default function PaymentsManagementClient() {
               </div>
             )}
 
+                        <section className="mt-6 rounded-xl border border-white/10 p-4">
+              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-gray-500">
+                    Gestione rimborso
+                  </p>
+
+                  <h3 className="mt-2 text-lg font-bold">
+                    Rimborso totale Stripe
+                  </h3>
+
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+                    Il rimborso restituisce l’intero importo
+                    del pagamento e rimuove tutti i crediti
+                    acquistati con questo pacchetto.
+                  </p>
+                </div>
+
+                {selectedPayment.latestRefund && (
+                  <RefundStatusBadge
+                    status={
+                      selectedPayment
+                        .latestRefund
+                        .status
+                    }
+                  />
+                )}
+              </div>
+
+              {selectedPayment.latestRefund ? (
+                <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <DetailBox
+                    label="Stato richiesta"
+                    value={getRefundStatusLabel(
+                      selectedPayment
+                        .latestRefund
+                        .status
+                    )}
+                  />
+
+                  <DetailBox
+                    label="Stato Stripe"
+                    value={
+                      selectedPayment
+                        .latestRefund
+                        .stripeStatus
+                    }
+                  />
+
+                  <DetailBox
+                    label="Importo rimborso"
+                    value={formatCurrency(
+                      selectedPayment
+                        .latestRefund
+                        .amountCents,
+                      selectedPayment
+                        .latestRefund
+                        .currency
+                    )}
+                  />
+
+                  <DetailBox
+                    label="Crediti stornati"
+                    value={formatNumber(
+                      selectedPayment
+                        .latestRefund
+                        .creditsReversed
+                    )}
+                  />
+
+                  <DetailBox
+                    label="Creata il"
+                    value={formatDate(
+                      selectedPayment
+                        .latestRefund
+                        .createdAt
+                    )}
+                  />
+
+                  <DetailBox
+                    label="Completata il"
+                    value={
+                      selectedPayment
+                        .latestRefund
+                        .completedAt
+                        ? formatDate(
+                            selectedPayment
+                              .latestRefund
+                              .completedAt
+                          )
+                        : "Non completata"
+                    }
+                  />
+
+                  <DetailBox
+                    label="Refund ID Stripe"
+                    value={
+                      selectedPayment
+                        .latestRefund
+                        .stripeRefundId
+                    }
+                    mono
+                    className="sm:col-span-2"
+                  />
+
+                  <DetailBox
+                    label="Motivazione"
+                    value={
+                      selectedPayment
+                        .latestRefund
+                        .reason
+                    }
+                    className="sm:col-span-2"
+                  />
+                </div>
+              ) : (
+                <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm leading-6 text-gray-400">
+                  Non è stata ancora avviata alcuna
+                  richiesta di rimborso per questo pagamento.
+                </div>
+              )}
+
+              {selectedPayment.latestRefund
+                ?.failureMessage && (
+                <div className="mt-4 rounded-xl border border-red-400/20 bg-red-400/5 p-4">
+                  <p className="text-xs uppercase text-red-300">
+                    Errore rimborso
+                  </p>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-300">
+                    {
+                      selectedPayment
+                        .latestRefund
+                        .failureMessage
+                    }
+                  </p>
+                </div>
+              )}
+
+              {isRefundActionAvailable(
+                selectedPayment,
+                canRefund
+              ) && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    openRefundModal(
+                      selectedPayment
+                    )
+                  }
+                  disabled={refunding}
+                  className="mt-5 w-full rounded-xl bg-red-500 px-5 py-3 font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {getRefundActionLabel(
+                    selectedPayment
+                  )}
+                </button>
+              )}
+
+              {!canRefund &&
+                selectedPayment
+                  .processingStatus ===
+                  "processed" && (
+                  <p className="mt-4 text-sm text-gray-500">
+                    Non possiedi il permesso necessario
+                    per effettuare rimborsi.
+                  </p>
+                )}
+
+              {selectedPayment
+                .processingStatus ===
+                "refunded" && (
+                <p className="mt-4 rounded-xl border border-purple-400/20 bg-purple-400/5 p-4 text-sm text-purple-300">
+                  Questo pagamento è già stato
+                  rimborsato definitivamente.
+                </p>
+              )}
+            </section>
+
             {selectedPayment.latestEvent && (
               <section className="mt-6 rounded-xl border border-white/10 p-4">
                 <p className="text-xs uppercase tracking-wide text-gray-500">
@@ -1128,6 +1675,225 @@ export default function PaymentsManagementClient() {
           </div>
         </div>
       )}
+
+      {refundPayment && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 p-4">
+          <div className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-red-400/20 bg-[#0B1028] p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-300">
+                  Operazione irreversibile
+                </p>
+
+                <h2 className="mt-3 text-2xl font-black">
+                  {refundPayment.latestRefund
+                    ?.status ===
+                    "pending_stripe"
+                    ? "Riprendi il rimborso"
+                    : "Rimborsa il pagamento"}
+                </h2>
+
+                <p className="mt-3 text-sm leading-6 text-gray-400">
+                  Verrà richiesto a Stripe il rimborso
+                  totale del pagamento. Tutti i crediti
+                  acquistati con questo pagamento verranno
+                  sottratti dal saldo dell’utente.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeRefundModal}
+                disabled={refunding}
+                className="rounded-lg border border-white/10 px-3 py-2 text-sm transition hover:bg-white/10 disabled:opacity-50"
+              >
+                Chiudi
+              </button>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <DetailBox
+                label="Utente"
+                value={getUserName(
+                  refundPayment.user
+                )}
+              />
+
+              <DetailBox
+                label="Email"
+                value={
+                  refundPayment.user?.email
+                }
+              />
+
+              <DetailBox
+                label="Importo da rimborsare"
+                value={formatCurrency(
+                  refundPayment.amountCents,
+                  refundPayment.currency
+                )}
+              />
+
+              <DetailBox
+                label="Crediti da stornare"
+                value={formatNumber(
+                  refundPayment.credits
+                )}
+              />
+
+              <DetailBox
+                label="Modalità Stripe"
+                value={
+                  refundPayment.livemode
+                    ? "LIVE"
+                    : "TEST"
+                }
+              />
+
+              <DetailBox
+                label="Pacchetto"
+                value={
+                  refundPayment.package?.name ||
+                  refundPayment.packageId
+                }
+              />
+
+              <DetailBox
+                label="Payment Intent"
+                value={
+                  refundPayment.paymentIntentId
+                }
+                mono
+                className="sm:col-span-2"
+              />
+
+              <DetailBox
+                label="Identificativo richiesta"
+                value={refundRequestId}
+                mono
+                className="sm:col-span-2"
+              />
+            </div>
+
+            {refundPayment.latestRefund
+              ?.status ===
+              "pending_stripe" && (
+              <div className="mt-5 rounded-xl border border-yellow-400/30 bg-yellow-400/5 p-4">
+                <p className="font-bold text-yellow-300">
+                  Richiesta Stripe già avviata
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-300">
+                  Verrà riutilizzato lo stesso identificativo
+                  della richiesta. Non verrà creato un secondo
+                  rimborso intenzionale.
+                </p>
+
+                {refundPayment.latestRefund
+                  .stripeRefundId && (
+                  <p className="mt-3 break-all font-mono text-xs text-gray-400">
+                    {
+                      refundPayment.latestRefund
+                        .stripeRefundId
+                    }
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="mt-6">
+              <label className="mb-2 block text-sm font-semibold text-gray-300">
+                Motivazione amministrativa
+              </label>
+
+              <textarea
+                value={refundReason}
+                onChange={(event) =>
+                  setRefundReason(
+                    event.target.value.slice(
+                      0,
+                      500
+                    )
+                  )
+                }
+                disabled={refunding}
+                minLength={10}
+                maxLength={500}
+                required
+                placeholder="Spiega il motivo del rimborso..."
+                className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none focus:border-red-400/50 disabled:opacity-60"
+              />
+
+              <div className="mt-2 flex justify-between gap-4 text-xs text-gray-500">
+                <span>
+                  Da 10 a 500 caratteri
+                </span>
+
+                <span>
+                  {refundReason.length}/500
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-5 rounded-xl border border-red-400/20 bg-red-400/5 p-4">
+              <label className="block text-sm font-semibold text-red-200">
+                Scrivi RIMBORSA per confermare
+              </label>
+
+              <input
+                value={refundConfirmation}
+                onChange={(event) =>
+                  setRefundConfirmation(
+                    event.target.value.slice(
+                      0,
+                      20
+                    )
+                  )
+                }
+                disabled={refunding}
+                autoComplete="off"
+                placeholder="RIMBORSA"
+                className="mt-3 w-full rounded-xl border border-red-400/20 bg-black/20 p-3 font-mono uppercase outline-none focus:border-red-400/60 disabled:opacity-60"
+              />
+            </div>
+
+            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+              <button
+                type="button"
+                onClick={submitRefund}
+                disabled={
+                  refunding ||
+                  refundReason.trim().length <
+                    10 ||
+                  refundConfirmation
+                    .trim()
+                    .toUpperCase() !==
+                    "RIMBORSA"
+                }
+                className="flex-1 rounded-xl bg-red-500 px-5 py-3 font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {refunding
+                  ? "Elaborazione rimborso..."
+                  : refundPayment.latestRefund
+                        ?.status ===
+                      "pending_stripe"
+                    ? "Riprendi richiesta Stripe"
+                    : "Conferma rimborso totale"}
+              </button>
+
+              <button
+                type="button"
+                onClick={closeRefundModal}
+                disabled={refunding}
+                className="rounded-xl border border-white/10 px-5 py-3 font-semibold transition hover:bg-white/10 disabled:opacity-50"
+              >
+                Annulla
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

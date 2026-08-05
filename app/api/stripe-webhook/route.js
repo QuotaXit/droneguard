@@ -10,9 +10,20 @@ export const dynamic = "force-dynamic"
 
 const MAX_WEBHOOK_BYTES = 1_000_000
 
-const supportedEvents = new Set([
+const checkoutEvents = new Set([
   "checkout.session.completed",
   "checkout.session.async_payment_succeeded"
+])
+
+const refundEvents = new Set([
+  "refund.created",
+  "refund.updated",
+  "refund.failed"
+])
+
+const supportedEvents = new Set([
+  ...checkoutEvents,
+  ...refundEvents
 ])
 
 function jsonResponse(body, status = 200) {
@@ -46,6 +57,73 @@ function getPaymentIntentId(session) {
   }
 
   return session.payment_intent.id || null
+}
+
+function getStripeObjectId(value) {
+  if (!value) {
+    return null
+  }
+
+  if (typeof value === "string") {
+    return value
+  }
+
+  return value.id || null
+}
+
+function getRefundRequestId(refund) {
+  const rawRequestId =
+    String(
+      refund?.metadata
+        ?.droneguard_refund_request_id ||
+      ""
+    ).trim()
+
+  return isValidUuid(rawRequestId)
+    ? rawRequestId
+    : null
+}
+
+function createRefundEventMetadata(
+  event,
+  refund
+) {
+  return {
+    source:
+      "stripe_refund_webhook",
+
+    event_api_version:
+      event?.api_version || null,
+
+    event_created_at:
+      Number.isFinite(
+        Number(event?.created)
+      )
+        ? new Date(
+            Number(event.created) *
+              1000
+          ).toISOString()
+        : null,
+
+    event_request_id:
+      event?.request?.id || null,
+
+    refund_reason:
+      refund?.reason || null,
+
+    refund_failure_reason:
+      refund?.failure_reason || null,
+
+    refund_pending_reason:
+      refund?.pending_reason || null,
+
+    refund_next_action_type:
+      refund?.next_action?.type ||
+      null,
+
+    refund_metadata:
+      refund?.metadata || {}
+  }
 }
 
 export async function POST(request) {
@@ -190,6 +268,253 @@ export async function POST(request) {
       eventType: event.type
     })
   }
+
+  if (refundEvents.has(event.type)) {
+  const refund =
+    event.data?.object
+
+  if (
+    !refund ||
+    refund.object !== "refund"
+  ) {
+    console.error(
+      "[stripe-webhook] Oggetto Refund non valido:",
+      event.id
+    )
+
+    return jsonResponse(
+      {
+        received: false,
+        error:
+          "Oggetto rimborso Stripe non valido."
+      },
+      400
+    )
+  }
+
+  const stripeRefundId =
+    String(
+      refund.id || ""
+    ).trim()
+
+  const paymentIntentId =
+    getStripeObjectId(
+      refund.payment_intent
+    )
+
+  const amountTotal =
+    Number(refund.amount)
+
+  const currency =
+    String(
+      refund.currency || ""
+    )
+      .trim()
+      .toLowerCase()
+
+  let refundStatus =
+    String(
+      refund.status || ""
+    )
+      .trim()
+      .toLowerCase()
+
+  if (
+    !refundStatus &&
+    event.type === "refund.failed"
+  ) {
+    refundStatus = "failed"
+  }
+
+  const refundRequestId =
+    getRefundRequestId(refund)
+
+  const failureReason =
+    refund.failure_reason
+      ? String(
+          refund.failure_reason
+        ).slice(0, 2000)
+      : null
+
+  const refundMetadata =
+    createRefundEventMetadata(
+      event,
+      refund
+    )
+
+  const adminSupabase =
+    createAdminSupabaseClient()
+
+  const {
+    data: refundResult,
+    error: refundError
+  } = await adminSupabase
+    .rpc(
+      "process_stripe_refund_event",
+      {
+        p_event_id:
+          event.id,
+
+        p_event_type:
+          event.type,
+
+        p_refund_request_id:
+          refundRequestId,
+
+        p_stripe_refund_id:
+          stripeRefundId,
+
+        p_payment_intent_id:
+          paymentIntentId,
+
+        p_amount_total:
+          amountTotal,
+
+        p_currency:
+          currency,
+
+        p_refund_status:
+          refundStatus,
+
+        p_failure_reason:
+          failureReason,
+
+        p_livemode:
+          Boolean(event.livemode),
+
+        p_metadata:
+          refundMetadata
+      }
+    )
+    .single()
+
+  if (refundError) {
+    console.error(
+      "[stripe-webhook] Errore elaborazione rimborso:",
+      {
+        eventId:
+          event.id,
+
+        refundId:
+          stripeRefundId,
+
+        code:
+          refundError.code,
+
+        message:
+          refundError.message,
+
+        details:
+          refundError.details
+      }
+    )
+
+    /*
+     * Risposta 500:
+     * Stripe ritenterà la consegna
+     * dello stesso evento.
+     */
+    return jsonResponse(
+      {
+        received: false,
+        error:
+          "Elaborazione del rimborso non completata."
+      },
+      500
+    )
+  }
+
+  if (!refundResult) {
+    console.error(
+      "[stripe-webhook] Risultato rimborso mancante:",
+      {
+        eventId:
+          event.id,
+
+        refundId:
+          stripeRefundId
+      }
+    )
+
+    return jsonResponse(
+      {
+        received: false,
+        error:
+          "Risultato rimborso non valido."
+      },
+      500
+    )
+  }
+
+  const processingStatus =
+    String(
+      refundResult
+        .event_processing_status ||
+      ""
+    )
+      .trim()
+      .toLowerCase()
+
+  return jsonResponse({
+    received: true,
+
+    processed:
+      processingStatus ===
+      "processed",
+
+    ignored:
+      processingStatus ===
+      "ignored",
+
+    recordedFailure:
+      processingStatus ===
+      "failed",
+
+    alreadyProcessed:
+      Boolean(
+        refundResult
+          .already_processed
+      ),
+
+    eventId:
+      event.id,
+
+    eventType:
+      event.type,
+
+    stripeRefundId,
+
+    stripeStatus:
+      refundResult.stripe_status ||
+      refundStatus,
+
+    refundRequestId:
+      refundResult
+        .matched_request_id ||
+      null,
+
+    paymentId:
+      refundResult.payment_id ||
+      null,
+
+    requestStatus:
+      refundResult
+        .request_status ||
+      null,
+
+    creditsAffected:
+      Number(
+        refundResult
+          .credits_affected || 0
+      ),
+
+    balanceAfter:
+      Number(
+        refundResult
+          .balance_after || 0
+      )
+  })
+}
 
   const session = event.data?.object
 

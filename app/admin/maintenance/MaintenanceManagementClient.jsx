@@ -217,48 +217,32 @@ export default function MaintenanceManagementClient() {
         )
 
         setForm({
-          maintenanceEnabled:
-            data.settings
-              .maintenanceEnabled,
+  maintenanceEnabled:
+    data.settings
+      .maintenanceEnabled,
 
-          maintenanceTitle:
-            data.settings
-              .maintenanceTitle,
+  maintenanceTitle:
+    data.settings
+      .maintenanceTitle,
 
-          maintenanceMessage:
-            data.settings
-              .maintenanceMessage,
+  maintenanceMessage:
+    data.settings
+      .maintenanceMessage,
 
-          maintenanceStartsAt:
-            toDateTimeLocal(
-              data.settings
-                .maintenanceStartsAt
-            ),
+  maintenanceStartsAt:
+    toDateTimeLocal(
+      data.settings
+        .maintenanceStartsAt
+    ),
 
-          maintenanceEndsAt:
-            toDateTimeLocal(
-              data.settings
-                .maintenanceEndsAt
-            ),
+  maintenanceEndsAt:
+    toDateTimeLocal(
+      data.settings
+        .maintenanceEndsAt
+    ),
 
-          registrationsEnabled:
-            data.settings
-              .registrationsEnabled,
-
-          jobCreationEnabled:
-            data.settings
-              .jobCreationEnabled,
-
-          applicationsEnabled:
-            data.settings
-              .applicationsEnabled,
-
-          paymentsEnabled:
-            data.settings
-              .paymentsEnabled,
-
-          reason: ""
-        })
+  reason: ""
+})
       } catch (error) {
         console.error(
           "Errore caricamento manutenzione:",
@@ -294,68 +278,30 @@ export default function MaintenanceManagementClient() {
       }
 
       return (
-        form.maintenanceEnabled !==
-          settings.maintenanceEnabled ||
-        form.maintenanceTitle.trim() !==
-          settings.maintenanceTitle ||
-        form.maintenanceMessage.trim() !==
-          settings.maintenanceMessage ||
-        form.maintenanceStartsAt !==
-          toDateTimeLocal(
-            settings.maintenanceStartsAt
-          ) ||
-        form.maintenanceEndsAt !==
-          toDateTimeLocal(
-            settings.maintenanceEndsAt
-          ) ||
-        form.registrationsEnabled !==
-          settings.registrationsEnabled ||
-        form.jobCreationEnabled !==
-          settings.jobCreationEnabled ||
-        form.applicationsEnabled !==
-          settings.applicationsEnabled ||
-        form.paymentsEnabled !==
-          settings.paymentsEnabled
-      )
+  form.maintenanceEnabled !==
+    settings.maintenanceEnabled ||
+
+  form.maintenanceTitle.trim() !==
+    settings.maintenanceTitle ||
+
+  form.maintenanceMessage.trim() !==
+    settings.maintenanceMessage ||
+
+  form.maintenanceStartsAt !==
+    toDateTimeLocal(
+      settings.maintenanceStartsAt
+    ) ||
+
+  form.maintenanceEndsAt !==
+    toDateTimeLocal(
+      settings.maintenanceEndsAt
+    )
+)
     }, [
       settings,
       form
     ])
 
-  const disabledServices =
-    useMemo(() => {
-      if (!form) {
-        return []
-      }
-
-      const disabled = []
-
-      if (!form.registrationsEnabled) {
-        disabled.push("Registrazioni")
-      }
-
-      if (!form.jobCreationEnabled) {
-        disabled.push(
-          "Pubblicazione lavori"
-        )
-      }
-
-      if (!form.applicationsEnabled) {
-        disabled.push("Candidature")
-      }
-
-      if (!form.paymentsEnabled) {
-        disabled.push("Pagamenti")
-      }
-
-      if (form.maintenanceEnabled) {
-        disabled.push(
-          "Modalità manutenzione"
-        )
-      }
-
-      return disabled
-    }, [form])
 
   const openConfirmation = () => {
     if (!form || !canManage) {
@@ -415,6 +361,20 @@ export default function MaintenanceManagementClient() {
       return
     }
 
+    const normalizedReason =
+  form.reason.trim()
+
+if (
+  normalizedReason.length < 10 ||
+  normalizedReason.length > 500
+) {
+  toast.error(
+    "La motivazione deve contenere da 10 a 500 caratteri."
+  )
+
+  return
+}
+
     setConfirmationOpen(true)
   }
 
@@ -466,21 +426,8 @@ export default function MaintenanceManagementClient() {
               form.maintenanceEndsAt ||
               null,
 
-            registrationsEnabled:
-              form.registrationsEnabled,
-
-            jobCreationEnabled:
-              form.jobCreationEnabled,
-
-            applicationsEnabled:
-              form.applicationsEnabled,
-
-            paymentsEnabled:
-              form.paymentsEnabled,
-
-            reason:
-              form.reason.trim() ||
-              null
+           reason:
+  form.reason.trim()
           })
         }
       )
@@ -537,62 +484,22 @@ export default function MaintenanceManagementClient() {
 
   return (
     <div className="space-y-6">
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-        <SummaryCard
-          label="Manutenzione"
-          enabled={
-            !settings.maintenanceActive
-          }
-          activeText="Sito operativo"
-          inactiveText="Attiva"
-          description={
-            settings.maintenanceEnabled &&
-            !settings.maintenanceActive
-              ? "Manutenzione configurata ma non ancora attiva."
-              : "Stato effettivo in questo momento."
-          }
-        />
-
-        <SummaryCard
-          label="Registrazioni"
-          enabled={
-            settings.registrationsEnabled
-          }
-          activeText="Aperte"
-          inactiveText="Bloccate"
-          description="Creazione di nuovi account."
-        />
-
-        <SummaryCard
-          label="Nuovi lavori"
-          enabled={
-            settings.jobCreationEnabled
-          }
-          activeText="Consentiti"
-          inactiveText="Bloccati"
-          description="Pubblicazione delle richieste."
-        />
-
-        <SummaryCard
-          label="Candidature"
-          enabled={
-            settings.applicationsEnabled
-          }
-          activeText="Consentite"
-          inactiveText="Bloccate"
-          description="Risposte dei piloti ai lavori."
-        />
-
-        <SummaryCard
-          label="Pagamenti"
-          enabled={
-            settings.paymentsEnabled
-          }
-          activeText="Consentiti"
-          inactiveText="Bloccati"
-          description="Creazione di Checkout Stripe."
-        />
-      </section>
+     <section className="grid grid-cols-1 gap-4 lg:max-w-xl">
+  <SummaryCard
+    label="Manutenzione"
+    enabled={
+      !settings.maintenanceActive
+    }
+    activeText="Sito operativo"
+    inactiveText="Manutenzione attiva"
+    description={
+      settings.maintenanceEnabled &&
+      !settings.maintenanceActive
+        ? "Manutenzione configurata ma non ancora attiva."
+        : "Stato effettivo della piattaforma in questo momento."
+    }
+  />
+</section>
 
       <section className="rounded-2xl border border-white/10 bg-[#0B1028] p-5 sm:p-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
@@ -826,86 +733,6 @@ export default function MaintenanceManagementClient() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 pt-6">
-            <h3 className="font-bold">
-              Servizi individuali
-            </h3>
-
-            <p className="mt-2 text-sm text-gray-400">
-              Possono essere bloccati anche senza attivare
-              la manutenzione globale.
-            </p>
-
-            <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <ToggleRow
-                label="Registrazioni abilitate"
-                description="Consente la creazione di nuovi account pilota e cliente."
-                checked={
-                  form
-                    .registrationsEnabled
-                }
-                onChange={(value) =>
-                  updateForm(
-                    "registrationsEnabled",
-                    value
-                  )
-                }
-                disabled={!canManage}
-                danger
-              />
-
-              <ToggleRow
-                label="Pubblicazione lavori abilitata"
-                description="Consente ai clienti di creare nuove richieste."
-                checked={
-                  form
-                    .jobCreationEnabled
-                }
-                onChange={(value) =>
-                  updateForm(
-                    "jobCreationEnabled",
-                    value
-                  )
-                }
-                disabled={!canManage}
-                danger
-              />
-
-              <ToggleRow
-                label="Candidature abilitate"
-                description="Consente ai piloti di candidarsi ai lavori disponibili."
-                checked={
-                  form
-                    .applicationsEnabled
-                }
-                onChange={(value) =>
-                  updateForm(
-                    "applicationsEnabled",
-                    value
-                  )
-                }
-                disabled={!canManage}
-                danger
-              />
-
-              <ToggleRow
-                label="Pagamenti abilitati"
-                description="Consente la creazione di nuove sessioni Checkout Stripe."
-                checked={
-                  form.paymentsEnabled
-                }
-                onChange={(value) =>
-                  updateForm(
-                    "paymentsEnabled",
-                    value
-                  )
-                }
-                disabled={!canManage}
-                danger
-              />
-            </div>
-          </div>
-
           <div>
             <label className="mb-2 block text-sm text-gray-400">
               Motivazione amministrativa
@@ -913,6 +740,8 @@ export default function MaintenanceManagementClient() {
 
             <textarea
               value={form.reason}
+              minLength={10}
+              required
               onChange={(event) =>
                 updateForm(
                   "reason",
@@ -965,31 +794,47 @@ export default function MaintenanceManagementClient() {
               Le impostazioni verranno registrate
               immediatamente nel database.
             </p>
+            <div
+  className={`mt-5 rounded-xl border p-4 ${
+    form.maintenanceEnabled
+      ? "border-red-400/30 bg-red-400/5"
+      : "border-green-400/20 bg-green-400/5"
+  }`}
+>
+  <p
+    className={`font-bold ${
+      form.maintenanceEnabled
+        ? "text-red-300"
+        : "text-green-300"
+    }`}
+  >
+    Stato dopo il salvataggio
+  </p>
 
-            {disabledServices.length > 0 ? (
-              <div className="mt-5 rounded-xl border border-red-400/30 bg-red-400/5 p-4">
-                <p className="font-bold text-red-300">
-                  Funzioni che risulteranno bloccate
-                </p>
+  <p className="mt-2 text-sm leading-6 text-gray-300">
+    {form.maintenanceEnabled
+      ? "La modalità manutenzione risulterà abilitata."
+      : "La modalità manutenzione risulterà disabilitata e il sito resterà operativo."}
+  </p>
 
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {disabledServices.map(
-                    (service) => (
-                      <span
-                        key={service}
-                        className="rounded-full bg-red-400/10 px-3 py-1 text-xs font-bold text-red-300"
-                      >
-                        {service}
-                      </span>
-                    )
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="mt-5 rounded-xl border border-green-400/20 bg-green-400/5 p-4 text-green-300">
-                Tutti i servizi risulteranno abilitati.
-              </div>
-            )}
+  {form.maintenanceStartsAt && (
+    <p className="mt-3 text-xs text-gray-400">
+      Inizio:{" "}
+      {formatDate(
+        form.maintenanceStartsAt
+      )}
+    </p>
+  )}
+
+  {form.maintenanceEndsAt && (
+    <p className="mt-1 text-xs text-gray-400">
+      Fine:{" "}
+      {formatDate(
+        form.maintenanceEndsAt
+      )}
+    </p>
+  )}
+</div>
 
             <div className="mt-6 flex flex-col gap-2 sm:flex-row">
               <button

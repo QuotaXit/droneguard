@@ -126,11 +126,12 @@ export async function GET(request) {
   )
 
   const allowedStatuses = new Set([
-    "all",
-    "open",
-    "assigned",
-    "completed"
-  ])
+  "all",
+  "open",
+  "assigned",
+  "completed",
+  "cancelled"
+])
 
   if (!allowedStatuses.has(status)) {
     return jsonError(
@@ -634,4 +635,413 @@ export async function GET(request) {
       }
     }
   )
+}
+
+export async function PATCH(request) {
+  const requestOrigin =
+    request.headers.get("origin")
+
+  if (
+    requestOrigin &&
+    requestOrigin !==
+      request.nextUrl.origin
+  ) {
+    return jsonError(
+      "Origine della richiesta non autorizzata.",
+      403
+    )
+  }
+
+  const {
+    user,
+    access
+  } = await getTeamAccess()
+
+  if (!user) {
+    return jsonError(
+      "Devi effettuare l'accesso.",
+      401
+    )
+  }
+
+  if (!access?.active) {
+    return jsonError(
+      "Accesso Team non autorizzato.",
+      403
+    )
+  }
+
+  let body
+
+  try {
+    body = await request.json()
+  } catch {
+    return jsonError(
+      "Dati della richiesta non validi."
+    )
+  }
+
+  const action = String(
+    body?.action || ""
+  )
+    .trim()
+    .toLowerCase()
+
+  const jobId = String(
+    body?.jobId || ""
+  ).trim()
+
+  const reason = String(
+    body?.reason || ""
+  ).trim()
+
+  const allowedActions =
+    new Set([
+      "update",
+      "cancel",
+      "reopen"
+    ])
+
+  if (!allowedActions.has(action)) {
+    return jsonError(
+      "Azione sul lavoro non valida."
+    )
+  }
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+  if (
+    !jobId ||
+    !uuidPattern.test(jobId)
+  ) {
+    return jsonError(
+      "Identificativo lavoro non valido."
+    )
+  }
+
+  if (
+    reason.length < 10 ||
+    reason.length > 500
+  ) {
+    return jsonError(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+  }
+
+  const permissions =
+    Array.isArray(
+      access.permissions
+    )
+      ? access.permissions
+      : []
+
+  const requiredPermission =
+    action === "update"
+      ? "jobs.update"
+      : action === "cancel"
+        ? "jobs.close"
+        : "jobs.reopen"
+
+  if (
+    !permissions.includes(
+      requiredPermission
+    )
+  ) {
+    return jsonError(
+      "Non hai il permesso necessario per questa operazione.",
+      403
+    )
+  }
+
+  let title = null
+  let description = null
+  let location = null
+  let jobDate = null
+
+  if (action === "update") {
+    title = String(
+      body?.title || ""
+    )
+      .trim()
+      .replace(/\s+/g, " ")
+
+    description = String(
+      body?.description || ""
+    ).trim()
+
+    location = String(
+      body?.location || ""
+    )
+      .trim()
+      .replace(/\s+/g, " ")
+
+    jobDate = String(
+      body?.jobDate || ""
+    ).trim()
+
+    if (
+      title.length < 3 ||
+      title.length > 150
+    ) {
+      return jsonError(
+        "Il titolo deve contenere da 3 a 150 caratteri."
+      )
+    }
+
+    if (
+      description.length < 5 ||
+      description.length > 5000
+    ) {
+      return jsonError(
+        "La descrizione deve contenere da 5 a 5000 caratteri."
+      )
+    }
+
+    if (
+      location.length < 2 ||
+      location.length > 500
+    ) {
+      return jsonError(
+        "La località deve contenere da 2 a 500 caratteri."
+      )
+    }
+
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(
+        jobDate
+      )
+    ) {
+      return jsonError(
+        "La data del lavoro non è valida."
+      )
+    }
+
+    const parsedDate =
+      new Date(
+        `${jobDate}T00:00:00Z`
+      )
+
+    if (
+      Number.isNaN(
+        parsedDate.getTime()
+      ) ||
+      parsedDate
+        .toISOString()
+        .slice(0, 10) !== jobDate
+    ) {
+      return jsonError(
+        "La data del lavoro non è valida."
+      )
+    }
+  }
+
+  const adminSupabase =
+    createAdminSupabaseClient()
+
+  const {
+    data,
+    error
+  } = await adminSupabase.rpc(
+    "admin_manage_job",
+    {
+      p_actor_user_id:
+        user.id,
+
+      p_action:
+        action,
+
+      p_job_id:
+        jobId,
+
+      p_title:
+        title,
+
+      p_description:
+        description,
+
+      p_location:
+        location,
+
+      p_job_date:
+        jobDate || null,
+
+      p_reason:
+        reason
+    }
+  )
+
+  if (error) {
+    console.error(
+      "[admin-jobs] management RPC failed:",
+      error
+    )
+
+    const errorText = [
+      error.message,
+      error.details,
+      error.hint,
+      error.code
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toUpperCase()
+
+    if (
+      errorText.includes(
+        "OPERATORE_NON_AUTORIZZATO"
+      )
+    ) {
+      return jsonError(
+        "Non hai il permesso necessario per questa operazione.",
+        403
+      )
+    }
+
+    if (
+      errorText.includes(
+        "LAVORO_NON_TROVATO"
+      )
+    ) {
+      return jsonError(
+        "Lavoro non trovato.",
+        404
+      )
+    }
+
+    if (
+      errorText.includes(
+        "MOTIVAZIONE_NON_VALIDA"
+      )
+    ) {
+      return jsonError(
+        "La motivazione deve contenere da 10 a 500 caratteri."
+      )
+    }
+
+    if (
+      errorText.includes(
+        "CLIENTE_DISATTIVATO"
+      )
+    ) {
+      return jsonError(
+        "Non è possibile riaprire il lavoro perché il cliente ha disattivato definitivamente l’account.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "CLIENTE_SOSPESO"
+      )
+    ) {
+      return jsonError(
+        "Non è possibile riaprire il lavoro perché il cliente è sospeso.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "LAVORO_COMPLETATO_NON_ANNULLABILE"
+      )
+    ) {
+      return jsonError(
+        "Un lavoro completato non può essere annullato.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "LAVORO_IN_ATTESA_DI_COMPLETAMENTO"
+      )
+    ) {
+      return jsonError(
+        "Il lavoro ha già ricevuto una conferma di completamento e non può essere chiuso normalmente.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "SOLO_I_LAVORI_ANNULLATI_POSSONO_ESSERE_RIAPERTI"
+      )
+    ) {
+      return jsonError(
+        "Soltanto i lavori annullati possono essere riaperti.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "LAVORO_CON_STORICO_COMPLETATO_NON_RIAPRIBILE"
+      )
+    ) {
+      return jsonError(
+        "Il lavoro contiene uno storico completato e non può essere riaperto.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "LAVORO_NON_MODIFICABILE"
+      ) ||
+      errorText.includes(
+        "LAVORO_NON_ANNULLABILE"
+      ) ||
+      errorText.includes(
+        "DATI_COMPLETAMENTO_INCOERENTI"
+      )
+    ) {
+      return jsonError(
+        "Lo stato attuale del lavoro non consente questa operazione.",
+        409
+      )
+    }
+
+    if (
+      errorText.includes(
+        "TITOLO_LAVORO_NON_VALIDO"
+      ) ||
+      errorText.includes(
+        "DESCRIZIONE_LAVORO_NON_VALIDA"
+      ) ||
+      errorText.includes(
+        "LOCALITA_LAVORO_NON_VALIDA"
+      ) ||
+      errorText.includes(
+        "DATA_LAVORO_OBBLIGATORIA"
+      ) ||
+      errorText.includes(
+        "DATA_LAVORO_NEL_PASSATO"
+      )
+    ) {
+      return jsonError(
+        "I dati inseriti per il lavoro non sono validi."
+      )
+    }
+
+    return jsonError(
+      "Non è stato possibile completare l’operazione sul lavoro.",
+      500
+    )
+  }
+
+  const messages = {
+    update:
+      "Lavoro aggiornato correttamente.",
+    cancel:
+      "Lavoro chiuso correttamente.",
+    reopen:
+      "Lavoro riaperto correttamente."
+  }
+
+  return NextResponse.json({
+    success: true,
+    message: messages[action],
+    result: data || null
+  })
 }

@@ -1,3 +1,7 @@
+import {
+  randomBytes,
+  randomUUID
+} from "node:crypto"
 import { NextResponse } from "next/server"
 import { getTeamAccess } from "@/lib/team/access"
 import { createAdminSupabaseClient } from "@/lib/supabase/admin"
@@ -14,6 +18,69 @@ const allowedRoles = new Set([
   "content",
   "technical"
 ])
+
+function createTemporaryPassword() {
+  const randomPart =
+    randomBytes(48)
+      .toString("base64url")
+
+  /*
+   * Prefisso e suffisso garantiscono:
+   * maiuscola, minuscola, numero e simbolo.
+   */
+  return `Dg!${randomPart}9aA`
+}
+
+function getSiteUrl() {
+  const configuredUrl =
+    String(
+      process.env
+        .NEXT_PUBLIC_SITE_URL ||
+        ""
+    )
+      .trim()
+      .replace(/\/+$/, "")
+
+  if (!configuredUrl) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL_NOT_CONFIGURED"
+    )
+  }
+
+  const parsedUrl =
+    new URL(configuredUrl)
+
+  const isLocalhost =
+    parsedUrl.hostname ===
+      "localhost" ||
+    parsedUrl.hostname ===
+      "127.0.0.1"
+
+  if (
+    process.env.NODE_ENV ===
+      "production" &&
+    !isLocalhost &&
+    parsedUrl.protocol !==
+      "https:"
+  ) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL_HTTPS_REQUIRED"
+    )
+  }
+
+  if (
+    parsedUrl.protocol !==
+      "https:" &&
+    parsedUrl.protocol !==
+      "http:"
+  ) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL_PROTOCOL_NOT_VALID"
+    )
+  }
+
+  return parsedUrl.origin
+}
 
 function jsonError(message, status = 400) {
   return NextResponse.json(
@@ -190,19 +257,24 @@ export async function GET() {
 }
 
 export async function PATCH(request) {
-  const requestOrigin = request.headers.get("origin")
+  const requestOrigin =
+  request.headers.get("origin")
 
-  if (
-    requestOrigin &&
-    requestOrigin !== request.nextUrl.origin
-  ) {
-    return jsonError(
-      "Origine della richiesta non autorizzata.",
-      403
-    )
-  }
+if (
+  !requestOrigin ||
+  requestOrigin !==
+    request.nextUrl.origin
+) {
+  return jsonError(
+    "Origine della richiesta non autorizzata.",
+    403
+  )
+}
 
-  const { user, access } = await getTeamAccess()
+  const {
+    user,
+    access
+  } = await getTeamAccess()
 
   if (!user) {
     return jsonError(
@@ -218,11 +290,16 @@ export async function PATCH(request) {
     )
   }
 
-  const permissions = Array.isArray(access.permissions)
-    ? access.permissions
-    : []
+  const permissions =
+    Array.isArray(access.permissions)
+      ? access.permissions
+      : []
 
-  if (!permissions.includes("team.update")) {
+  if (
+    !permissions.includes(
+      "team.update"
+    )
+  ) {
     return jsonError(
       "Non hai il permesso di modificare i membri del Team.",
       403
@@ -239,25 +316,44 @@ export async function PATCH(request) {
     )
   }
 
-  const targetUserId = String(
-    body?.userId || ""
-  ).trim()
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-  const displayName = String(
-    body?.displayName || ""
-  ).trim()
+  const targetUserId =
+    String(
+      body?.userId || ""
+    ).trim()
 
-  const roleKey = String(
-    body?.roleKey || ""
-  )
-    .trim()
-    .toLowerCase()
+  const displayName =
+    String(
+      body?.displayName || ""
+    )
+      .replace(/\u0000/g, "")
+      .trim()
+      .slice(0, 80)
 
-  const active = body?.active
+  const roleKey =
+    String(
+      body?.roleKey || ""
+    )
+      .trim()
+      .toLowerCase()
+      .slice(0, 50)
 
-  if (!targetUserId) {
+  const active =
+    body?.active
+
+  const reason =
+    String(
+      body?.reason || ""
+    )
+      .replace(/\u0000/g, "")
+      .trim()
+      .slice(0, 500)
+
+  if (!uuidRegex.test(targetUserId)) {
     return jsonError(
-      "Identificativo membro mancante."
+      "Identificativo membro non valido."
     )
   }
 
@@ -282,151 +378,363 @@ export async function PATCH(request) {
     )
   }
 
-  const adminSupabase =
-    createAdminSupabaseClient()
+  if (
+    reason.length < 10 ||
+    reason.length > 500
+  ) {
+    return jsonError(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+  }
 
-  const {
-    data: existingMember,
-    error: existingMemberError
-  } = await adminSupabase
+  const adminSupabase =
+  createAdminSupabaseClient()
+
+/*
+ * Legge lo stato attuale prima di modificare
+ * Supabase Auth e il database.
+ */
+const [
+  memberReadResult,
+  authReadResult,
+  profileReadResult
+] = await Promise.all([
+  adminSupabase
     .from("team_members")
     .select(`
       user_id,
-      role_key,
-      display_name,
       active
     `)
-    .eq("user_id", targetUserId)
-    .maybeSingle()
+    .eq(
+      "user_id",
+      targetUserId
+    )
+    .maybeSingle(),
 
-  if (existingMemberError) {
+  adminSupabase
+    .auth
+    .admin
+    .getUserById(
+      targetUserId
+    ),
+
+  adminSupabase
+    .from("users")
+    .select(`
+      id,
+      banned,
+      account_status
+    `)
+    .eq(
+      "id",
+      targetUserId
+    )
+    .maybeSingle()
+])
+
+if (
+  memberReadResult.error ||
+  !memberReadResult.data
+) {
+  console.error(
+    "[team-members] Errore lettura membro:",
+    memberReadResult.error
+  )
+
+  return jsonError(
+    "Membro Team non trovato.",
+    404
+  )
+}
+
+if (
+  authReadResult.error ||
+  !authReadResult.data?.user
+) {
+  console.error(
+    "[team-members] Account Auth non trovato:",
+    authReadResult.error
+  )
+
+  return jsonError(
+    "Account di autenticazione non trovato.",
+    500
+  )
+}
+
+if (
+  profileReadResult.error ||
+  !profileReadResult.data
+) {
+  console.error(
+    "[team-members] Profilo Team non trovato:",
+    profileReadResult.error
+  )
+
+  return jsonError(
+    "Profilo applicativo del membro non trovato.",
+    500
+  )
+}
+
+const existingMember =
+  memberReadResult.data
+
+const existingAuthUser =
+  authReadResult.data.user
+
+const existingProfile =
+  profileReadResult.data
+
+const activeChanged =
+  existingMember.active !== active
+
+/*
+ * La modifica dello stato attivo richiede
+ * il permesso specifico team.deactivate.
+ */
+if (
+  activeChanged &&
+  !permissions.includes(
+    "team.deactivate"
+  )
+) {
+  return jsonError(
+    "Non hai il permesso di disattivare o riattivare account Team.",
+    403
+  )
+}
+
+/*
+ * Non riattiva da questa pagina un account
+ * sospeso o disattivato nella gestione utenti.
+ */
+if (
+  activeChanged &&
+  active === true &&
+  (
+    existingProfile.banned === true ||
+    existingProfile.account_status !==
+      "active"
+  )
+) {
+  return jsonError(
+    "Questo account è sospeso o disattivato nella gestione utenti e non può essere riattivato da Account Team.",
+    409
+  )
+}
+
+const bannedUntilTime =
+  existingAuthUser.banned_until
+    ? new Date(
+        existingAuthUser.banned_until
+      ).getTime()
+    : 0
+
+const previousAuthBanned =
+  Number.isFinite(bannedUntilTime) &&
+  bannedUntilTime > Date.now()
+
+let authStateChanged = false
+
+/*
+ * Aggiorna prima Supabase Auth.
+ * Se la RPC fallisce, lo stato Auth
+ * verrà ripristinato.
+ */
+if (activeChanged) {
+  const {
+    error: authUpdateError
+  } = await adminSupabase
+    .auth
+    .admin
+    .updateUserById(
+      targetUserId,
+      {
+        ban_duration:
+          active
+            ? "none"
+            : "876000h"
+      }
+    )
+
+  if (authUpdateError) {
     console.error(
-      "[team-members] Errore lettura membro:",
-      existingMemberError
+      "[team-members] Errore aggiornamento Auth:",
+      authUpdateError
     )
 
     return jsonError(
-      "Impossibile controllare il membro Team.",
+      active
+        ? "Impossibile riattivare l'accesso del membro Team."
+        : "Impossibile disattivare l'accesso del membro Team.",
       500
     )
   }
 
-  if (!existingMember) {
-    return jsonError(
-      "Membro Team non trovato.",
-      404
+  authStateChanged = true
+}
+
+const {
+  data: updatedMember,
+  error: updateError
+} = await adminSupabase
+  .rpc(
+    "admin_update_team_member",
+    {
+      p_actor_user_id:
+        user.id,
+
+      p_target_user_id:
+        targetUserId,
+
+      p_display_name:
+        displayName,
+
+      p_role_key:
+        roleKey,
+
+      p_active:
+        active,
+
+      p_reason:
+        reason
+    }
+  )
+  .single()
+
+  if (updateError) {
+    if (authStateChanged) {
+  const {
+    error: authRollbackError
+  } = await adminSupabase
+    .auth
+    .admin
+    .updateUserById(
+      targetUserId,
+      {
+        ban_duration:
+          previousAuthBanned
+            ? "876000h"
+            : "none"
+      }
+    )
+
+  if (authRollbackError) {
+    console.error(
+      "[team-members] Errore rollback Auth:",
+      authRollbackError
     )
   }
-
-  /*
-   * Modifiche relative agli Owner richiedono
-   * il permesso speciale.
-   */
-  if (
-    (
-      existingMember.role_key === "owner" ||
-      roleKey === "owner"
-    ) &&
-    !permissions.includes("team.owner.manage")
-  ) {
-    return jsonError(
-      "Non hai il permesso di gestire gli Owner.",
-      403
-    )
-  }
-
-  /*
-   * Un membro non può disattivare sé stesso
-   * o togliersi autonomamente il ruolo.
-   *
-   * È invece consentito modificare soltanto
-   * il proprio nome visualizzato.
-   */
-  if (
-    targetUserId === user.id &&
-    (
-      active === false ||
-      roleKey !== existingMember.role_key
-    )
-  ) {
-    return jsonError(
-      "Non puoi disattivare o cambiare il ruolo del tuo stesso account.",
-      400
-    )
-  }
-
-  /*
-   * Non può mai essere rimosso o disattivato
-   * l'ultimo Owner attivo.
-   */
-  const removesActiveOwner =
-    existingMember.role_key === "owner" &&
-    existingMember.active === true &&
-    (
-      roleKey !== "owner" ||
-      active === false
+}
+    console.error(
+      "[team-members] Errore aggiornamento atomico:",
+      updateError
     )
 
-  if (removesActiveOwner) {
-    const {
-      count: activeOwnerCount,
-      error: ownerCountError
-    } = await adminSupabase
-      .from("team_members")
-      .select("user_id", {
-        count: "exact",
-        head: true
-      })
-      .eq("role_key", "owner")
-      .eq("active", true)
+    const message =
+      String(
+        updateError.message || ""
+      ).toUpperCase()
 
-    if (ownerCountError) {
-      console.error(
-        "[team-members] Errore conteggio Owner:",
-        ownerCountError
+    if (
+      message.includes(
+        "OPERATORE_NON_AUTORIZZATO_AGGIORNAMENTO_TEAM"
       )
-
+    ) {
       return jsonError(
-        "Impossibile verificare gli Owner attivi.",
-        500
+        "Non sei autorizzato a modificare i membri del Team.",
+        403
       )
     }
 
-    if ((activeOwnerCount || 0) <= 1) {
+    if (
+  message.includes(
+    "DISATTIVAZIONE_TEAM_NON_AUTORIZZATA"
+  )
+) {
+  return jsonError(
+    "Non hai il permesso di disattivare o riattivare account Team.",
+    403
+  )
+}
+
+    if (
+      message.includes(
+        "GESTIONE_OWNER_NON_AUTORIZZATA"
+      )
+    ) {
       return jsonError(
-        "Non puoi rimuovere o disattivare l'ultimo Owner attivo.",
+        "Non hai il permesso di gestire gli Owner.",
+        403
+      )
+    }
+
+    if (
+      message.includes(
+        "MODIFICA_PROPRIO_RUOLO_NON_CONSENTITA"
+      )
+    ) {
+      return jsonError(
+        "Non puoi disattivare o cambiare il ruolo del tuo stesso account.",
         400
       )
     }
-  }
 
-  const {
-    data: updatedMember,
-    error: updateError
-  } = await adminSupabase
-    .from("team_members")
-    .update({
-      display_name: displayName,
-      role_key: roleKey,
-      active
-    })
-    .eq("user_id", targetUserId)
-    .select(`
-      user_id,
-      role_key,
-      display_name,
-      active,
-      invited_at,
-      accepted_at,
-      last_admin_login_at
-    `)
-    .single()
+    if (
+      message.includes(
+        "ULTIMO_OWNER_ATTIVO_NON_MODIFICABILE"
+      )
+    ) {
+      return jsonError(
+        "Non puoi rimuovere o disattivare l'ultimo Owner attivo.",
+        409
+      )
+    }
 
-  if (updateError) {
-    console.error(
-      "[team-members] Errore aggiornamento membro:",
-      updateError
-    )
+    if (
+      message.includes(
+        "MEMBRO_TEAM_NON_TROVATO"
+      )
+    ) {
+      return jsonError(
+        "Membro Team non trovato.",
+        404
+      )
+    }
+
+    if (
+      message.includes(
+        "RUOLO_TEAM_NON_VALIDO"
+      ) ||
+      message.includes(
+        "RUOLO_TEAM_MANCANTE"
+      )
+    ) {
+      return jsonError(
+        "Ruolo Team non valido."
+      )
+    }
+
+    if (
+      message.includes(
+        "NOME_MEMBRO_TEAM_NON_VALIDO"
+      )
+    ) {
+      return jsonError(
+        "Il nome deve contenere da 2 a 80 caratteri."
+      )
+    }
+
+    if (
+      message.includes(
+        "MOTIVAZIONE_TEAM_NON_VALIDA"
+      )
+    ) {
+      return jsonError(
+        "La motivazione deve contenere da 10 a 500 caratteri."
+      )
+    }
 
     return jsonError(
       "Impossibile aggiornare il membro Team.",
@@ -434,122 +742,82 @@ export async function PATCH(request) {
     )
   }
 
-  const { error: auditError } =
-    await adminSupabase
-      .from("admin_audit_log")
-      .insert({
-        actor_user_id: user.id,
-        action: "team.member.update",
-        target_type: "team_member",
-        target_id: targetUserId,
-        old_data: {
-          display_name:
-            existingMember.display_name,
-          role_key:
-            existingMember.role_key,
-          active:
-            existingMember.active
-        },
-        new_data: {
-          display_name:
-            updatedMember.display_name,
-          role_key:
-            updatedMember.role_key,
-          active:
-            updatedMember.active
-        },
-        reason:
-          "Modifica effettuata dal Centro Operativo"
-      })
-
-  if (auditError) {
-    console.error(
-      "[team-members] Errore audit modifica:",
-      auditError
-    )
-
-    /*
-     * Ripristina i dati precedenti se non è
-     * possibile registrare l'operazione.
-     */
-    const { error: rollbackError } =
-      await adminSupabase
-        .from("team_members")
-        .update({
-          display_name:
-            existingMember.display_name,
-          role_key:
-            existingMember.role_key,
-          active:
-            existingMember.active
-        })
-        .eq("user_id", targetUserId)
-
-    if (rollbackError) {
-      console.error(
-        "[team-members] Errore rollback:",
-        rollbackError
-      )
-    }
-
+  if (!updatedMember) {
     return jsonError(
-      "Modifica annullata perché non è stato possibile registrarla.",
+      "L'aggiornamento non ha restituito un risultato valido.",
       500
     )
   }
 
-  const {
-    data: authData,
-    error: authError
-  } = await adminSupabase.auth.admin.getUserById(
-    targetUserId
-  )
+  const [
+    authResult,
+    roleResult
+  ] = await Promise.all([
+    adminSupabase
+      .auth
+      .admin
+      .getUserById(
+        targetUserId
+      ),
 
-  if (authError) {
+    adminSupabase
+      .from("team_roles")
+      .select("name")
+      .eq(
+        "role_key",
+        updatedMember.role_key
+      )
+      .maybeSingle()
+  ])
+
+  if (authResult.error) {
     console.error(
       "[team-members] Errore recupero Auth:",
-      authError
+      authResult.error
     )
   }
 
-  const {
-    data: updatedRole,
-    error: updatedRoleError
-  } = await adminSupabase
-    .from("team_roles")
-    .select("name")
-    .eq("role_key", updatedMember.role_key)
-    .maybeSingle()
-
-  if (updatedRoleError) {
+  if (roleResult.error) {
     console.error(
       "[team-members] Errore recupero ruolo:",
-      updatedRoleError
+      roleResult.error
     )
   }
 
   return NextResponse.json({
     success: true,
+
     member: {
-      userId: updatedMember.user_id,
+      userId:
+        updatedMember.user_id,
+
       email:
-        authData?.user?.email ||
+        authResult.data?.user?.email ||
         "Email non disponibile",
+
       displayName:
         updatedMember.display_name,
+
       roleKey:
         updatedMember.role_key,
+
       roleName:
-        updatedRole?.name ||
+        roleResult.data?.name ||
         updatedMember.role_key,
+
       active:
         updatedMember.active,
+
       isCurrentUser:
-        updatedMember.user_id === user.id,
+        updatedMember.user_id ===
+        user.id,
+
       invitedAt:
         updatedMember.invited_at,
+
       acceptedAt:
         updatedMember.accepted_at,
+
       lastAdminLoginAt:
         updatedMember.last_admin_login_at
     }
@@ -594,6 +862,17 @@ export async function POST(request) {
     )
   }
 
+  if (
+  !permissions.includes(
+    "emails.send"
+  )
+) {
+  return jsonError(
+    "Non hai il permesso di inviare l'invito al nuovo membro Team.",
+    403
+  )
+}
+
   let body
 
   try {
@@ -606,8 +885,10 @@ export async function POST(request) {
     .trim()
     .toLowerCase()
 
-  const password = String(body?.password || "")
-  const displayName = String(body?.displayName || "").trim()
+  const displayName =
+  String(
+    body?.displayName || ""
+  ).trim()
   const roleKey = String(body?.roleKey || "")
     .trim()
     .toLowerCase()
@@ -629,12 +910,6 @@ export async function POST(request) {
     return jsonError("Ruolo Team non valido.")
   }
 
-  if (!passwordIsSecure(password)) {
-    return jsonError(
-      "La password deve avere almeno 12 caratteri, una maiuscola, una minuscola, un numero e un simbolo."
-    )
-  }
-
   /*
    * Solo chi possiede il permesso speciale può
    * creare un secondo Owner.
@@ -648,6 +923,23 @@ export async function POST(request) {
       403
     )
   }
+
+  let siteUrl
+
+try {
+  siteUrl =
+    getSiteUrl()
+} catch (error) {
+  console.error(
+    "[team-members] URL sito non valido:",
+    error
+  )
+
+  return jsonError(
+    "Configurazione del sito non valida.",
+    500
+  )
+}
 
   const adminSupabase = createAdminSupabaseClient()
 
@@ -687,12 +979,16 @@ export async function POST(request) {
    * credits = 0
    * free_credits_claimed = true
    */
+const temporaryPassword =
+  createTemporaryPassword()
+
   const {
     data: createdAuthData,
     error: createAuthError
   } = await adminSupabase.auth.admin.createUser({
     email,
-    password,
+    password:
+  temporaryPassword,
     email_confirm: true,
 
     app_metadata: {
@@ -819,88 +1115,296 @@ if (profileError || !normalizedProfile) {
   )
 }
 
-  /*
-   * Collega l'utente al Team DroneGuard.
+    /*
+   * Finalizza atomicamente:
+   *
+   * - collegamento a team_members;
+   * - verifica dei permessi;
+   * - controllo del ruolo Owner;
+   * - registrazione audit.
+   *
+   * Se la RPC fallisce, PostgreSQL annulla
+   * automaticamente entrambe le operazioni.
    */
-  const { error: memberError } = await adminSupabase
-    .from("team_members")
-    .insert({
-      user_id: createdUser.id,
-      role_key: roleKey,
-      display_name: displayName,
-      active: true,
-      invited_by: user.id,
-      invited_at: new Date().toISOString(),
-      accepted_at: new Date().toISOString(),
-      notes: "Account creato dal Centro Operativo DroneGuard"
-    })
+  const {
+    data: finalizedMember,
+    error: finalizeError
+  } = await adminSupabase
+    .rpc(
+      "admin_finalize_team_member",
+      {
+        p_actor_user_id:
+          user.id,
 
-  if (memberError) {
+        p_target_user_id:
+          createdUser.id,
+
+        p_display_name:
+          displayName,
+
+        p_role_key:
+          roleKey
+      }
+    )
+    .single()
+
+  if (
+    finalizeError ||
+    !finalizedMember
+  ) {
     console.error(
-      "[team-members] Errore inserimento membro:",
-      memberError
+      "[team-members] Errore finalizzazione membro:",
+      finalizeError
     )
 
+    /*
+     * Auth e PostgreSQL non condividono
+     * la stessa transazione.
+     *
+     * Se la finalizzazione DB fallisce,
+     * eliminiamo l'account Auth e il profilo
+     * applicativo appena creati.
+     */
     await cleanupCreatedUser(
       adminSupabase,
       createdUser.id
     )
 
+    const normalizedMessage =
+      String(
+        finalizeError?.message || ""
+      ).toUpperCase()
+
+    if (
+      normalizedMessage.includes(
+        "OPERATORE_NON_AUTORIZZATO_CREAZIONE_TEAM"
+      )
+    ) {
+      return jsonError(
+        "Non sei autorizzato a creare account Team.",
+        403
+      )
+    }
+
+    if (
+      normalizedMessage.includes(
+        "CREAZIONE_OWNER_NON_AUTORIZZATA"
+      )
+    ) {
+      return jsonError(
+        "Non hai il permesso di creare un account Owner.",
+        403
+      )
+    }
+
+    if (
+      normalizedMessage.includes(
+        "MEMBRO_TEAM_GIA_PRESENTE"
+      )
+    ) {
+      return jsonError(
+        "Questo account risulta già collegato al Team.",
+        409
+      )
+    }
+
+    if (
+      normalizedMessage.includes(
+        "NOME_MEMBRO_TEAM_NON_VALIDO"
+      )
+    ) {
+      return jsonError(
+        "Il nome deve contenere da 2 a 80 caratteri."
+      )
+    }
+
+    if (
+      normalizedMessage.includes(
+        "RUOLO_TEAM_NON_VALIDO"
+      ) ||
+      normalizedMessage.includes(
+        "RUOLO_TEAM_MANCANTE"
+      )
+    ) {
+      return jsonError(
+        "Ruolo Team non valido."
+      )
+    }
+
+    if (
+      normalizedMessage.includes(
+        "PROFILO_NUOVO_MEMBRO_NON_TROVATO"
+      ) ||
+      normalizedMessage.includes(
+        "PROFILO_NUOVO_MEMBRO_NON_TEAM"
+      )
+    ) {
+      return jsonError(
+        "Il profilo del nuovo account Team non è stato configurato correttamente.",
+        500
+      )
+    }
+
     return jsonError(
-      "Account non completato. La creazione è stata annullata.",
+      "Impossibile finalizzare il nuovo account Team.",
       500
     )
   }
 
-  /*
-   * Registra l'operazione nel registro amministrativo.
-   * La password non viene mai salvata nel registro.
-   */
-  const { error: auditError } = await adminSupabase
-    .from("admin_audit_log")
-    .insert({
-      actor_user_id: user.id,
-      action: "team.member.create",
-      target_type: "team_member",
-      target_id: createdUser.id,
-      old_data: null,
-      new_data: {
-        email,
-        display_name: displayName,
-        role_key: roleKey,
-        active: true
-      },
-      reason: "Creazione account dal Centro Operativo"
-    })
+  let recoveryEmailSent = false
+let recoveryTrackingFailed = false
+let recoveryError = null
 
-  if (auditError) {
+const passwordResetRequestId =
+  randomUUID()
+
+const {
+  data: preparedPasswordReset,
+  error: preparePasswordResetError
+} = await adminSupabase
+  .rpc(
+    "admin_prepare_team_password_reset",
+    {
+      p_request_id:
+        passwordResetRequestId,
+
+      p_actor_user_id:
+        user.id,
+
+      p_target_user_id:
+        finalizedMember.user_id,
+
+      p_reason:
+        "Invio iniziale per configurazione del nuovo account Team"
+    }
+  )
+  .single()
+
+if (
+  preparePasswordResetError ||
+  !preparedPasswordReset
+) {
+  console.error(
+    "[team-members] Impossibile preparare l'invito password:",
+    preparePasswordResetError
+  )
+
+  recoveryError =
+    "Account creato, ma invito password non preparato."
+} else {
+  const {
+    error: resetEmailError
+  } = await adminSupabase
+    .auth
+    .resetPasswordForEmail(
+      email,
+      {
+        redirectTo:
+          `${siteUrl}/reset-password`
+      }
+    )
+
+  const resetStatus =
+    resetEmailError
+      ? "failed"
+      : "sent"
+
+  const providerErrorCode =
+    resetEmailError
+      ? String(
+          resetEmailError.code ||
+            resetEmailError.name ||
+            "unknown"
+        ).slice(0, 200)
+      : null
+
+  const {
+    error: finalizeResetError
+  } = await adminSupabase
+    .rpc(
+      "admin_finalize_team_password_reset",
+      {
+        p_request_id:
+          passwordResetRequestId,
+
+        p_actor_user_id:
+          user.id,
+
+        p_status:
+          resetStatus,
+
+        p_provider_error_code:
+          providerErrorCode
+      }
+    )
+    .single()
+
+  if (finalizeResetError) {
     console.error(
-      "[team-members] Errore audit:",
-      auditError
+      "[team-members] Finalizzazione invito password fallita:",
+      finalizeResetError
     )
 
-    await cleanupCreatedUser(
-      adminSupabase,
-      createdUser.id
-    )
-
-    return jsonError(
-      "Registrazione amministrativa fallita. La creazione è stata annullata.",
-      500
-    )
+    recoveryTrackingFailed = true
   }
+
+  if (resetEmailError) {
+    console.error(
+      "[team-members] Invio iniziale recupero password fallito:",
+      resetEmailError
+    )
+
+    recoveryError =
+      "Account creato, ma email per scegliere la password non inviata."
+  } else {
+    recoveryEmailSent = true
+  }
+}
 
   return NextResponse.json(
     {
       success: true,
+      message:
+  recoveryEmailSent
+    ? "Account Team creato e invito password inviato."
+    : "Account Team creato, ma l'invito password richiede un nuovo tentativo.",
+
+recoveryEmailSent,
+
+recoveryTrackingFailed,
+
+recoveryError,
       member: {
-        userId: createdUser.id,
-        email,
-        displayName,
-        roleKey,
-        roleName: role.name,
-        active: true
-      }
+  userId:
+    finalizedMember.user_id,
+
+  email,
+
+  displayName:
+    finalizedMember.display_name,
+
+  roleKey:
+    finalizedMember.role_key,
+
+  roleName:
+    role.name,
+
+  active:
+    finalizedMember.active,
+
+  invitedAt:
+    finalizedMember.invited_at,
+
+  acceptedAt:
+    finalizedMember.accepted_at,
+
+  lastAdminLoginAt:
+    finalizedMember.last_admin_login_at,
+
+  isCurrentUser:
+    finalizedMember.user_id ===
+    user.id
+}
     },
     {
       status: 201

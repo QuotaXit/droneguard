@@ -25,8 +25,35 @@ export default async function TeamPage() {
       </section>
 
       <TeamMembersClient
-        canInvite={permissions.includes("team.invite")}
-      />
+  canInvite={
+    permissions.includes(
+      "team.invite"
+    )
+  }
+  canUpdate={
+    permissions.includes(
+      "team.update"
+    )
+  }
+  canManageOwner={
+    permissions.includes(
+      "team.owner.manage"
+    )
+  }
+
+  canDeactivate={
+  permissions.includes(
+    "team.deactivate"
+  )
+}
+
+canSendEmail={
+  permissions.includes(
+    "emails.send"
+  )
+}
+
+/>
     </div>
   )
 }

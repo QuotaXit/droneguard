@@ -10,21 +10,23 @@ import { toast } from "sonner"
 
 function getStatusLabel(status) {
   const labels = {
-    open: "Aperto",
-    assigned: "Assegnato",
-    completed: "Completato"
-  }
+  open: "Aperto",
+  assigned: "Assegnato",
+  completed: "Completato",
+  cancelled: "Annullato"
+}
 
   return labels[status] || status || "Aperto"
 }
 
 function getApplicationStatusLabel(status) {
   const labels = {
-    pending: "In attesa",
-    accepted: "Accettata",
-    rejected: "Rifiutata",
-    completed: "Completata"
-  }
+  pending: "In attesa",
+  accepted: "Accettata",
+  rejected: "Rifiutata",
+  completed: "Completata",
+  cancelled: "Annullata"
+}
 
   return labels[status] || status || "In attesa"
 }
@@ -62,10 +64,11 @@ function formatPrice(value) {
 
 function JobStatusBadge({ status }) {
   const classes = {
-    open: "bg-green-400/10 text-green-400",
-    assigned: "bg-yellow-400/10 text-yellow-300",
-    completed: "bg-blue-400/10 text-blue-300"
-  }
+  open: "bg-green-400/10 text-green-400",
+  assigned: "bg-yellow-400/10 text-yellow-300",
+  completed: "bg-blue-400/10 text-blue-300",
+  cancelled: "bg-red-400/10 text-red-300"
+}
 
   return (
     <span
@@ -109,6 +112,31 @@ export default function JobsManagementClient({
 
   const [selectedJob, setSelectedJob] =
     useState(null)
+
+    const [actionMode, setActionMode] =
+  useState(null)
+
+const [actionReason, setActionReason] =
+  useState("")
+
+const [
+  submittingAction,
+  setSubmittingAction
+] = useState(false)
+
+const [editTitle, setEditTitle] =
+  useState("")
+
+const [
+  editDescription,
+  setEditDescription
+] = useState("")
+
+const [editLocation, setEditLocation] =
+  useState("")
+
+const [editJobDate, setEditJobDate] =
+  useState("")
 
   const [searchInput, setSearchInput] =
     useState("")
@@ -202,13 +230,288 @@ export default function JobsManagementClient({
   }
 
   const resetFilters = () => {
-    setSearchInput("")
-    setAppliedSearch("")
-    setStatusFilter("all")
-    setPage(1)
+  setSearchInput("")
+  setAppliedSearch("")
+  setStatusFilter("all")
+  setPage(1)
+}
+
+const openJobAction = (mode) => {
+  if (!selectedJob) {
+    return
   }
 
-  return (
+  const normalizedMode =
+    String(mode || "")
+      .trim()
+      .toLowerCase()
+
+  const normalizedStatus =
+    String(
+      selectedJob.status || ""
+    )
+      .trim()
+      .toLowerCase()
+
+  if (
+    ![
+      "update",
+      "cancel",
+      "reopen"
+    ].includes(normalizedMode)
+  ) {
+    toast.error(
+      "Operazione non valida."
+    )
+    return
+  }
+
+  if (
+    normalizedMode === "update" &&
+    ![
+      "open",
+      "assigned"
+    ].includes(normalizedStatus)
+  ) {
+    toast.error(
+      "Questo lavoro non può essere modificato."
+    )
+    return
+  }
+
+  if (
+    normalizedMode === "cancel" &&
+    ![
+      "open",
+      "assigned"
+    ].includes(normalizedStatus)
+  ) {
+    toast.error(
+      "Questo lavoro non può essere chiuso."
+    )
+    return
+  }
+
+  if (
+    normalizedMode === "reopen" &&
+    normalizedStatus !== "cancelled"
+  ) {
+    toast.error(
+      "Soltanto un lavoro annullato può essere riaperto."
+    )
+    return
+  }
+
+  setActionMode(normalizedMode)
+  setActionReason("")
+
+  setEditTitle(
+    String(
+      selectedJob.title || ""
+    )
+  )
+
+  setEditDescription(
+    String(
+      selectedJob.description || ""
+    )
+  )
+
+  setEditLocation(
+    String(
+      selectedJob.location || ""
+    )
+  )
+
+  setEditJobDate(
+    selectedJob.jobDate
+      ? String(
+          selectedJob.jobDate
+        ).slice(0, 10)
+      : ""
+  )
+}
+
+const closeJobAction = () => {
+  if (submittingAction) {
+    return
+  }
+
+  setActionMode(null)
+  setActionReason("")
+  setEditTitle("")
+  setEditDescription("")
+  setEditLocation("")
+  setEditJobDate("")
+}
+
+const submitJobAction = async (
+  event
+) => {
+  event.preventDefault()
+
+  if (
+    !selectedJob ||
+    !actionMode ||
+    submittingAction
+  ) {
+    return
+  }
+
+  const normalizedReason =
+    actionReason.trim()
+
+  if (
+    normalizedReason.length < 10 ||
+    normalizedReason.length > 500
+  ) {
+    toast.error(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+    return
+  }
+
+  const payload = {
+    action: actionMode,
+    jobId: selectedJob.id,
+    reason: normalizedReason
+  }
+
+  if (actionMode === "update") {
+    const normalizedTitle =
+      editTitle
+        .trim()
+        .replace(/\s+/g, " ")
+
+    const normalizedDescription =
+      editDescription.trim()
+
+    const normalizedLocation =
+      editLocation
+        .trim()
+        .replace(/\s+/g, " ")
+
+    const normalizedJobDate =
+      editJobDate.trim()
+
+    if (
+      normalizedTitle.length < 3 ||
+      normalizedTitle.length > 150
+    ) {
+      toast.error(
+        "Il titolo deve contenere da 3 a 150 caratteri."
+      )
+      return
+    }
+
+    if (
+      normalizedDescription.length <
+        5 ||
+      normalizedDescription.length >
+        5000
+    ) {
+      toast.error(
+        "La descrizione deve contenere da 5 a 5000 caratteri."
+      )
+      return
+    }
+
+    if (
+      normalizedLocation.length < 2 ||
+      normalizedLocation.length > 500
+    ) {
+      toast.error(
+        "La località deve contenere da 2 a 500 caratteri."
+      )
+      return
+    }
+
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(
+        normalizedJobDate
+      )
+    ) {
+      toast.error(
+        "Inserisci una data valida."
+      )
+      return
+    }
+
+    payload.title =
+      normalizedTitle
+
+    payload.description =
+      normalizedDescription
+
+    payload.location =
+      normalizedLocation
+
+    payload.jobDate =
+      normalizedJobDate
+  }
+
+  try {
+    setSubmittingAction(true)
+
+    const response = await fetch(
+      "/api/admin/jobs",
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify(
+          payload
+        )
+      }
+    )
+
+    let data = null
+
+    try {
+      data = await response.json()
+    } catch {
+      data = null
+    }
+
+    if (!response.ok) {
+      toast.error(
+        data?.error ||
+          "Impossibile completare l’operazione."
+      )
+      return
+    }
+
+    toast.success(
+      data?.message ||
+        "Operazione completata correttamente."
+    )
+
+    setActionMode(null)
+    setActionReason("")
+    setEditTitle("")
+    setEditDescription("")
+    setEditLocation("")
+    setEditJobDate("")
+    setSelectedJob(null)
+
+    await loadJobs()
+  } catch (error) {
+    console.error(
+      "Errore gestione lavoro:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante l’operazione."
+    )
+  } finally {
+    setSubmittingAction(false)
+  }
+}
+
+return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-white/10 bg-[#0B1028] p-5 sm:p-6">
         <form
@@ -256,9 +559,13 @@ export default function JobsManagementClient({
                 Assegnati
               </option>
 
-              <option value="completed">
-                Completati
-              </option>
+             <option value="completed">
+  Completati
+</option>
+
+<option value="cancelled">
+  Annullati
+</option>
             </select>
           </div>
 
@@ -854,36 +1161,314 @@ export default function JobsManagementClient({
             </section>
 
             <section className="mt-6 rounded-xl border border-yellow-400/20 bg-yellow-400/5 p-4">
-              <p className="font-semibold text-yellow-300">
-                Comandi amministrativi
-              </p>
+  <p className="font-semibold text-yellow-300">
+    Comandi amministrativi
+  </p>
 
-              <p className="mt-2 text-sm text-gray-400">
-                Le operazioni verranno collegate dopo
-                aver uniformato gli stati dei lavori.
-              </p>
+  <p className="mt-2 text-sm text-gray-400">
+    Le operazioni vengono registrate nel registro
+    amministrativo e richiedono una motivazione.
+  </p>
 
-              <div className="mt-4 flex flex-wrap gap-2">
-                {canUpdate && (
-                  <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-                    Modifica lavoro da collegare
-                  </span>
-                )}
+  <div className="mt-4 flex flex-wrap gap-2">
+    {canUpdate &&
+      ["open", "assigned"].includes(
+        String(
+          selectedJob.status || ""
+        )
+          .trim()
+          .toLowerCase()
+      ) && (
+        <button
+          type="button"
+          onClick={() =>
+            openJobAction("update")
+          }
+          disabled={submittingAction}
+          className="rounded-lg border border-blue-400/30 bg-blue-400/10 px-4 py-2 text-sm font-semibold text-blue-300 transition hover:bg-blue-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Modifica lavoro
+        </button>
+      )}
 
-                {canClose && (
-                  <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-                    Chiudi lavoro da collegare
-                  </span>
-                )}
+    {canClose &&
+      ["open", "assigned"].includes(
+        String(
+          selectedJob.status || ""
+        )
+          .trim()
+          .toLowerCase()
+      ) && (
+        <button
+          type="button"
+          onClick={() =>
+            openJobAction("cancel")
+          }
+          disabled={submittingAction}
+          className="rounded-lg border border-red-400/30 bg-red-400/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Chiudi lavoro
+        </button>
+      )}
 
-                {canReopen && (
-                  <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-                    Riapri lavoro da collegare
-                  </span>
-                )}
-              </div>
-            </section>
+    {canReopen &&
+      String(
+        selectedJob.status || ""
+      )
+        .trim()
+        .toLowerCase() ===
+        "cancelled" && (
+        <button
+          type="button"
+          onClick={() =>
+            openJobAction("reopen")
+          }
+          disabled={submittingAction}
+          className="rounded-lg border border-green-400/30 bg-green-400/10 px-4 py-2 text-sm font-semibold text-green-300 transition hover:bg-green-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Riapri lavoro
+        </button>
+      )}
+
+    {String(
+      selectedJob.status || ""
+    )
+      .trim()
+      .toLowerCase() ===
+      "completed" && (
+      <span className="rounded-lg border border-blue-400/20 bg-blue-400/10 px-4 py-2 text-sm font-semibold text-blue-300">
+        Il lavoro completato non può essere modificato
+      </span>
+    )}
+  </div>
+</section>
           </div>
+        </div>
+      )}
+
+      {selectedJob && actionMode && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 p-4">
+          <form
+            onSubmit={submitJobAction}
+            className="max-h-[92vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0B1028] p-6 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p
+                  className={`text-sm font-semibold uppercase tracking-[0.18em] ${
+                    actionMode === "update"
+                      ? "text-blue-300"
+                      : actionMode === "cancel"
+                        ? "text-red-300"
+                        : "text-green-300"
+                  }`}
+                >
+                  {actionMode === "update"
+                    ? "Modifica amministrativa"
+                    : actionMode === "cancel"
+                      ? "Chiusura amministrativa"
+                      : "Riapertura amministrativa"}
+                </p>
+
+                <h2 className="mt-2 text-2xl font-bold">
+                  {selectedJob.title}
+                </h2>
+
+                <p className="mt-2 text-sm text-gray-400">
+                  ID: {selectedJob.id}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeJobAction}
+                disabled={submittingAction}
+                className="rounded-lg border border-white/10 px-3 py-2 text-sm transition hover:bg-white/10 disabled:opacity-50"
+              >
+                Chiudi
+              </button>
+            </div>
+
+            {actionMode === "update" && (
+              <div className="mt-6 space-y-4">
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Titolo
+                  </label>
+
+                  <input
+                    type="text"
+                    value={editTitle}
+                    onChange={(event) =>
+                      setEditTitle(
+                        event.target.value
+                      )
+                    }
+                    minLength={3}
+                    maxLength={150}
+                    disabled={submittingAction}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                  />
+
+                  <p className="mt-1 text-right text-xs text-gray-500">
+                    {editTitle.length}/150
+                  </p>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Descrizione
+                  </label>
+
+                  <textarea
+                    value={editDescription}
+                    onChange={(event) =>
+                      setEditDescription(
+                        event.target.value
+                      )
+                    }
+                    minLength={5}
+                    maxLength={5000}
+                    rows={7}
+                    disabled={submittingAction}
+                    required
+                    className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                  />
+
+                  <p className="mt-1 text-right text-xs text-gray-500">
+                    {editDescription.length}/5000
+                  </p>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Località
+                  </label>
+
+                  <input
+                    type="text"
+                    value={editLocation}
+                    onChange={(event) =>
+                      setEditLocation(
+                        event.target.value
+                      )
+                    }
+                    minLength={2}
+                    maxLength={500}
+                    disabled={submittingAction}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-300">
+                    Data del lavoro
+                  </label>
+
+                  <input
+                    type="date"
+                    value={editJobDate}
+                    onChange={(event) =>
+                      setEditJobDate(
+                        event.target.value
+                      )
+                    }
+                    disabled={submittingAction}
+                    required
+                    className="w-full rounded-xl border border-white/10 bg-[#111735] p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                  />
+                </div>
+              </div>
+            )}
+
+            {actionMode === "cancel" && (
+              <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/10 p-4">
+                <p className="font-semibold text-red-300">
+                  Conferma chiusura del lavoro
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-300">
+                  Il lavoro diventerà annullato. Le candidature,
+                  le assegnazioni e le conversazioni operative
+                  verranno chiuse secondo lo stato attuale del
+                  lavoro.
+                </p>
+              </div>
+            )}
+
+            {actionMode === "reopen" && (
+              <div className="mt-6 rounded-xl border border-green-400/20 bg-green-400/10 p-4">
+                <p className="font-semibold text-green-300">
+                  Conferma riapertura del lavoro
+                </p>
+
+                <p className="mt-2 text-sm leading-6 text-gray-300">
+                  Il lavoro tornerà aperto. L’eventuale pilota
+                  assegnato verrà scollegato e le candidature
+                  annullate potranno tornare in attesa.
+                </p>
+              </div>
+            )}
+
+            <div className="mt-6">
+              <label className="mb-2 block text-sm font-medium text-gray-300">
+                Motivazione amministrativa
+              </label>
+
+              <textarea
+                value={actionReason}
+                onChange={(event) =>
+                  setActionReason(
+                    event.target.value
+                  )
+                }
+                minLength={10}
+                maxLength={500}
+                rows={4}
+                disabled={submittingAction}
+                required
+                placeholder="Inserisci una motivazione da 10 a 500 caratteri..."
+                className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-yellow-400/50 disabled:opacity-60"
+              />
+
+              <p className="mt-1 text-right text-xs text-gray-500">
+                {actionReason.length}/500
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeJobAction}
+                disabled={submittingAction}
+                className="rounded-xl border border-white/10 px-5 py-3 font-semibold transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Annulla
+              </button>
+
+              <button
+                type="submit"
+                disabled={submittingAction}
+                className={`rounded-xl px-5 py-3 font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                  actionMode === "update"
+                    ? "bg-blue-500 text-white hover:bg-blue-400"
+                    : actionMode === "cancel"
+                      ? "bg-red-500 text-white hover:bg-red-400"
+                      : "bg-green-500 text-black hover:bg-green-400"
+                }`}
+              >
+                {submittingAction
+                  ? "Operazione in corso..."
+                  : actionMode === "update"
+                    ? "Salva modifiche"
+                    : actionMode === "cancel"
+                      ? "Conferma chiusura"
+                      : "Conferma riapertura"}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>

@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto"
 
 import { NextResponse } from "next/server"
-import { Resend } from "resend"
+
+import {
+  sendTrackedEmail
+} from "@/lib/email/send-tracked-email"
 
 import {
   createServerSupabaseClient
@@ -23,10 +26,6 @@ const ALLOWED_TYPES = new Set([
   "image/webp",
   "application/pdf"
 ])
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null
 
 function jsonError(message, status = 400) {
   return NextResponse.json(
@@ -522,100 +521,178 @@ export async function POST(request) {
 
     let emailSent = false
 
-    if (resend) {
-      const fullName =
-        [
-          profile.name,
-          profile.surname
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .trim() ||
-        "Pilota DroneGuard"
+const fullName =
+  [
+    profile.name,
+    profile.surname
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .trim() ||
+  "Pilota DroneGuard"
 
-      const siteUrl =
-        String(
-          process.env.NEXT_PUBLIC_SITE_URL ||
-            "https://www.droneguard.it"
-        ).replace(/\/+$/, "")
+const pilotEmail =
+  String(
+    profile.email ||
+      user.email ||
+      ""
+  ).trim()
 
-      const {
-        error: emailError
-      } = await resend.emails.send({
-        from:
-          "DroneGuard <noreply@droneguard.it>",
-        to:
-          "assistenza@droneguard.it",
-        subject:
-          "Nuova certificazione da verificare",
-        html: `
-          <h2>Nuova certificazione da verificare</h2>
+const declaredCertifications =
+  String(
+    profile.certifications ||
+      "Non indicate"
+  ).trim()
 
-          <p>
-            È arrivata una nuova richiesta nel pannello Team.
-          </p>
+const siteUrl =
+  String(
+    process.env.NEXT_PUBLIC_SITE_URL ||
+      "https://www.droneguard.it"
+  ).replace(/\/+$/, "")
 
-          <p>
-            <strong>Pilota:</strong>
-            ${escapeHtml(fullName)}
-          </p>
+try {
+  const emailResult =
+    await sendTrackedEmail({
+      idempotencyKey:
+        `certification-request:${requestId}:team-notification`,
 
-          <p>
-            <strong>Email:</strong>
-            ${escapeHtml(
-              profile.email ||
-                user.email ||
-                ""
-            )}
-          </p>
+      category:
+        "certification_request",
 
-          <p>
-            <strong>Certificazioni dichiarate:</strong>
-            ${escapeHtml(
-              profile.certifications ||
-                "Non indicate"
-            )}
-          </p>
+      templateKey:
+        "certification_request_team_notification",
 
-          <p>
-            Il documento è conservato nello Storage privato
-            e non è allegato a questa email.
-          </p>
+      recipientEmail:
+        "assistenza@droneguard.it",
 
-          <p>
-            <a href="${siteUrl}/admin">
-              Apri il pannello Team
-            </a>
-          </p>
-        `
-      })
+      recipientName:
+        "Team DroneGuard",
 
-      if (emailError) {
-        console.error(
-          "[certification-request] notification email failed:",
-          emailError
-        )
-      } else {
-        emailSent = true
+      senderEmail:
+        "noreply@droneguard.it",
 
-        const {
-          error: emailTimestampError
-        } = await adminSupabase
-          .from("certification_requests")
-          .update({
-            email_notification_sent_at:
-              new Date().toISOString()
-          })
-          .eq("id", requestId)
+      senderName:
+        "DroneGuard",
 
-        if (emailTimestampError) {
-          console.error(
-            "[certification-request] email timestamp failed:",
-            emailTimestampError
-          )
-        }
+      subject:
+        "Nuova certificazione da verificare",
+
+      html: `
+        <h2>Nuova certificazione da verificare</h2>
+
+        <p>
+          È arrivata una nuova richiesta nel pannello Team.
+        </p>
+
+        <p>
+          <strong>Pilota:</strong>
+          ${escapeHtml(fullName)}
+        </p>
+
+        <p>
+          <strong>Email:</strong>
+          ${escapeHtml(pilotEmail)}
+        </p>
+
+        <p>
+          <strong>Certificazioni dichiarate:</strong>
+          ${escapeHtml(
+            declaredCertifications
+          )}
+        </p>
+
+        <p>
+          Il documento è conservato nello Storage
+          privato e non è allegato a questa email.
+        </p>
+
+        <p>
+          <a href="${siteUrl}/admin/certifications">
+            Apri le certificazioni nel pannello Team
+          </a>
+        </p>
+      `,
+
+      text: [
+        "Nuova certificazione da verificare",
+        "",
+        `Pilota: ${fullName}`,
+        `Email: ${pilotEmail}`,
+        `Certificazioni dichiarate: ${declaredCertifications}`,
+        "",
+        "Il documento è conservato nello Storage privato.",
+        `${siteUrl}/admin/certifications`
+      ].join("\n"),
+
+      sourceType:
+        "certification_request",
+
+      sourceId:
+        requestId,
+
+      triggeredByUserId:
+        user.id,
+
+      metadata: {
+        pilotUserId:
+          user.id,
+
+        certificationRequestId:
+          requestId
+      },
+
+      maxAttempts:
+        3
+    })
+
+  emailSent =
+    emailResult.success === true
+
+  if (!emailSent) {
+    console.error(
+      "[certification-request] tracked notification email failed:",
+      {
+        deliveryId:
+          emailResult.deliveryId ||
+          null,
+
+        status:
+          emailResult.status ||
+          null,
+
+        error:
+          emailResult.error ||
+          "Errore email non disponibile."
       }
-    }
+    )
+  }
+} catch (emailError) {
+  console.error(
+    "[certification-request] tracked notification email unexpected error:",
+    emailError
+  )
+
+  emailSent = false
+}
+
+if (emailSent) {
+  const {
+    error: emailTimestampError
+  } = await adminSupabase
+    .from("certification_requests")
+    .update({
+      email_notification_sent_at:
+        new Date().toISOString()
+    })
+    .eq("id", requestId)
+
+  if (emailTimestampError) {
+    console.error(
+      "[certification-request] email timestamp failed:",
+      emailTimestampError
+    )
+  }
+}
 
     return NextResponse.json({
       success: true,

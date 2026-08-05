@@ -42,7 +42,28 @@ function formatDate(value) {
   }).format(new Date(value))
 }
 
-function UserStatusBadge({ banned }) {
+function UserStatusBadge({
+  banned,
+  accountStatus
+}) {
+  const normalizedAccountStatus =
+    String(
+      accountStatus || "active"
+    )
+      .trim()
+      .toLowerCase()
+
+  if (
+    normalizedAccountStatus ===
+    "deactivated"
+  ) {
+    return (
+      <span className="rounded-full bg-purple-400/10 px-3 py-1 text-xs font-semibold text-purple-300">
+        Disattivato
+      </span>
+    )
+  }
+
   return (
     <span
       className={`rounded-full px-3 py-1 text-xs font-semibold ${
@@ -91,6 +112,46 @@ const [statusReason, setStatusReason] =
 
 const [updatingStatus, setUpdatingStatus] =
   useState(false)
+
+  const [profileActionUser, setProfileActionUser] =
+  useState(null)
+
+const [profileName, setProfileName] =
+  useState("")
+
+const [profileSurname, setProfileSurname] =
+  useState("")
+
+const [profileCity, setProfileCity] =
+  useState("")
+
+const [profileReason, setProfileReason] =
+  useState("")
+
+const [
+  updatingProfile,
+  setUpdatingProfile
+] = useState(false)
+
+const [
+  deactivationActionUser,
+  setDeactivationActionUser
+] = useState(null)
+
+const [
+  deactivationReason,
+  setDeactivationReason
+] = useState("")
+
+const [
+  deactivationConfirmation,
+  setDeactivationConfirmation
+] = useState("")
+
+const [
+  deactivatingUser,
+  setDeactivatingUser
+] = useState(false)
 
   const [searchInput, setSearchInput] =
     useState("")
@@ -299,12 +360,408 @@ const submitStatusChange = async () => {
     toast.error(
       "Errore imprevisto durante l'operazione."
     )
-  } finally {
+   } finally {
     setUpdatingStatus(false)
   }
 }
 
-  return (
+const openProfileAction = (currentUser) => {
+  if (!currentUser) {
+    return
+  }
+
+  const accountStatus = String(
+    currentUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase()
+
+  if (accountStatus === "deactivated") {
+    toast.error(
+      "Un account disattivato definitivamente non può essere modificato."
+    )
+    return
+  }
+
+  setProfileActionUser(currentUser)
+
+  setProfileName(
+    String(currentUser.name || "")
+  )
+
+  setProfileSurname(
+    String(currentUser.surname || "")
+  )
+
+  setProfileCity(
+    String(currentUser.city || "")
+  )
+
+  setProfileReason("")
+}
+
+const closeProfileAction = () => {
+  if (updatingProfile) {
+    return
+  }
+
+  setProfileActionUser(null)
+  setProfileName("")
+  setProfileSurname("")
+  setProfileCity("")
+  setProfileReason("")
+}
+
+const submitProfileChange = async (
+  event
+) => {
+  event.preventDefault()
+
+  if (
+    !profileActionUser ||
+    updatingProfile
+  ) {
+    return
+  }
+
+  const normalizedName =
+    profileName
+      .trim()
+      .replace(/\s+/g, " ")
+
+  const normalizedSurname =
+    profileSurname
+      .trim()
+      .replace(/\s+/g, " ")
+
+  const normalizedCity =
+    profileCity
+      .trim()
+      .replace(/\s+/g, " ")
+
+  const normalizedReason =
+    profileReason.trim()
+
+  if (normalizedName.length > 100) {
+    toast.error(
+      "Il nome può contenere al massimo 100 caratteri."
+    )
+    return
+  }
+
+  if (normalizedSurname.length > 100) {
+    toast.error(
+      "Il cognome può contenere al massimo 100 caratteri."
+    )
+    return
+  }
+
+  if (normalizedCity.length > 150) {
+    toast.error(
+      "La città può contenere al massimo 150 caratteri."
+    )
+    return
+  }
+
+  if (
+    normalizedReason.length < 10 ||
+    normalizedReason.length > 500
+  ) {
+    toast.error(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+    return
+  }
+
+  try {
+    setUpdatingProfile(true)
+
+    const response = await fetch(
+      "/api/admin/users",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          userId:
+            profileActionUser.id,
+          name:
+            normalizedName,
+          surname:
+            normalizedSurname,
+          city:
+            normalizedCity,
+          reason:
+            normalizedReason
+        })
+      }
+    )
+
+    let data = null
+
+    try {
+      data = await response.json()
+    } catch {
+      data = null
+    }
+
+    if (!response.ok) {
+      toast.error(
+        data?.error ||
+          "Impossibile modificare il profilo."
+      )
+      return
+    }
+
+    if (!data?.user?.id) {
+      toast.error(
+        "Il profilo è stato aggiornato, ma la risposta ricevuta non è valida."
+      )
+      return
+    }
+
+    setUsers((currentUsers) =>
+      currentUsers.map(
+        (currentUser) =>
+          currentUser.id === data.user.id
+            ? data.user
+            : currentUser
+      )
+    )
+
+    setSelectedUser(
+      (currentUser) =>
+        currentUser?.id ===
+        data.user.id
+          ? data.user
+          : currentUser
+    )
+
+    setProfileActionUser(null)
+    setProfileName("")
+    setProfileSurname("")
+    setProfileCity("")
+    setProfileReason("")
+
+    toast.success(
+      data.message ||
+        "Dati del profilo aggiornati correttamente."
+    )
+  } catch (error) {
+    console.error(
+      "Errore modifica profilo utente:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante la modifica del profilo."
+    )
+  } finally {
+    setUpdatingProfile(false)
+  }
+}
+
+const openDeactivationAction = (
+  currentUser
+) => {
+  if (!currentUser) {
+    return
+  }
+
+  const accountStatus = String(
+    currentUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase()
+
+  if (
+    accountStatus ===
+    "deactivated"
+  ) {
+    toast.error(
+      "Questo account è già disattivato definitivamente."
+    )
+    return
+  }
+
+  setDeactivationActionUser(
+    currentUser
+  )
+
+  setDeactivationReason("")
+  setDeactivationConfirmation("")
+}
+
+const closeDeactivationAction = () => {
+  if (deactivatingUser) {
+    return
+  }
+
+  setDeactivationActionUser(null)
+  setDeactivationReason("")
+  setDeactivationConfirmation("")
+}
+
+const submitDeactivation = async (
+  event
+) => {
+  event.preventDefault()
+
+  if (
+    !deactivationActionUser ||
+    deactivatingUser
+  ) {
+    return
+  }
+
+  const normalizedReason =
+    deactivationReason.trim()
+
+  const normalizedConfirmation =
+    deactivationConfirmation
+      .trim()
+      .toUpperCase()
+
+  if (
+    normalizedReason.length < 10 ||
+    normalizedReason.length > 500
+  ) {
+    toast.error(
+      "La motivazione deve contenere da 10 a 500 caratteri."
+    )
+    return
+  }
+
+  if (
+    normalizedConfirmation !==
+    "DISATTIVA"
+  ) {
+    toast.error(
+      "Scrivi DISATTIVA per confermare l'operazione."
+    )
+    return
+  }
+
+  try {
+    setDeactivatingUser(true)
+
+    const response = await fetch(
+      "/api/admin/users",
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+        body: JSON.stringify({
+          userId:
+            deactivationActionUser.id,
+          reason:
+            normalizedReason,
+          confirmation:
+            normalizedConfirmation
+        })
+      }
+    )
+
+    let data = null
+
+    try {
+      data = await response.json()
+    } catch {
+      data = null
+    }
+
+    /*
+     * Il database potrebbe essere già stato
+     * disattivato anche quando Auth o Storage
+     * restituiscono un errore parziale.
+     */
+    if (
+      !response.ok &&
+      data?.accountDeactivated === true
+    ) {
+      setDeactivationActionUser(null)
+      setDeactivationReason("")
+      setDeactivationConfirmation("")
+      setSelectedUser(null)
+
+      await loadUsers()
+
+      toast.error(
+        data?.error ||
+          "L'account è stato disattivato, ma è necessario completare una pulizia amministrativa."
+      )
+
+      return
+    }
+
+    if (!response.ok) {
+      toast.error(
+        data?.error ||
+          "Impossibile disattivare definitivamente l'account."
+      )
+      return
+    }
+
+    if (!data?.user?.id) {
+      toast.error(
+        "L'account è stato disattivato, ma la risposta ricevuta non è valida."
+      )
+
+      setDeactivationActionUser(null)
+      setSelectedUser(null)
+
+      await loadUsers()
+
+      return
+    }
+
+    setUsers((currentUsers) =>
+      currentUsers.map(
+        (currentUser) =>
+          currentUser.id ===
+          data.user.id
+            ? data.user
+            : currentUser
+      )
+    )
+
+    setSelectedUser(
+      (currentUser) =>
+        currentUser?.id ===
+        data.user.id
+          ? data.user
+          : currentUser
+    )
+
+    setDeactivationActionUser(null)
+    setDeactivationReason("")
+    setDeactivationConfirmation("")
+
+    toast.success(
+      data.message ||
+        "Account disattivato e anonimizzato definitivamente."
+    )
+  } catch (error) {
+    console.error(
+      "Errore disattivazione definitiva utente:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante la disattivazione dell'account."
+    )
+  } finally {
+    setDeactivatingUser(false)
+  }
+}
+
+return (
     <div className="space-y-6">
       <section className="rounded-2xl border border-white/10 bg-[#0B1028] p-5 sm:p-6">
         <form
@@ -377,6 +834,10 @@ const submitStatusChange = async () => {
 
               <option value="banned">
                 Sospesi
+              </option>
+
+              <option value="deactivated">
+               Disattivati
               </option>
             </select>
           </div>
@@ -502,8 +963,11 @@ const submitStatusChange = async () => {
 
                       <td className="px-5 py-4">
                         <UserStatusBadge
-                          banned={currentUser.banned}
-                        />
+  banned={currentUser.banned}
+  accountStatus={
+    currentUser.accountStatus
+  }
+/>
                       </td>
 
                       <td className="px-5 py-4">
@@ -729,9 +1193,12 @@ const submitStatusChange = async () => {
                 </p>
 
                 <div className="mt-2">
-                  <UserStatusBadge
-                    banned={selectedUser.banned}
-                  />
+                 <UserStatusBadge
+  banned={selectedUser.banned}
+  accountStatus={
+    selectedUser.accountStatus
+  }
+/>
                 </div>
               </div>
 
@@ -783,8 +1250,15 @@ const submitStatusChange = async () => {
   </p>
 
   <div className="mt-4 flex flex-wrap gap-2">
-    {canSuspend && (
-      <button
+    {canSuspend &&
+  String(
+    selectedUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase() !==
+    "deactivated" && (
+  <button
         type="button"
         onClick={() =>
           openStatusAction(selectedUser)
@@ -801,29 +1275,100 @@ const submitStatusChange = async () => {
       </button>
     )}
 
-    {canVerify && (
-      <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-        Verifica da collegare
-      </span>
-    )}
+    {String(
+  selectedUser.accountStatus ||
+    "active"
+)
+  .trim()
+  .toLowerCase() ===
+  "deactivated" && (
+  <span className="rounded-lg border border-purple-400/20 bg-purple-400/10 px-3 py-2 text-xs font-semibold text-purple-300">
+    Account disattivato definitivamente
+  </span>
+)}
 
-    {canAdjustCredits && (
-      <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-        Crediti da collegare
-      </span>
-    )}
+    {canVerify &&
+  ["pilot", "pilota"].includes(
+    String(
+      selectedUser.role || ""
+    )
+      .trim()
+      .toLowerCase()
+  ) &&
+  String(
+    selectedUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase() !==
+    "deactivated" && (
+    <a
+      href="/admin/certifications"
+      className="rounded-lg border border-blue-400/30 bg-blue-400/10 px-4 py-2 text-sm font-semibold text-blue-300 transition hover:bg-blue-400/20"
+    >
+      Gestisci certificazioni
+    </a>
+  )}
 
-    {canUpdate && (
-      <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-        Modifica dati da collegare
-      </span>
-    )}
+    {canAdjustCredits &&
+  String(
+    selectedUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase() !==
+    "deactivated" && (
+    <a
+      href="/admin/credits"
+      className="rounded-lg border border-yellow-400/30 bg-yellow-400/10 px-4 py-2 text-sm font-semibold text-yellow-300 transition hover:bg-yellow-400/20"
+    >
+      Gestisci crediti
+    </a>
+  )}
 
-    {canDelete && (
-      <span className="rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-500">
-        Eliminazione da collegare
-      </span>
-    )}
+    {canUpdate &&
+  String(
+    selectedUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase() !==
+    "deactivated" && (
+    <button
+      type="button"
+      onClick={() =>
+        openProfileAction(
+          selectedUser
+        )
+      }
+      disabled={updatingProfile}
+      className="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Modifica dati
+    </button>
+  )}
+
+    {canDelete &&
+  String(
+    selectedUser.accountStatus ||
+      "active"
+  )
+    .trim()
+    .toLowerCase() !==
+    "deactivated" && (
+    <button
+      type="button"
+      onClick={() =>
+        openDeactivationAction(
+          selectedUser
+        )
+      }
+      disabled={deactivatingUser}
+      className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2 text-sm font-semibold text-red-300 transition hover:bg-red-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Disattiva definitivamente
+    </button>
+  )}
   </div>
 </div>
             </div>
@@ -938,6 +1483,333 @@ const submitStatusChange = async () => {
   </div>
 )}
 
+{profileActionUser && (
+  <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/85 p-4">
+    <form
+      onSubmit={submitProfileChange}
+      className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-white/10 bg-[#0B1028] p-6 shadow-2xl"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-cyan-300">
+            Modifica dati utente
+          </p>
+
+          <h2 className="mt-3 text-2xl font-bold">
+            {`${profileActionUser.name} ${profileActionUser.surname}`.trim() ||
+              profileActionUser.email}
+          </h2>
+
+          <p className="mt-2 break-all text-sm text-gray-400">
+            {profileActionUser.email}
+          </p>
+
+          <p className="mt-1 break-all text-xs text-gray-500">
+            ID: {profileActionUser.id}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={closeProfileAction}
+          disabled={updatingProfile}
+          className="rounded-lg border border-white/10 px-3 py-2 text-sm transition hover:bg-white/10 disabled:opacity-50"
+        >
+          Chiudi
+        </button>
+      </div>
+
+      <div className="mt-6 space-y-4">
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-300">
+            Nome
+          </label>
+
+          <input
+            type="text"
+            value={profileName}
+            onChange={(event) =>
+              setProfileName(
+                event.target.value.slice(
+                  0,
+                  100
+                )
+              )
+            }
+            maxLength={100}
+            disabled={updatingProfile}
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-cyan-400/50 disabled:opacity-60"
+          />
+
+          <p className="mt-1 text-right text-xs text-gray-500">
+            {profileName.length}/100
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-300">
+            Cognome
+          </label>
+
+          <input
+            type="text"
+            value={profileSurname}
+            onChange={(event) =>
+              setProfileSurname(
+                event.target.value.slice(
+                  0,
+                  100
+                )
+              )
+            }
+            maxLength={100}
+            disabled={updatingProfile}
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-cyan-400/50 disabled:opacity-60"
+          />
+
+          <p className="mt-1 text-right text-xs text-gray-500">
+            {profileSurname.length}/100
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-300">
+            Città
+          </label>
+
+          <input
+            type="text"
+            value={profileCity}
+            onChange={(event) =>
+              setProfileCity(
+                event.target.value.slice(
+                  0,
+                  150
+                )
+              )
+            }
+            maxLength={150}
+            disabled={updatingProfile}
+            className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-cyan-400/50 disabled:opacity-60"
+          />
+
+          <p className="mt-1 text-right text-xs text-gray-500">
+            {profileCity.length}/150
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-gray-300">
+            Motivazione amministrativa
+          </label>
+
+          <textarea
+            value={profileReason}
+            onChange={(event) =>
+              setProfileReason(
+                event.target.value.slice(
+                  0,
+                  500
+                )
+              )
+            }
+            minLength={10}
+            maxLength={500}
+            rows={4}
+            required
+            disabled={updatingProfile}
+            placeholder="Spiega il motivo della modifica..."
+            className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-yellow-400/50 disabled:opacity-60"
+          />
+
+          <p className="mt-1 text-right text-xs text-gray-500">
+            {profileReason.length}/500
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-yellow-400/20 bg-yellow-400/5 p-4">
+        <p className="text-sm leading-6 text-gray-300">
+          La modifica verrà registrata nel registro
+          amministrativo e l’utente riceverà una notifica.
+        </p>
+      </div>
+
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={closeProfileAction}
+          disabled={updatingProfile}
+          className="rounded-xl border border-white/10 px-5 py-3 font-semibold transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Annulla
+        </button>
+
+        <button
+          type="submit"
+          disabled={
+            updatingProfile ||
+            profileReason.trim().length <
+              10
+          }
+          className="rounded-xl bg-cyan-500 px-5 py-3 font-semibold text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {updatingProfile
+            ? "Salvataggio in corso..."
+            : "Salva modifiche"}
+        </button>
+      </div>
+    </form>
+  </div>
+)}
+
+{deactivationActionUser && (
+  <div className="fixed inset-0 z-[130] flex items-center justify-center bg-black/90 p-4">
+    <form
+      onSubmit={submitDeactivation}
+      className="max-h-[92vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-red-500/30 bg-[#0B1028] p-6 shadow-2xl"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-red-400">
+            Disattivazione definitiva
+          </p>
+
+          <h2 className="mt-3 text-2xl font-bold">
+            {`${deactivationActionUser.name} ${deactivationActionUser.surname}`.trim() ||
+              deactivationActionUser.email}
+          </h2>
+
+          <p className="mt-2 break-all text-sm text-gray-400">
+            {deactivationActionUser.email}
+          </p>
+
+          <p className="mt-1 break-all text-xs text-gray-500">
+            ID: {deactivationActionUser.id}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={closeDeactivationAction}
+          disabled={deactivatingUser}
+          className="rounded-lg border border-white/10 px-3 py-2 text-sm transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Chiudi
+        </button>
+      </div>
+
+      <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+        <p className="font-semibold text-red-300">
+          Questa operazione è definitiva.
+        </p>
+
+        <p className="mt-2 text-sm leading-6 text-gray-300">
+          L’account verrà bloccato, anonimizzato e non
+          potrà essere riattivato. I dati personali,
+          gli avatar e i documenti di certificazione
+          verranno rimossi.
+        </p>
+
+        <p className="mt-2 text-sm leading-6 text-gray-400">
+          Le informazioni necessarie allo storico
+          amministrativo, ai pagamenti e ai lavori
+          completati verranno conservate in forma
+          anonimizzata.
+        </p>
+      </div>
+
+      <div className="mt-6">
+        <div className="mb-2 flex items-center justify-between gap-4">
+          <label className="text-sm font-medium text-gray-300">
+            Motivazione amministrativa
+          </label>
+
+          <span className="text-xs text-gray-500">
+            {deactivationReason.length}/500
+          </span>
+        </div>
+
+        <textarea
+          value={deactivationReason}
+          onChange={(event) =>
+            setDeactivationReason(
+              event.target.value.slice(
+                0,
+                500
+              )
+            )
+          }
+          minLength={10}
+          maxLength={500}
+          rows={4}
+          required
+          disabled={deactivatingUser}
+          placeholder="Spiega il motivo della disattivazione definitiva..."
+          className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-red-400/50 disabled:opacity-60"
+        />
+
+        <p className="mt-2 text-xs text-gray-500">
+          Minimo 10 caratteri. La motivazione verrà
+          salvata nel registro amministrativo.
+        </p>
+      </div>
+
+      <div className="mt-5">
+        <label className="mb-2 block text-sm font-medium text-gray-300">
+          Scrivi DISATTIVA per confermare
+        </label>
+
+        <input
+          type="text"
+          value={deactivationConfirmation}
+          onChange={(event) =>
+            setDeactivationConfirmation(
+              event.target.value
+                .slice(0, 10)
+                .toUpperCase()
+            )
+          }
+          maxLength={10}
+          required
+          autoComplete="off"
+          disabled={deactivatingUser}
+          placeholder="DISATTIVA"
+          className="w-full rounded-xl border border-red-500/30 bg-black/20 p-3 font-mono font-bold uppercase tracking-widest outline-none transition focus:border-red-400 disabled:opacity-60"
+        />
+      </div>
+
+      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={closeDeactivationAction}
+          disabled={deactivatingUser}
+          className="rounded-xl border border-white/10 px-5 py-3 font-semibold transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Annulla
+        </button>
+
+        <button
+          type="submit"
+          disabled={
+            deactivatingUser ||
+            deactivationReason.trim()
+              .length < 10 ||
+            deactivationConfirmation
+              .trim()
+              .toUpperCase() !==
+              "DISATTIVA"
+          }
+          className="rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {deactivatingUser
+            ? "Disattivazione in corso..."
+            : "Disattiva definitivamente"}
+        </button>
+      </div>
+    </form>
+  </div>
+)}
 
     </div>
   )

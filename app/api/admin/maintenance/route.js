@@ -185,26 +185,6 @@ function normalizeSettings(row) {
       row.maintenance_ends_at ||
       null,
 
-    registrationsEnabled:
-      Boolean(
-        row.registrations_enabled
-      ),
-
-    jobCreationEnabled:
-      Boolean(
-        row.job_creation_enabled
-      ),
-
-    applicationsEnabled:
-      Boolean(
-        row.applications_enabled
-      ),
-
-    paymentsEnabled:
-      Boolean(
-        row.payments_enabled
-      ),
-
     updatedBy:
       row.updated_by || null,
 
@@ -217,9 +197,22 @@ function normalizeSettings(row) {
 }
 
 function mapDatabaseError(error) {
-  const message = String(
-    error?.message || ""
-  ).toUpperCase()
+  const message =
+    String(
+      error?.message || ""
+    ).toUpperCase()
+
+  if (
+    message.includes(
+      "OPERATORE_TEAM_MANCANTE"
+    )
+  ) {
+    return {
+      message:
+        "Operatore Team non disponibile.",
+      status: 401
+    }
+  }
 
   if (
     message.includes(
@@ -228,7 +221,7 @@ function mapDatabaseError(error) {
   ) {
     return {
       message:
-        "Non sei autorizzato a modificare le impostazioni operative.",
+        "Non sei autorizzato a modificare la manutenzione.",
       status: 403
     }
   }
@@ -240,7 +233,7 @@ function mapDatabaseError(error) {
   ) {
     return {
       message:
-        "Compila tutte le impostazioni richieste.",
+        "La configurazione della manutenzione è incompleta.",
       status: 400
     }
   }
@@ -271,7 +264,7 @@ function mapDatabaseError(error) {
 
   if (
     message.includes(
-      "INTERVALLO_MANUTENZIONE_NON_VALIDO"
+      "PERIODO_MANUTENZIONE_NON_VALIDO"
     )
   ) {
     return {
@@ -281,9 +274,33 @@ function mapDatabaseError(error) {
     }
   }
 
+  if (
+    message.includes(
+      "MOTIVAZIONE_NON_VALIDA"
+    )
+  ) {
+    return {
+      message:
+        "La motivazione deve contenere da 10 a 500 caratteri.",
+      status: 400
+    }
+  }
+
+  if (
+    message.includes(
+      "IMPOSTAZIONI_PIATTAFORMA_NON_TROVATE"
+    )
+  ) {
+    return {
+      message:
+        "Configurazione della piattaforma non trovata.",
+      status: 404
+    }
+  }
+
   return {
     message:
-      "Impossibile aggiornare le impostazioni operative.",
+      "Impossibile aggiornare la manutenzione.",
     status: 500
   }
 }
@@ -313,10 +330,6 @@ export async function GET() {
       maintenance_message,
       maintenance_starts_at,
       maintenance_ends_at,
-      registrations_enabled,
-      job_creation_enabled,
-      applications_enabled,
-      payments_enabled,
       updated_by,
       created_at,
       updated_at
@@ -331,14 +344,14 @@ export async function GET() {
     )
 
     return jsonError(
-      "Impossibile caricare le impostazioni operative.",
+      "Impossibile caricare la configurazione della manutenzione.",
       500
     )
   }
 
   if (!data) {
     return jsonError(
-      "Impostazioni della piattaforma non trovate.",
+      "Configurazione della manutenzione non trovata.",
       404
     )
   }
@@ -392,16 +405,12 @@ export async function GET() {
       updater,
 
       permissions: {
-        canManage:
-          hasPermission(
-            accessResult.access,
-            "maintenance.manage"
-          ) ||
-          hasPermission(
-            accessResult.access,
-            "settings.manage"
-          )
-      }
+  canManage:
+    hasPermission(
+      accessResult.access,
+      "maintenance.manage"
+    )
+}
     },
     {
       headers: {
@@ -440,14 +449,10 @@ export async function PATCH(request) {
   }
 
   const canManage =
-    hasPermission(
-      access,
-      "maintenance.manage"
-    ) ||
-    hasPermission(
-      access,
-      "settings.manage"
-    )
+  hasPermission(
+    access,
+    "maintenance.manage"
+  )
 
   if (!canManage) {
     return jsonError(
@@ -479,10 +484,10 @@ export async function PATCH(request) {
     )
 
   const reason =
-    cleanText(
-      body?.reason,
-      500
-    ) || null
+  cleanText(
+    body?.reason,
+    500
+  )
 
   const maintenanceStartsAt =
     parseNullableDate(
@@ -539,12 +544,8 @@ export async function PATCH(request) {
   }
 
   const booleanFields = [
-    "maintenanceEnabled",
-    "registrationsEnabled",
-    "jobCreationEnabled",
-    "applicationsEnabled",
-    "paymentsEnabled"
-  ]
+  "maintenanceEnabled"
+]
 
   for (const field of booleanFields) {
     if (
@@ -557,51 +558,48 @@ export async function PATCH(request) {
     }
   }
 
+  if (
+  reason.length < 10 ||
+  reason.length > 500
+) {
+  return jsonError(
+    "La motivazione deve contenere da 10 a 500 caratteri."
+  )
+}
+
   const adminSupabase =
     createAdminSupabaseClient()
 
   const {
-    data,
-    error
-  } = await adminSupabase
-    .rpc(
-      "admin_update_platform_settings",
-      {
-        p_actor_user_id:
-          user.id,
+  data,
+  error
+} = await adminSupabase
+  .rpc(
+    "admin_update_maintenance_settings",
+    {
+      p_actor_user_id:
+        user.id,
 
-        p_maintenance_enabled:
-          body.maintenanceEnabled,
+      p_maintenance_enabled:
+        body.maintenanceEnabled,
 
-        p_maintenance_title:
-          maintenanceTitle,
+      p_maintenance_title:
+        maintenanceTitle,
 
-        p_maintenance_message:
-          maintenanceMessage,
+      p_maintenance_message:
+        maintenanceMessage,
 
-        p_maintenance_starts_at:
-          maintenanceStartsAt,
+      p_maintenance_starts_at:
+        maintenanceStartsAt,
 
-        p_maintenance_ends_at:
-          maintenanceEndsAt,
+      p_maintenance_ends_at:
+        maintenanceEndsAt,
 
-        p_registrations_enabled:
-          body.registrationsEnabled,
-
-        p_job_creation_enabled:
-          body.jobCreationEnabled,
-
-        p_applications_enabled:
-          body.applicationsEnabled,
-
-        p_payments_enabled:
-          body.paymentsEnabled,
-
-        p_reason:
-          reason
-      }
-    )
-    .single()
+      p_reason:
+        reason
+    }
+  )
+  .single()
 
   if (error) {
     console.error(
@@ -622,7 +620,7 @@ export async function PATCH(request) {
     success: true,
 
     message:
-      "Impostazioni operative aggiornate correttamente.",
+  "Configurazione della manutenzione aggiornata correttamente.",
 
     settings:
       normalizeSettings(data),
