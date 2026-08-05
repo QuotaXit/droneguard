@@ -82,8 +82,11 @@ function getCategoryLabel(category) {
     new_job_available:
       "Nuovo lavoro",
 
-    account_notification:
-      "Notifica account"
+   account_notification:
+  "Notifica account",
+
+manual_team_email:
+  "Email manuale Team"
   }
 
   return (
@@ -145,7 +148,9 @@ function SummaryCard({
   )
 }
 
-export default function EmailsManagementClient() {
+export default function EmailsManagementClient({
+  canSend
+}) {
   const [
     deliveries,
     setDeliveries
@@ -188,6 +193,46 @@ export default function EmailsManagementClient() {
     retrying,
     setRetrying
   ] = useState(false)
+
+  const [
+  composeOpen,
+  setComposeOpen
+] = useState(false)
+
+const [
+  composeRecipientEmail,
+  setComposeRecipientEmail
+] = useState("")
+
+const [
+  composeRecipientName,
+  setComposeRecipientName
+] = useState("")
+
+const [
+  composeSubject,
+  setComposeSubject
+] = useState("")
+
+const [
+  composeMessage,
+  setComposeMessage
+] = useState("")
+
+const [
+  composeReason,
+  setComposeReason
+] = useState("")
+
+const [
+  composeRequestId,
+  setComposeRequestId
+] = useState("")
+
+const [
+  composing,
+  setComposing
+] = useState(false)
 
   const [
     searchInput,
@@ -616,6 +661,240 @@ export default function EmailsManagementClient() {
     }
   }
 
+  const resetComposeForm = () => {
+  setComposeRecipientEmail("")
+  setComposeRecipientName("")
+  setComposeSubject("")
+  setComposeMessage("")
+  setComposeReason("")
+  setComposeRequestId("")
+}
+
+const openCompose = () => {
+  if (
+    !canSend ||
+    composing
+  ) {
+    return
+  }
+
+  if (
+    typeof globalThis.crypto
+      ?.randomUUID !== "function"
+  ) {
+    toast.error(
+      "Il browser non riesce a generare un identificativo sicuro per l'invio."
+    )
+
+    return
+  }
+
+  setSelectedDelivery(null)
+  setRetryDelivery(null)
+  setRetryReason("")
+
+  resetComposeForm()
+
+  setComposeRequestId(
+    globalThis.crypto.randomUUID()
+  )
+
+  setComposeOpen(true)
+}
+
+const closeCompose = () => {
+  if (composing) {
+    return
+  }
+
+  setComposeOpen(false)
+  resetComposeForm()
+}
+
+const submitCompose = async (
+  event
+) => {
+  event.preventDefault()
+
+  if (
+    !canSend ||
+    !composeOpen ||
+    composing
+  ) {
+    return
+  }
+
+  const recipientEmail =
+    composeRecipientEmail
+      .trim()
+      .toLowerCase()
+
+  const recipientName =
+    composeRecipientName.trim()
+
+  const subject =
+    composeSubject
+      .trim()
+      .replace(/\s+/g, " ")
+
+  const message =
+    composeMessage.trim()
+
+  const reason =
+    composeReason.trim()
+
+  const requestId =
+    composeRequestId.trim()
+
+  const emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+  const uuidPattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+  if (
+    !uuidPattern.test(
+      requestId
+    )
+  ) {
+    toast.error(
+      "Identificativo di sicurezza dell'invio non valido. Chiudi e riapri la finestra."
+    )
+
+    return
+  }
+
+  if (
+    !emailPattern.test(
+      recipientEmail
+    )
+  ) {
+    toast.error(
+      "Inserisci un indirizzo email destinatario valido."
+    )
+
+    return
+  }
+
+  if (
+    recipientName.length > 200
+  ) {
+    toast.error(
+      "Il nome del destinatario non può superare 200 caratteri."
+    )
+
+    return
+  }
+
+  if (
+    subject.length < 3 ||
+    subject.length > 200
+  ) {
+    toast.error(
+      "L'oggetto deve contenere da 3 a 200 caratteri."
+    )
+
+    return
+  }
+
+  if (
+    message.length < 10 ||
+    message.length > 10_000
+  ) {
+    toast.error(
+      "Il messaggio deve contenere da 10 a 10.000 caratteri."
+    )
+
+    return
+  }
+
+  if (
+    reason.length < 10 ||
+    reason.length > 500
+  ) {
+    toast.error(
+      "La motivazione amministrativa deve contenere da 10 a 500 caratteri."
+    )
+
+    return
+  }
+
+  try {
+    setComposing(true)
+
+    const response =
+      await fetch(
+        "/api/admin/emails/compose",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            requestId,
+            recipientEmail,
+            recipientName,
+            subject,
+            message,
+            reason
+          })
+        }
+      )
+
+    let data = null
+
+    try {
+      data =
+        await response.json()
+    } catch {
+      data = null
+    }
+
+    if (!response.ok) {
+      if (
+        data?.deliveryCreated
+      ) {
+        toast.error(
+          "L'invio è stato registrato ma non completato. Controllalo nell'elenco Email prima di effettuare un nuovo invio."
+        )
+      } else {
+        toast.error(
+          data?.error ||
+            "Impossibile inviare l'email."
+        )
+      }
+
+      return
+    }
+
+    setComposeOpen(false)
+    resetComposeForm()
+
+    toast.success(
+      data?.message ||
+        "Email inviata correttamente."
+    )
+
+    setPage(1)
+
+    await loadDeliveries()
+  } catch (error) {
+    console.error(
+      "Errore composizione email:",
+      error
+    )
+
+    toast.error(
+      "Errore imprevisto durante l'invio dell'email."
+    )
+  } finally {
+    setComposing(false)
+  }
+}
+
   const previousPage = () => {
     setPage(
       (currentPage) =>
@@ -674,7 +953,39 @@ export default function EmailsManagementClient() {
           value={summary.cancelled}
           description="Invii annullati."
         />
-      </section>
+            </section>
+
+      {canSend && (
+        <section className="flex flex-col justify-between gap-4 rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5 sm:flex-row sm:items-center sm:p-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-300">
+              Comunicazione diretta
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Invia una nuova email
+            </h2>
+
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+              Invia una comunicazione tracciata verso
+              un singolo destinatario. L’operazione
+              richiede una motivazione amministrativa
+              e viene registrata nel Registro attività.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={openCompose}
+            disabled={composing}
+            className="shrink-0 rounded-xl bg-blue-500 px-5 py-3 font-bold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {composing
+              ? "Invio in corso..."
+              : "+ Componi email"}
+          </button>
+        </section>
+      )}
 
       <section className="rounded-2xl border border-white/10 bg-[#0B1028] p-5 sm:p-6">
         <form
@@ -1302,6 +1613,246 @@ export default function EmailsManagementClient() {
               </>
             )}
           </div>
+        </div>
+      )}
+
+      {composeOpen && canSend && (
+        <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/90 p-4">
+          <form
+            onSubmit={submitCompose}
+            className="max-h-[94vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-blue-400/30 bg-[#0B1028] p-6 shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-blue-300">
+                  Comunicazione diretta
+                </p>
+
+                <h2 className="mt-3 text-2xl font-bold">
+                  Componi una nuova email
+                </h2>
+
+                <p className="mt-2 max-w-xl text-sm leading-6 text-gray-400">
+                  La comunicazione verrà inviata a un
+                  singolo destinatario, registrata nel
+                  sistema Email e associata al tuo account
+                  Team.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeCompose}
+                disabled={composing}
+                className="rounded-lg border border-white/10 px-3 py-2 text-sm transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Chiudi
+              </button>
+            </div>
+
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">
+                  Email destinatario
+                </label>
+
+                <input
+                  type="email"
+                  value={composeRecipientEmail}
+                  onChange={(event) =>
+                    setComposeRecipientEmail(
+                      event.target.value.slice(
+                        0,
+                        320
+                      )
+                    )
+                  }
+                  required
+                  maxLength={320}
+                  disabled={composing}
+                  autoComplete="off"
+                  placeholder="utente@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-gray-300">
+                  Nome destinatario
+                </label>
+
+                <input
+                  type="text"
+                  value={composeRecipientName}
+                  onChange={(event) =>
+                    setComposeRecipientName(
+                      event.target.value.slice(
+                        0,
+                        200
+                      )
+                    )
+                  }
+                  maxLength={200}
+                  disabled={composing}
+                  autoComplete="off"
+                  placeholder="Nome facoltativo"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+                />
+
+                <p className="mt-2 text-right text-xs text-gray-500">
+                  {composeRecipientName.length}/200
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label className="text-sm text-gray-300">
+                  Oggetto
+                </label>
+
+                <span className="text-xs text-gray-500">
+                  {composeSubject.length}/200
+                </span>
+              </div>
+
+              <input
+                type="text"
+                value={composeSubject}
+                onChange={(event) =>
+                  setComposeSubject(
+                    event.target.value.slice(
+                      0,
+                      200
+                    )
+                  )
+                }
+                required
+                minLength={3}
+                maxLength={200}
+                disabled={composing}
+                placeholder="Oggetto della comunicazione"
+                className="w-full rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+              />
+            </div>
+
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label className="text-sm text-gray-300">
+                  Messaggio
+                </label>
+
+                <span className="text-xs text-gray-500">
+                  {composeMessage.length}/10.000
+                </span>
+              </div>
+
+              <textarea
+                value={composeMessage}
+                onChange={(event) =>
+                  setComposeMessage(
+                    event.target.value.slice(
+                      0,
+                      10_000
+                    )
+                  )
+                }
+                required
+                minLength={10}
+                maxLength={10_000}
+                disabled={composing}
+                rows={12}
+                placeholder="Scrivi il contenuto dell'email..."
+                className="w-full resize-y rounded-xl border border-white/10 bg-black/20 p-3 leading-6 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+              />
+            </div>
+
+            <div className="mt-5 rounded-xl border border-blue-400/20 bg-blue-400/5 p-4">
+              <p className="text-sm font-semibold text-blue-300">
+                Contenuto protetto
+              </p>
+
+              <p className="mt-2 text-xs leading-5 text-gray-400">
+                Il testo viene convertito automaticamente
+                in un’email DroneGuard. Eventuale codice
+                HTML inserito nel messaggio verrà mostrato
+                come testo e non verrà eseguito.
+              </p>
+            </div>
+
+            <div className="mt-5">
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label className="text-sm text-gray-300">
+                  Motivazione amministrativa
+                </label>
+
+                <span className="text-xs text-gray-500">
+                  {composeReason.length}/500
+                </span>
+              </div>
+
+              <textarea
+                value={composeReason}
+                onChange={(event) =>
+                  setComposeReason(
+                    event.target.value.slice(
+                      0,
+                      500
+                    )
+                  )
+                }
+                required
+                minLength={10}
+                maxLength={500}
+                disabled={composing}
+                rows={4}
+                placeholder="Spiega perché stai inviando questa comunicazione..."
+                className="w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 outline-none transition focus:border-blue-400/50 disabled:opacity-60"
+              />
+
+              <p className="mt-2 text-xs leading-5 text-gray-500">
+                La motivazione sarà registrata nel
+                Registro attività. Il messaggio completo
+                non verrà copiato nel registro audit.
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-xl border border-yellow-400/20 bg-yellow-400/5 p-4">
+              <p className="text-sm leading-6 text-gray-300">
+                Controlla attentamente destinatario,
+                oggetto e contenuto. Dopo la conferma
+                l’invio non può essere annullato.
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeCompose}
+                disabled={composing}
+                className="rounded-xl border border-white/10 px-5 py-3 font-semibold transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Annulla
+              </button>
+
+              <button
+                type="submit"
+                disabled={
+                  composing ||
+                  !composeRecipientEmail.trim() ||
+                  composeSubject.trim().length < 3 ||
+                  composeMessage.trim().length < 10 ||
+                  composeReason.trim().length < 10 ||
+                  !composeRequestId
+                }
+                className="rounded-xl bg-blue-500 px-5 py-3 font-bold text-white transition hover:bg-blue-400 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                {composing
+                  ? "Invio in corso..."
+                  : "Conferma e invia"}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 

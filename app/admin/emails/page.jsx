@@ -15,6 +15,7 @@ export const metadata = {
 }
 
 export default async function EmailsPage() {
+  const { permissions } =
   await requireTeamAccess(
     "emails.view"
   )
@@ -64,9 +65,31 @@ export default async function EmailsPage() {
             nel Registro attività.
           </p>
         </div>
+        {permissions.includes(
+  "emails.send"
+) && (
+  <div className="rounded-2xl border border-blue-400/20 bg-blue-400/5 p-5">
+    <p className="font-semibold text-blue-300">
+      Nuove comunicazioni
+    </p>
+
+    <p className="mt-2 text-sm leading-6 text-gray-400">
+      Gli operatori autorizzati possono comporre
+      una nuova email verso un singolo destinatario.
+      Ogni invio viene tracciato e registrato
+      nel Registro attività.
+    </p>
+  </div>
+)}
       </div>
 
-      <EmailsManagementClient />
+      <EmailsManagementClient
+  canSend={
+    permissions.includes(
+      "emails.send"
+    )
+  }
+/>
     </div>
   )
 }

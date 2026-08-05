@@ -1,11 +1,17 @@
 import { requireTeamAccess } from "@/lib/team/access"
 import TeamMembersClient from "./TeamMembersClient"
+import TeamPermissionsClient from "./TeamPermissionsClient"
 
 export const dynamic = "force-dynamic"
 
 export default async function TeamPage() {
   const { permissions } =
     await requireTeamAccess("team.view")
+
+    const canManagePermissions =
+  permissions.includes(
+    "team.permissions.manage"
+  )
 
   return (
     <div className="space-y-8">
@@ -54,6 +60,14 @@ canSendEmail={
 }
 
 />
+
+{canManagePermissions && (
+  <TeamPermissionsClient
+    canManagePermissions={
+      canManagePermissions
+    }
+  />
+)}
     </div>
   )
 }
