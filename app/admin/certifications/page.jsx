@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 
 import CertificationsManagementClient from "./CertificationsManagementClient"
+import PilotCertificationsClient from "./PilotCertificationsClient"
 import { requireTeamAccess } from "@/lib/team/access"
 
 export const dynamic = "force-dynamic"
@@ -24,9 +25,15 @@ export default async function CertificationsPage() {
     redirect("/admin")
   }
 
-  return (
+ return (
+  <div className="space-y-10">
     <CertificationsManagementClient
       canReview={canReview}
     />
-  )
+
+    <PilotCertificationsClient
+      canReview={canReview}
+    />
+  </div>
+)
 }
