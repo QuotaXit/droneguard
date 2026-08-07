@@ -33,79 +33,124 @@ export default function ClientHistoryPage() {
   const [reviewText, setReviewText] = useState("")
   const [reviewLoading, setReviewLoading] = useState(false)
 
-  const loadHistory = async () => {
-
+    const loadHistory = async () => {
     setLoading(true)
 
-    const {
+    try {
+      const {
         data: { user }
       } = await supabase.auth.getUser()
 
-    if (!user) return
+      if (!user) {
+        setJobs([])
+        return
+      }
 
-    // 🔥 PRENDE TUTTI I JOB CHIUSI / COMPLETATI
-    const { data, error } = await supabase
-      .from("jobs")
-      .select("*")
-      .eq("user_id", user.id)
-      .in("status", ["completed", "cancelled"])
-      .order("created_at", {
-        ascending: false
-      })
+      // Recupera i lavori completati e annullati del cliente
+      const { data: jobsData, error: jobsError } = await supabase
+        .from("jobs")
+        .select("*")
+        .eq("user_id", user.id)
+        .in("status", ["completed", "cancelled"])
+        .order("created_at", {
+          ascending: false
+        })
 
-    if (error) {
-      console.log(error)
-      setLoading(false)
-      return
-    }
+      if (jobsError) {
+        console.error("Errore caricamento storico:", jobsError)
+        toast.error("Impossibile caricare lo storico dei lavori")
+        setJobs([])
+        return
+      }
 
-    // 🔥 COUNT CANDIDATURE
-    const jobsWithApplications = await Promise.all(
+      const loadedJobs = jobsData || []
 
-      (data || []).map(async (job) => {
+      // Conta le candidature ricevute per ogni lavoro
+      const jobsWithApplications = await Promise.all(
+        loadedJobs.map(async (job) => {
+          const { count, error: applicationsError } = await supabase
+            .from("applications")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("job_id", job.id)
 
-        const { count } = await supabase
-          .from("applications")
-          .select("*", {
-            count: "exact",
-            head: true
-          })
-          .eq("job_id", job.id)
+          if (applicationsError) {
+            console.error(
+              `Errore candidature lavoro ${job.id}:`,
+              applicationsError
+            )
+          }
 
-        return {
-          ...job,
-          applications: count || 0
+          return {
+            ...job,
+            applications: count || 0,
+            hasReview: false
+          }
+        })
+      )
+
+      // Recupera solamente gli ID dei lavori completati
+      const completedJobIds = jobsWithApplications
+        .filter((job) => job.status === "completed")
+        .map((job) => job.id)
+
+      let reviewedJobIds = new Set()
+
+      // Controlla quali lavori possiedono già una recensione
+      if (completedJobIds.length > 0) {
+        const { data: reviewsData, error: reviewsError } = await supabase
+          .from("reviews")
+          .select("job_id")
+          .eq("client_id", user.id)
+          .in("job_id", completedJobIds)
+
+        if (reviewsError) {
+          console.error(
+            "Errore controllo recensioni esistenti:",
+            reviewsError
+          )
+        } else {
+          reviewedJobIds = new Set(
+            (reviewsData || [])
+              .map((review) => review.job_id)
+              .filter(Boolean)
+          )
         }
+      }
 
-      })
+      const finalJobs = jobsWithApplications.map((job) => ({
+        ...job,
+        hasReview: reviewedJobIds.has(job.id)
+      }))
 
-    )
+      setJobs(finalJobs)
 
-    setJobs(jobsWithApplications)
+      const completedJobs = finalJobs.filter(
+        (job) => job.status === "completed"
+      )
 
-    // 🔥 STATS
-    setTotalCount(jobsWithApplications.length)
+      const cancelledJobs = finalJobs.filter(
+        (job) => job.status === "cancelled"
+      )
 
-    const confirmed = jobsWithApplications.filter(
-      (job) => job.status === "completed"
-    )
+      const totalApplications = finalJobs.reduce(
+        (sum, job) => sum + Number(job.applications || 0),
+        0
+      )
 
-    const cancelled = jobsWithApplications.filter(
-      (job) => job.status === "cancelled"
-    )
-
-    setConfirmedCount(confirmed.length)
-    setCancelledCount(cancelled.length)
-
-    const totalApplications = jobsWithApplications.reduce(
-      (sum, job) => sum + job.applications,
-      0
-    )
-
-    setApplicationsCount(totalApplications)
-
-    setLoading(false)
-
+      setTotalCount(finalJobs.length)
+      setConfirmedCount(completedJobs.length)
+      setCancelledCount(cancelledJobs.length)
+      setApplicationsCount(totalApplications)
+    } catch (error) {
+      console.error("Errore imprevisto caricamento storico:", error)
+      toast.error("Errore imprevisto durante il caricamento")
+      setJobs([])
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -122,46 +167,147 @@ export default function ClientHistoryPage() {
     setShowReviewModal(true)
   }
 
-  const saveReview = async () => {
-    if (!selectedReviewJob) return
+    const saveReview = async () => {
+    if (!selectedReviewJob || reviewLoading) return
 
-    if (!reviewTitle.trim() || !reviewText.trim()) {
-      toast.error("Compila titolo e recensione")
+    const cleanTitle = reviewTitle.trim()
+    const cleanReview = reviewText.trim()
+    const numericRating = Number(reviewRating)
+
+    if (
+      selectedReviewJob.status !== "completed" ||
+      selectedReviewJob.hasReview
+    ) {
+      toast.error("La recensione non è disponibile per questo lavoro")
+      return
+    }
+
+    if (
+      !Number.isInteger(numericRating) ||
+      numericRating < 1 ||
+      numericRating > 5
+    ) {
+      toast.error("Seleziona una valutazione valida")
+      return
+    }
+
+    if (cleanTitle.length < 3) {
+      toast.error("Il titolo deve contenere almeno 3 caratteri")
+      return
+    }
+
+    if (cleanTitle.length > 100) {
+      toast.error("Il titolo non può superare 100 caratteri")
+      return
+    }
+
+    if (cleanReview.length < 10) {
+      toast.error("La recensione deve contenere almeno 10 caratteri")
+      return
+    }
+
+    if (cleanReview.length > 2000) {
+      toast.error("La recensione non può superare 2000 caratteri")
       return
     }
 
     try {
       setReviewLoading(true)
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        toast.error("Devi essere loggato")
-        return
-      }
-
-      const { error } = await supabase
-        .from("reviews")
-        .insert({
-          job_id: selectedReviewJob.id,
-          client_id: user.id,
-          pilot_id: selectedReviewJob.pilot_id || selectedReviewJob.assigned_pilot,
-          rating: Number(reviewRating),
-          title: reviewTitle.trim(),
-          review: reviewText.trim(),
-          comment: reviewText.trim()
-        })
+      const { data, error } = await supabase.rpc(
+        "create_job_review",
+        {
+          p_job_id: selectedReviewJob.id,
+          p_rating: numericRating,
+          p_title: cleanTitle,
+          p_review: cleanReview
+        }
+      )
 
       if (error) {
-        console.log(error)
-        toast.error("Errore salvataggio recensione")
+        console.error("Errore creazione recensione:", error)
+
+        const errorMessage = String(
+          error.message || ""
+        ).toUpperCase()
+
+        if (errorMessage.includes("RECENSIONE_GIA_PRESENTE")) {
+          toast.error("Hai già recensito questo lavoro")
+        } else if (
+          errorMessage.includes("LAVORO_NON_COMPLETATO")
+        ) {
+          toast.error("Puoi recensire soltanto un lavoro completato")
+        } else if (
+          errorMessage.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          toast.error("Non puoi recensire questo lavoro")
+        } else if (
+          errorMessage.includes("PILOTA_NON_ASSEGNATO")
+        ) {
+          toast.error("Non risulta alcun pilota assegnato")
+        } else if (
+          errorMessage.includes("ACCOUNT_SOSPESO")
+        ) {
+          toast.error("Il tuo account è sospeso")
+        } else if (
+          errorMessage.includes("SOLO_CLIENTI")
+        ) {
+          toast.error("Solo i clienti possono lasciare recensioni")
+        } else if (
+          errorMessage.includes("VALUTAZIONE_NON_VALIDA")
+        ) {
+          toast.error("La valutazione deve essere compresa tra 1 e 5")
+        } else if (
+          errorMessage.includes("TITOLO_TROPPO_CORTO")
+        ) {
+          toast.error("Il titolo deve contenere almeno 3 caratteri")
+        } else if (
+          errorMessage.includes("TITOLO_TROPPO_LUNGO")
+        ) {
+          toast.error("Il titolo non può superare 100 caratteri")
+        } else if (
+          errorMessage.includes("RECENSIONE_TROPPO_CORTA")
+        ) {
+          toast.error("La recensione deve contenere almeno 10 caratteri")
+        } else if (
+          errorMessage.includes("RECENSIONE_TROPPO_LUNGA")
+        ) {
+          toast.error("La recensione non può superare 2000 caratteri")
+        } else {
+          toast.error("Errore durante il salvataggio della recensione")
+        }
+
         return
       }
 
-      toast.success("Recensione salvata ✅")
+      if (!data?.created) {
+        toast.error("La recensione non è stata creata correttamente")
+        return
+      }
+
+      setJobs((currentJobs) =>
+        currentJobs.map((job) =>
+          job.id === selectedReviewJob.id
+            ? {
+                ...job,
+                hasReview: true
+              }
+            : job
+        )
+      )
+
+      toast.success("Recensione pubblicata ✅")
+
       setShowReviewModal(false)
+      setSelectedReviewJob(null)
+      setReviewRating(5)
+      setReviewTitle("")
+      setReviewText("")
+    } catch (error) {
+      console.error("Errore imprevisto recensione:", error)
+      toast.error("Errore imprevisto durante il salvataggio")
     } finally {
       setReviewLoading(false)
     }
@@ -353,12 +499,25 @@ export default function ClientHistoryPage() {
 
                   </div>
 
-                  <button
-                    onClick={() => openReviewModal(job)}
-                    className="mt-5 w-full rounded-xl bg-yellow-400 py-3 font-bold text-black transition hover:bg-yellow-300"
-                  >
-                    Lascia recensione
-                  </button>
+{job.status === "completed" && (
+  job.hasReview ? (
+    <button
+      type="button"
+      disabled
+      className="mt-5 w-full cursor-not-allowed rounded-xl border border-green-400/30 bg-green-500/10 py-3 font-bold text-green-300"
+    >
+      Recensione già inviata
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={() => openReviewModal(job)}
+      className="mt-5 w-full rounded-xl bg-yellow-400 py-3 font-bold text-black transition hover:bg-yellow-300"
+    >
+      Lascia recensione
+    </button>
+  )
+)}
 
                 </div>
 
@@ -419,40 +578,68 @@ export default function ClientHistoryPage() {
             </label>
 
             <input
-              value={reviewTitle}
-              onChange={(e) => setReviewTitle(e.target.value)}
-              placeholder="Esempio: Ottimo pilota"
-              className="mb-4 w-full rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500"
-            />
+  type="text"
+  value={reviewTitle}
+  onChange={(e) => setReviewTitle(e.target.value)}
+  placeholder="Esempio: Ottimo pilota"
+  minLength={3}
+  maxLength={100}
+  disabled={reviewLoading}
+  className="mb-2 w-full rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+/>
+
+<p className="mb-4 text-right text-xs text-gray-500">
+  {reviewTitle.length}/100
+</p>
 
             <label className="mb-2 block text-sm text-gray-300">
               Recensione
             </label>
 
             <textarea
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              placeholder="Scrivi com'è andato il lavoro..."
-              rows={5}
-              className="mb-6 w-full resize-none rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500"
-            />
+  value={reviewText}
+  onChange={(e) => setReviewText(e.target.value)}
+  placeholder="Scrivi com'è andato il lavoro..."
+  rows={5}
+  minLength={10}
+  maxLength={2000}
+  disabled={reviewLoading}
+  className="mb-2 w-full resize-none rounded-xl bg-white/10 p-3 text-white outline-none placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+/>
+
+<p className="mb-6 text-right text-xs text-gray-500">
+  {reviewText.length}/2000
+</p>
 
             <div className="grid grid-cols-2 gap-4">
 
               <button
-                onClick={() => setShowReviewModal(false)}
-                className="rounded-xl border border-white/10 bg-white/5 py-3 font-semibold hover:bg-white/10"
-              >
-                Chiudi
-              </button>
+  type="button"
+  onClick={() => {
+    setShowReviewModal(false)
+    setSelectedReviewJob(null)
+    setReviewRating(5)
+    setReviewTitle("")
+    setReviewText("")
+  }}
+  disabled={reviewLoading}
+  className="rounded-xl border border-white/10 bg-white/5 py-3 font-semibold transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  Chiudi
+</button>
 
               <button
-                onClick={saveReview}
-                disabled={reviewLoading}
-                className="rounded-xl bg-green-500 py-3 font-bold text-black hover:bg-green-400 disabled:opacity-50"
-              >
-                {reviewLoading ? "Salvataggio..." : "Salva"}
-              </button>
+  type="button"
+  onClick={saveReview}
+  disabled={
+    reviewLoading ||
+    reviewTitle.trim().length < 3 ||
+    reviewText.trim().length < 10
+  }
+  className="rounded-xl bg-green-500 py-3 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+>
+  {reviewLoading ? "Salvataggio..." : "Pubblica recensione"}
+</button>
 
             </div>
 

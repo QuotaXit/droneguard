@@ -1,33 +1,33 @@
 export default function Services() {
-  const services = [
+    const services = [
     {
-      title: "Riprese Aeree",
-      desc: "Immagini ad alta risoluzione per immobili, eventi e campagne di marketing.",
+      title: "Riprese aeree",
+      desc: "Foto e video dall’alto per immobili, eventi, turismo, attività e contenuti promozionali.",
       icon: "📷"
     },
     {
-      title: "Sondaggi e Mappatura",
-      desc: "Rilievi topografici accurati e mappature per edilizia e ingegneria.",
+      title: "Rilievi e mappature",
+      desc: "Rilievi fotogrammetrici, mappature del territorio e supporto al monitoraggio di cantieri e aree.",
       icon: "🗺️"
     },
     {
-      title: "Ispezione",
-      desc: "Ispezioni infrastrutturali, energetiche e industriali con reporting dettagliato.",
+      title: "Ispezioni tecniche",
+      desc: "Controlli visivi di tetti, facciate, impianti, infrastrutture e zone difficilmente accessibili.",
       icon: "🔍"
     },
     {
       title: "Agricoltura",
-      desc: "Immagini cinematografiche di droni per film, pubblicità e produzioni aziendali.",
+      desc: "Supporto al monitoraggio di colture e terreni, in base alle attrezzature e alle competenze del pilota.",
       icon: "🌾"
     },
     {
-      title: "Videografia",
-      desc: "Fotografie ad alta risoluzione per immobili, eventi e campagne di marketing.",
+      title: "Eventi e videografia",
+      desc: "Riprese aeree per matrimoni, eventi, produzioni video, attività turistiche e contenuti aziendali.",
       icon: "🎥"
     },
     {
       title: "Modellazione 3D",
-      desc: "Modelli 3D basati su fotogrammetria per architettura e piani urbani.",
+      desc: "Creazione di modelli tridimensionali tramite fotogrammetria per edifici, terreni e progetti tecnici.",
       icon: "📦"
     }
   ]
@@ -44,13 +44,13 @@ export default function Services() {
         <div className="text-center mt-16 mb-20">
 
           <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
-            Servizi Professionali con Drone
-          </h2>
+  Servizi con drone
+</h2>
 
-          <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-  Dai rilievi del cantiere alle mappature agricole
-  <br />
-  ogni servizio di droni commerciali, una piattaforma.
+          <p className="text-gray-300 mt-4 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed">
+  Dalle riprese aeree alle ispezioni, dalla mappatura
+  all’agricoltura: pubblica la tua richiesta e trova
+  piloti con competenze adatte al servizio.
 </p>
 
         </div>

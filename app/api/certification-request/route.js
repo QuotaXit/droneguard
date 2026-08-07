@@ -34,7 +34,11 @@ function jsonError(message, status = 400) {
       error: message
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0"
+      }
     }
   )
 }
@@ -175,9 +179,9 @@ export async function POST(request) {
       request.headers.get("origin")
 
     if (
-      requestOrigin &&
-      requestOrigin !== request.nextUrl.origin
-    ) {
+  !requestOrigin ||
+  requestOrigin !== request.nextUrl.origin
+) {
       return jsonError(
         "Origine della richiesta non autorizzata.",
         403
@@ -219,15 +223,16 @@ export async function POST(request) {
     } = await adminSupabase
       .from("users")
       .select(`
-        id,
-        email,
-        role,
-        name,
-        surname,
-        certifications,
-        banned,
-        cert_request_sent
-      `)
+  id,
+  email,
+  role,
+  name,
+  surname,
+  certifications,
+  banned,
+  account_status,
+  cert_request_sent
+`)
       .eq("id", user.id)
       .maybeSingle()
 
@@ -257,6 +262,19 @@ export async function POST(request) {
         403
       )
     }
+
+    if (
+  String(
+    profile.account_status || "active"
+  )
+    .trim()
+    .toLowerCase() !== "active"
+) {
+  return jsonError(
+    "Il tuo account non è attivo.",
+    403
+  )
+}
 
     // =====================================================
     // RICHIESTA GIÀ PENDENTE
@@ -694,12 +712,20 @@ if (emailSent) {
   }
 }
 
-    return NextResponse.json({
-      success: true,
-      request: createdRequest,
-      emailNotificationSent:
-        emailSent
-    })
+    return NextResponse.json(
+  {
+    success: true,
+    request: createdRequest,
+    emailNotificationSent:
+      emailSent
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
   } catch (error) {
     console.error(
       "[certification-request] unexpected error:",

@@ -2,34 +2,62 @@
 
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
+import {
+  getDashboardPath,
+  isPilot
+} from "@/lib/auth-utils"
 
 export default function JobCard({ variant = 1 }) {
   const router = useRouter()
 
-  const handleGoToProfile = async () => {
+    const handleOpenJobsBoard = async () => {
     const {
-      data: { user }
+      data: { user },
+      error: authError
     } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (authError) {
+      console.error(
+        "Errore controllo sessione card esempio:",
+        authError
+      )
+
       router.push("/login")
       return
     }
 
-    const { data: profile } = await supabase
+    if (!user) {
+      router.push("/register?type=pilot")
+      return
+    }
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
       .from("users")
       .select("role")
       .eq("id", user.id)
       .maybeSingle()
 
-    const role = profile?.role?.toLowerCase()
+    if (profileError || !profile) {
+      console.error(
+        "Impossibile recuperare il ruolo:",
+        profileError
+      )
 
-    if (role === "cliente" || role === "client") {
-      router.push("/dashboard-client")
+      router.push("/login")
       return
     }
 
-    router.push("/dashboard")
+    if (isPilot(profile.role)) {
+      router.push("/dashboard/jobs-board")
+      return
+    }
+
+    router.push(
+      getDashboardPath(profile.role)
+    )
   }
 
   const jobs = {
@@ -40,8 +68,8 @@ export default function JobCard({ variant = 1 }) {
       client: "Agenzia immobiliare (Roma)",
       brief: "Riprese esterne + panoramiche + montaggio base",
       location: "Roma, Lazio",
-      published: "Pubblicato 2 giorni fa",
-      deadline: "15/06/2026",
+      published: "Esempio dimostrativo",
+      deadline: "Da concordare",
       type: "Riprese immobili",
       image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=500"
     },
@@ -52,8 +80,8 @@ export default function JobCard({ variant = 1 }) {
       client: "Azienda logistica",
       brief: "Ispezione area + sorveglianza + report video",
       location: "Milano, Lombardia",
-      published: "Pubblicato 3 giorni fa",
-      deadline: "20/06/2026",
+      published: "Esempio dimostrativo",
+      deadline: "Da concordare",
       type: "Ispezione industriale",
       image: "https://images.unsplash.com/photo-1513828583688-c52646db42da?q=80&w=500"
     },
@@ -64,8 +92,8 @@ export default function JobCard({ variant = 1 }) {
       client: "Azienda agricola",
       brief: "Mappatura area + analisi terreno + esportazione dati",
       location: "Bologna, Emilia-Romagna",
-      published: "Pubblicato 1 giorno fa",
-      deadline: "10/06/2026",
+      published: "Esempio dimostrativo",
+      deadline: "Da concordare",
       type: "Mappatura agricola",
       image: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=500"
     }
@@ -121,11 +149,12 @@ export default function JobCard({ variant = 1 }) {
         </div>
 
         <button
-          onClick={handleGoToProfile}
-          className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#60a5fa] via-[#3b82f6] to-[#6366f1] px-6 py-4 text-base font-semibold text-white shadow-[0_0_20px_rgba(96,165,250,0.6)] transition hover:scale-105"
-        >
-          Anteprima Annuncio
-        </button>
+  type="button"
+  onClick={handleOpenJobsBoard}
+  className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#60a5fa] via-[#3b82f6] to-[#6366f1] px-6 py-4 text-base font-semibold text-white shadow-[0_0_20px_rgba(96,165,250,0.6)] transition hover:scale-105"
+>
+  Scopri la Bacheca lavori
+</button>
       </div>
     </div>
   )

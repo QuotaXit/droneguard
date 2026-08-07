@@ -8,7 +8,7 @@ import Footer from "@/components/Footer"
 import CTA from "@/components/CTA"
 import PilotCitiesStats from "@/components/PilotCitiesStats"
 
-export default async function Home() {
+export default function Home() {
   return (
     <main className="min-h-screen bg-[#0A0D1F]">
       <Navbar />

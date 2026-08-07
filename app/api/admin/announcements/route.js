@@ -229,10 +229,10 @@ function rejectCrossOrigin(request) {
   const origin =
     request.headers.get("origin")
 
-  if (
-    origin &&
-    origin !== request.nextUrl.origin
-  ) {
+ if (
+  !origin ||
+  origin !== request.nextUrl.origin
+) {
     return jsonError(
       "Origine della richiesta non autorizzata.",
       403
@@ -844,13 +844,21 @@ export async function POST(request) {
     )
   }
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
     message:
       "Bozza dell’avviso creata correttamente.",
     announcement:
       normalizeAnnouncement(data)
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }
 
 export async function PATCH(request) {
@@ -1115,11 +1123,19 @@ export async function PATCH(request) {
       "Avviso archiviato correttamente."
   }
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
     message:
       successMessages[action],
     announcement:
       normalizeAnnouncement(data)
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }

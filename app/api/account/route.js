@@ -781,66 +781,76 @@ export async function DELETE(request) {
     }
 
     /*
-     * Eliminiamo prima i file personali.
-     * Se questa fase fallisce, il profilo
-     * non viene ancora disattivato.
-     */
+ * Prima disattiviamo atomicamente il profilo
+ * e sistemiamo tutti i flussi del database.
+ *
+ * Il trigger cleanup_deactivated_user_pii
+ * esegue inoltre la pulizia dei dati personali
+ * residui collegati all'account.
+ */
+const {
+  data: deactivationResult,
+  error: deactivationError
+} = await supabase.rpc(
+  "deactivate_my_account"
+)
 
-    let removedAvatars = 0
-    let removedCertifications = 0
+if (deactivationError) {
+  console.error(
+    "[account-delete] RPC failed:",
+    deactivationError
+  )
 
-    try {
-      removedAvatars =
-        await removeStoragePaths({
-          adminSupabase,
-          bucket: "avatars",
-          paths: avatarPaths
-        })
+  return jsonError(
+    deactivationError.message ||
+      "Non è stato possibile disattivare l’account.",
+    500
+  )
+}
 
-      removedCertifications =
-        await removeStoragePaths({
-          adminSupabase,
-          bucket:
-            "certification-documents",
-          paths:
-            certificationPaths
-        })
-    } catch (storageRemoveError) {
-      console.error(
-        "[account-delete] storage cleanup failed:",
-        storageRemoveError
-      )
+/*
+ * Dopo la disattivazione DB rimuoviamo
+ * i file personali dallo Storage.
+ *
+ * Se questa fase fallisce l'account è già
+ * disattivato, ma Supabase Auth non viene
+ * ancora anonimizzato: la pulizia può quindi
+ * essere ritentata in sicurezza.
+ */
+let removedAvatars = 0
+let removedCertifications = 0
 
-      return jsonError(
-        "Non è stato possibile completare la rimozione dei file personali.",
-        500
-      )
+try {
+  removedAvatars =
+    await removeStoragePaths({
+      adminSupabase,
+      bucket: "avatars",
+      paths: avatarPaths
+    })
+
+  removedCertifications =
+    await removeStoragePaths({
+      adminSupabase,
+      bucket:
+        "certification-documents",
+      paths:
+        certificationPaths
+    })
+} catch (storageRemoveError) {
+  console.error(
+    "[account-delete] storage cleanup failed:",
+    storageRemoveError
+  )
+
+  return jsonError(
+    "L’account è stato disattivato, ma la rimozione completa dei file personali deve essere ritentata.",
+    500,
+    {
+      accountDeactivated: true,
+      storageCleanupPending: true
     }
-
-    /*
-     * Disattivazione atomica del profilo
-     * e sistemazione dei flussi operativi.
-     */
-
-    const {
-      data: deactivationResult,
-      error: deactivationError
-    } = await supabase.rpc(
-      "deactivate_my_account"
-    )
-
-    if (deactivationError) {
-      console.error(
-        "[account-delete] RPC failed:",
-        deactivationError
-      )
-
-      return jsonError(
-        deactivationError.message ||
-          "Non è stato possibile disattivare l’account.",
-        500
-      )
-    }
+  )
+}
 
     /*
      * Anonimizzazione e blocco permanente
@@ -880,53 +890,79 @@ export async function DELETE(request) {
     let authSanitized = true
 
     if (authSanitizeError) {
-      authSanitized = false
+  authSanitized = false
 
-      console.error(
-        "[account-delete] full Auth anonymization failed:",
-        authSanitizeError
+  console.error(
+    "[account-delete] full Auth anonymization failed:",
+    authSanitizeError
+  )
+
+  /*
+   * Fallback di sicurezza:
+   * se l'anonimizzazione completa fallisce,
+   * almeno impediamo qualsiasi nuovo accesso.
+   */
+  const {
+    error: authBanError
+  } =
+    await adminSupabase.auth.admin
+      .updateUserById(
+        user.id,
+        {
+          ban_duration:
+            "876000h"
+        }
       )
 
-      /*
-       * Secondo tentativo minimo:
-       * almeno il ban permanente deve
-       * essere applicato.
-       */
+  if (authBanError) {
+    console.error(
+      "[account-delete] Auth ban fallback failed:",
+      authBanError
+    )
 
-      const {
-        error: authBanError
-      } =
-        await adminSupabase.auth.admin
-          .updateUserById(
-            user.id,
-            {
-              ban_duration:
-                "876000h"
-            }
-          )
-
-      if (authBanError) {
-        console.error(
-          "[account-delete] Auth ban fallback failed:",
-          authBanError
-        )
-
-        return jsonError(
-          "Il profilo è stato disattivato, ma il blocco Auth richiede un intervento amministrativo.",
-          500,
-          {
-            accountDeactivated: true
-          }
-        )
+    return jsonError(
+      "Il profilo è stato disattivato e i file personali sono stati rimossi, ma il blocco dell’account Auth richiede un intervento amministrativo.",
+      500,
+      {
+        accountDeactivated: true,
+        storageCleaned: true,
+        authSanitized: false,
+        authBlocked: false
       }
-    }
+    )
+  }
 
+  /*
+   * Il ban è riuscito, quindi l'account
+   * non può più essere utilizzato.
+   *
+   * Tuttavia non dichiariamo la cancellazione
+   * completamente riuscita perché l'anonimizzazione
+   * di email/password in Auth non è stata completata.
+   */
+  return jsonError(
+    "L’account è stato disattivato e bloccato, ma l’anonimizzazione completa dei dati di autenticazione richiede un intervento amministrativo.",
+    500,
+    {
+      accountDeactivated: true,
+      storageCleaned: true,
+      authSanitized: false,
+      authBlocked: true
+    }
+  )
+}
+
+ /*
+     * Tutte le fasi sono state completate:
+     * database, Storage e Supabase Auth.
+     */
     return NextResponse.json({
       success: true,
       message:
         "Account disattivato correttamente.",
       accountDeactivated: true,
-      authSanitized,
+      authSanitized: true,
+      storageCleaned: true,
       removedFiles: {
         avatars:
           removedAvatars,

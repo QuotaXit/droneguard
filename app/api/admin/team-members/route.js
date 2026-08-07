@@ -98,20 +98,70 @@ function jsonError(message, status = 400) {
  * Supabase Auth e PostgreSQL non condividono una singola transazione.
  * Se un passaggio successivo fallisce, rimuoviamo l'utente appena creato.
  */
-async function cleanupCreatedUser(adminSupabase, userId) {
-  if (!userId) return
+async function cleanupCreatedUser(
+  adminSupabase,
+  userId
+) {
+  if (!userId) {
+    return false
+  }
 
-  await adminSupabase
+  let cleanupSucceeded = true
+
+  /*
+   * Prova tutti i passaggi anche se uno fallisce,
+   * così massimizziamo la possibilità di lasciare
+   * il sistema in uno stato pulito.
+   */
+
+  const {
+    error: teamMemberDeleteError
+  } = await adminSupabase
     .from("team_members")
     .delete()
     .eq("user_id", userId)
 
-  await adminSupabase
+  if (teamMemberDeleteError) {
+    cleanupSucceeded = false
+
+    console.error(
+      "[team-members] Rollback team_members fallito:",
+      teamMemberDeleteError
+    )
+  }
+
+  const {
+    error: profileDeleteError
+  } = await adminSupabase
     .from("users")
     .delete()
     .eq("id", userId)
 
-  await adminSupabase.auth.admin.deleteUser(userId)
+  if (profileDeleteError) {
+    cleanupSucceeded = false
+
+    console.error(
+      "[team-members] Rollback profilo users fallito:",
+      profileDeleteError
+    )
+  }
+
+  const {
+    error: authDeleteError
+  } =
+    await adminSupabase.auth.admin
+      .deleteUser(userId)
+
+  if (authDeleteError) {
+    cleanupSucceeded = false
+
+    console.error(
+      "[team-members] Rollback Auth fallito:",
+      authDeleteError
+    )
+  }
+
+  return cleanupSucceeded
 }
 
 export async function GET() {
@@ -239,11 +289,19 @@ export async function GET() {
       permissions.includes("team.owner.manage")
   )
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
     members: completeMembers,
     roles: availableRoles
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }
 
 export async function PATCH(request) {
@@ -819,14 +877,18 @@ export async function POST(request) {
    * Protezione base contro richieste provenienti
    * da un sito esterno.
    */
-  const requestOrigin = request.headers.get("origin")
+  const requestOrigin =
+  request.headers.get("origin")
 
-  if (
-    requestOrigin &&
-    requestOrigin !== request.nextUrl.origin
-  ) {
-    return jsonError("Origine della richiesta non autorizzata.", 403)
-  }
+if (
+  !requestOrigin ||
+  requestOrigin !== request.nextUrl.origin
+) {
+  return jsonError(
+    "Origine della richiesta non autorizzata.",
+    403
+  )
+}
 
   /*
    * Verifica sessione e accesso Team.
@@ -1054,15 +1116,23 @@ if (metadataError) {
     metadataError
   )
 
+  const cleanupSucceeded =
   await cleanupCreatedUser(
     adminSupabase,
     createdUser.id
   )
 
+if (!cleanupSucceeded) {
   return jsonError(
-    "Impossibile configurare il nuovo account Team.",
+    "La creazione dell'account Team è fallita e il rollback richiede un intervento amministrativo.",
     500
   )
+}
+
+return jsonError(
+  "Impossibile configurare il nuovo account Team.",
+  500
+)
 }
 
 /*
@@ -1094,15 +1164,23 @@ if (profileError || !normalizedProfile) {
     profileError
   )
 
+  const cleanupSucceeded =
   await cleanupCreatedUser(
     adminSupabase,
     createdUser.id
   )
 
+if (!cleanupSucceeded) {
   return jsonError(
-    "Impossibile completare il profilo Team.",
+    "La configurazione del profilo Team è fallita e il rollback richiede un intervento amministrativo.",
     500
   )
+}
+
+return jsonError(
+  "Impossibile completare il profilo Team.",
+  500
+)
 }
 
     /*
@@ -1155,10 +1233,18 @@ if (profileError || !normalizedProfile) {
      * eliminiamo l'account Auth e il profilo
      * applicativo appena creati.
      */
-    await cleanupCreatedUser(
-      adminSupabase,
-      createdUser.id
-    )
+    const cleanupSucceeded =
+  await cleanupCreatedUser(
+    adminSupabase,
+    createdUser.id
+  )
+
+if (!cleanupSucceeded) {
+  return jsonError(
+    "La creazione del membro Team non è stata completata e il rollback richiede un intervento amministrativo.",
+    500
+  )
+}
 
     const normalizedMessage =
       String(

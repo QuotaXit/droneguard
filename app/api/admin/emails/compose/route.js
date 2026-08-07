@@ -167,16 +167,49 @@ export async function POST(
     )
   }
 
-  let body
+  let rawBody
 
-  try {
-    body =
-      await request.json()
-  } catch {
-    return jsonError(
-      "Dati della richiesta non validi."
-    )
-  }
+try {
+  rawBody =
+    await request.text()
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  Buffer.byteLength(
+    rawBody,
+    "utf8"
+  ) > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let body
+
+try {
+  body =
+    JSON.parse(rawBody)
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  !body ||
+  typeof body !== "object" ||
+  Array.isArray(body)
+) {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
 
   const requestId =
     normalizeSingleLine(
@@ -379,7 +412,7 @@ export async function POST(
     emailResult =
       await sendTrackedEmail({
         idempotencyKey:
-          `admin-compose:${requestId}`,
+  `admin-compose:${user.id}:${requestId}`,
 
         category:
           "manual_team_email",
@@ -450,6 +483,22 @@ export async function POST(
       500
     )
   }
+
+  if (emailResult.inProgress) {
+  return jsonError(
+    "L'invio di questa email è già in corso.",
+    409,
+    {
+      deliveryId:
+        emailResult.deliveryId ||
+        null,
+
+      status:
+        emailResult.status ||
+        "sending"
+    }
+  )
+}
 
   if (
     emailResult.success !== true

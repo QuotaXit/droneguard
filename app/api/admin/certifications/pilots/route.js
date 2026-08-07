@@ -389,6 +389,11 @@ export async function GET(
           "pilota"
         ]
       )
+
+.or(
+  "account_status.eq.active,account_status.is.null"
+)
+
       .order(
         "surname",
         {
@@ -738,6 +743,28 @@ export async function POST(
         "L'account selezionato non appartiene a un pilota."
       )
     }
+
+    if (
+  errorMessage.includes(
+    "PROFILO_PILOTA_NON_ATTIVO"
+  )
+) {
+  return jsonError(
+    "L'account del pilota è stato disattivato e non può ricevere certificazioni.",
+    409
+  )
+}
+
+if (
+  errorMessage.includes(
+    "PROFILO_PILOTA_SOSPESO"
+  )
+) {
+  return jsonError(
+    "L'account del pilota è sospeso e non può ricevere certificazioni.",
+    409
+  )
+}
 
     if (
       errorMessage.includes(

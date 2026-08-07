@@ -42,7 +42,11 @@ function jsonError(message, status = 400) {
       error: message
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0"
+      }
     }
   )
 }
@@ -477,33 +481,41 @@ export async function GET(request) {
         )
       )
 
-    return NextResponse.json({
-      success: true,
+    return NextResponse.json(
+  {
+    success: true,
 
-      requests:
-        completeRequests,
+    requests:
+      completeRequests,
 
-      permissions: {
-        canView: true,
+    permissions: {
+      canView: true,
 
-        canReview:
-          permissions.includes(
-            "certifications.review"
-          )
-      },
+      canReview:
+        permissions.includes(
+          "certifications.review"
+        )
+    },
 
-      pagination: {
-        page,
-        pageSize:
-          PAGE_SIZE,
-        total,
-        totalPages
-      },
+    pagination: {
+      page,
+      pageSize:
+        PAGE_SIZE,
+      total,
+      totalPages
+    },
 
-      filters: {
-        status
-      }
-    })
+    filters: {
+      status
+    }
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
   } catch (error) {
     console.error(
       "[admin-certifications] unexpected GET error:",
@@ -527,9 +539,9 @@ export async function PATCH(request) {
       request.headers.get("origin")
 
     if (
-      requestOrigin &&
-      requestOrigin !== request.nextUrl.origin
-    ) {
+  !requestOrigin ||
+  requestOrigin !== request.nextUrl.origin
+) {
       return jsonError(
         "Origine della richiesta non autorizzata.",
         403
@@ -758,11 +770,22 @@ export async function PATCH(request) {
           "PROFILO_PILOTA_NON_TROVATO"
         )
       ) {
-        return jsonError(
+       return jsonError(
           "Il profilo del pilota non è più disponibile.",
           404
         )
       }
+
+      if (
+  errorMessage.includes(
+    "PROFILO_PILOTA_NON_ATTIVO"
+  )
+) {
+  return jsonError(
+    "L'account del pilota è stato disattivato e la certificazione non può essere approvata.",
+    409
+  )
+}
 
       return jsonError(
         "Non è stato possibile completare la revisione.",
@@ -770,16 +793,24 @@ export async function PATCH(request) {
       )
     }
 
-    return NextResponse.json({
-      success: true,
+    return NextResponse.json(
+  {
+    success: true,
 
-      message:
-        decision === "approved"
-          ? "Certificazione approvata correttamente."
-          : "Certificazione rifiutata correttamente.",
+    message:
+      decision === "approved"
+        ? "Certificazione approvata correttamente."
+        : "Certificazione rifiutata correttamente.",
 
-      result
-    })
+    result
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
   } catch (error) {
     console.error(
       "[admin-certifications] unexpected PATCH error:",

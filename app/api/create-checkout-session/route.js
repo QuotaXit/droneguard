@@ -262,14 +262,6 @@ export async function POST(request) {
     )
   }
 
-  try {
-    body = await request.json()
-  } catch {
-    return jsonError(
-      "Dati della richiesta non validi."
-    )
-  }
-
   /*
    * Viene letto soltanto packageId.
    * Un eventuale userId inviato dal vecchio frontend

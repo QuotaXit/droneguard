@@ -2,34 +2,79 @@
 
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
+import {
+  getDashboardPath,
+  isClient,
+  isPilot
+} from "@/lib/auth-utils"
 
 export default function Hero() {
   const router = useRouter()
 
-  const handleGoToProfile = async () => {
+    const handleRoleAction = async (targetRole) => {
     const {
-      data: { user }
+      data: { user },
+      error: authError
     } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (authError) {
+      console.error(
+        "Errore controllo sessione homepage:",
+        authError
+      )
+
       router.push("/login")
       return
     }
 
-    const { data: profile } = await supabase
+    if (!user) {
+      router.push(
+        targetRole === "pilot"
+          ? "/register?type=pilot"
+          : "/register?type=cliente"
+      )
+
+      return
+    }
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
       .from("users")
       .select("role")
       .eq("id", user.id)
       .maybeSingle()
 
-    const role = profile?.role?.toLowerCase()
+    if (profileError || !profile) {
+      console.error(
+        "Impossibile recuperare il ruolo dell'utente:",
+        profileError
+      )
 
-    if (role === "cliente" || role === "client") {
-      router.push("/dashboard-client")
+      router.push("/login")
       return
     }
 
-    router.push("/dashboard")
+    if (
+      targetRole === "pilot" &&
+      isPilot(profile.role)
+    ) {
+      router.push("/dashboard/jobs-board")
+      return
+    }
+
+    if (
+      targetRole === "cliente" &&
+      isClient(profile.role)
+    ) {
+      router.push("/dashboard-client/create-job")
+      return
+    }
+
+    router.push(
+      getDashboardPath(profile.role)
+    )
   }
 
   return (
@@ -47,18 +92,20 @@ export default function Hero() {
 
         <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:gap-6">
           <button
-            onClick={handleGoToProfile}
-            className="w-full rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-6 py-4 font-medium text-black shadow-lg transition hover:scale-105 sm:w-auto sm:px-8"
-          >
-            Cerca Lavoro
-          </button>
+  type="button"
+  onClick={() => handleRoleAction("cliente")}
+  className="w-full rounded-full bg-green-500 px-6 py-4 font-semibold text-black shadow-lg transition hover:scale-105 hover:bg-green-400 sm:w-auto sm:px-8"
+>
+  Richiedi un volo
+</button>
 
           <button
-            onClick={handleGoToProfile}
-            className="w-full rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-6 py-4 font-medium text-black shadow-lg transition hover:scale-105 sm:w-auto sm:px-8"
-          >
-            Pubblica il tuo lavoro
-          </button>
+  type="button"
+  onClick={() => handleRoleAction("cliente")}
+  className="w-full rounded-full bg-green-500 px-6 py-4 font-semibold text-black shadow-lg transition hover:scale-105 hover:bg-green-400 sm:w-auto sm:px-8"
+>
+  Richiedi un volo
+</button>
         </div>
       </div>
     </section>

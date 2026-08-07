@@ -3,36 +3,64 @@
 import JobCard from "./JobCard"
 import { useRouter } from "next/navigation"
 import { supabase } from "@/lib/supabase/client"
+import {
+  getDashboardPath,
+  isPilot
+} from "@/lib/auth-utils"
 
 export default function JobsSection() {
   const router = useRouter()
 
   const variants = [1, 2, 3]
 
-  const handleStart = async () => {
+    const handleStart = async () => {
     const {
-      data: { user }
+      data: { user },
+      error: authError
     } = await supabase.auth.getUser()
 
-    if (!user) {
+    if (authError) {
+      console.error(
+        "Errore controllo sessione sezione lavori:",
+        authError
+      )
+
       router.push("/login")
       return
     }
 
-    const { data: profile } = await supabase
+    if (!user) {
+      router.push("/register?type=pilot")
+      return
+    }
+
+    const {
+      data: profile,
+      error: profileError
+    } = await supabase
       .from("users")
       .select("role")
       .eq("id", user.id)
       .maybeSingle()
 
-    const role = profile?.role?.toLowerCase()
+    if (profileError || !profile) {
+      console.error(
+        "Impossibile recuperare il ruolo:",
+        profileError
+      )
 
-    if (role === "cliente" || role === "client") {
-      router.push("/dashboard-client")
+      router.push("/login")
       return
     }
 
-    router.push("/dashboard")
+    if (isPilot(profile.role)) {
+      router.push("/dashboard/jobs-board")
+      return
+    }
+
+    router.push(
+      getDashboardPath(profile.role)
+    )
   }
 
   return (
@@ -43,13 +71,15 @@ export default function JobsSection() {
       <div className="relative z-10 max-w-5xl mx-auto text-center">
         {/* TITLE */}
         <h2 className="text-3xl md:text-4xl font-bold font-[var(--font-krona)]">
-          Missioni disponibili
-        </h2>
+  Esempi di richieste di lavoro
+</h2>
 
         {/* SUBTITLE */}
         <p className="text-gray-300 mt-4 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-          Sfoglia i lavori aerei nella bacheca lavoro. Candidati subito al prossimo lavoro.
-        </p>
+  Scopri come possono apparire le richieste pubblicate dai clienti.
+  I piloti registrati possono consultare gli annunci reali direttamente
+  nella Bacheca lavori.
+</p>
 
         {/* LIST */}
         <div className="mt-12 space-y-6 text-left">
@@ -61,15 +91,17 @@ export default function JobsSection() {
         {/* CTA */}
         <div className="text-center mt-16">
           <p className="text-gray-300 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed tracking-wide font-medium">
-            Accedi a missioni esclusive. Candidati, vola, guadagna.
-          </p>
+  Registrati come pilota, consulta le richieste disponibili
+  e candidati ai lavori adatti alle tue competenze.
+</p>
 
           <button
-            onClick={handleStart}
-            className="mt-6 px-10 py-2.5 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 text-black font-medium shadow-lg hover:scale-105 transition"
-          >
-            Inizia Adesso
-          </button>
+  type="button"
+  onClick={handleStart}
+  className="mt-6 rounded-full bg-gradient-to-b from-gray-200 to-gray-300 px-10 py-3 font-semibold text-black shadow-lg transition hover:scale-105"
+>
+  Vai alla Bacheca lavori
+</button>
         </div>
       </div>
     </section>

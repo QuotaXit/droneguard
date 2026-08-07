@@ -264,29 +264,32 @@ export default function Navbar() {
 
       <div className="flex min-w-0 items-center gap-2 sm:gap-4">
         {!user && !authLoading && (
-          <Link href="/login">
-            <button className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black">
-              <LogIn size={20} />
-              Accedi
-            </button>
-          </Link>
+          <Link
+  href="/login"
+  className="flex items-center gap-2 rounded-full border-2 border-white px-5 py-2 text-sm transition hover:bg-white hover:text-black"
+>
+  <LogIn size={20} />
+  Accedi
+</Link>
         )}
 
         {user && (
           <>
-            <Link href="/">
-              <button className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base">
-                Home
-              </button>
-            </Link>
+           <Link
+  href="/"
+  className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base"
+>
+  Home
+</Link>
 
             {profileHref && (
-              <Link href={profileHref}>
-                <button className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base">
-                  Profilo
-                </button>
-              </Link>
-            )}
+  <Link
+    href={profileHref}
+    className="rounded-full border border-white px-3 py-2 text-sm transition hover:bg-white hover:text-black sm:px-4 sm:text-base"
+  >
+    Profilo
+  </Link>
+)}
 
             <div className="relative">
               <button

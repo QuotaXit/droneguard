@@ -284,17 +284,18 @@ createdAt:
 }
 
 export async function PATCH(request) {
-  const requestOrigin = request.headers.get("origin")
+  const requestOrigin =
+  request.headers.get("origin")
 
-  if (
-    requestOrigin &&
-    requestOrigin !== request.nextUrl.origin
-  ) {
-    return jsonError(
-      "Origine della richiesta non autorizzata.",
-      403
-    )
-  }
+if (
+  !requestOrigin ||
+  requestOrigin !== request.nextUrl.origin
+) {
+  return jsonError(
+    "Origine della richiesta non autorizzata.",
+    403
+  )
+}
 
   const { user, access } = await getTeamAccess()
 
@@ -337,17 +338,23 @@ export async function PATCH(request) {
     body?.userId || ""
   ).trim()
 
+  const uuidPattern =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
   const banned = body?.banned
 
   const reason = String(
     body?.reason || ""
   ).trim()
 
-  if (!targetUserId) {
-    return jsonError(
-      "Identificativo utente mancante."
-    )
-  }
+  if (
+  !targetUserId ||
+  !uuidPattern.test(targetUserId)
+) {
+  return jsonError(
+    "Identificativo utente non valido."
+  )
+}
 
   if (typeof banned !== "boolean") {
     return jsonError(
@@ -704,18 +711,18 @@ createdAt:
 
 export async function PUT(request) {
   const requestOrigin =
-    request.headers.get("origin")
+  request.headers.get("origin")
 
-  if (
-    requestOrigin &&
-    requestOrigin !==
-      request.nextUrl.origin
-  ) {
-    return jsonError(
-      "Origine della richiesta non autorizzata.",
-      403
-    )
-  }
+if (
+  !requestOrigin ||
+  requestOrigin !==
+    request.nextUrl.origin
+) {
+  return jsonError(
+    "Origine della richiesta non autorizzata.",
+    403
+  )
+}
 
   const {
     user,
@@ -1472,16 +1479,19 @@ export async function DELETE(request) {
 
     try {
       removedStorage =
-        await removeUserPersonalStorage({
-          adminSupabase,
+  await removeUserPersonalStorage({
+    adminSupabase,
 
-          avatarPaths:
-            personalStorage.avatarPaths,
+    userId:
+      targetUserId,
 
-          certificationPaths:
-            personalStorage
-              .certificationPaths
-        })
+    avatarPaths:
+      personalStorage.avatarPaths,
+
+    certificationPaths:
+      personalStorage
+        .certificationPaths
+  })
     } catch (storageRemoveError) {
       console.error(
         "[admin-users-delete] Pulizia Storage fallita:",
@@ -1550,6 +1560,29 @@ export async function DELETE(request) {
         }
       )
     }
+
+    if (!authSanitized) {
+  return jsonError(
+    "L'account è stato disattivato, bloccato e i file personali sono stati rimossi, ma l'anonimizzazione completa dei dati Auth richiede un intervento amministrativo.",
+    500,
+    {
+      accountDeactivated: true,
+      authSanitized: false,
+      authBlocked: true,
+      storageCleaned: true,
+
+      removedFiles: {
+        avatars:
+          removedStorage
+            .removedAvatars,
+
+        certifications:
+          removedStorage
+            .removedCertifications
+      }
+    }
+  )
+}
 
     return NextResponse.json({
       success: true,

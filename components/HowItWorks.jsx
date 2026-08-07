@@ -1,23 +1,23 @@
 import Link from "next/link"
 
 export default function HowItWorks() {
-  const steps = [
+    const steps = [
     {
       number: "1",
       title: "Crea il tuo profilo pilota",
-      desc: "Registrati gratis, aggiungi esperienza, città, drone, servizi offerti e certificazioni. Un profilo completo aumenta le possibilità di essere scelto dai clienti.",
+      desc: "Registrati gratuitamente e inserisci città, esperienza, drone, servizi offerti e certificazioni. Mantieni il profilo aggiornato per permettere ai clienti di conoscere meglio le tue competenze.",
       type: "profile"
     },
     {
       number: "2",
-      title: "Sfoglia la Bacheca lavori",
-      desc: "Entra nella Bacheca lavori, guarda gli annunci pubblicati dai clienti e candidati ai lavori più adatti alla tua zona e ai tuoi servizi.",
+      title: "Consulta la Bacheca lavori",
+      desc: "Visualizza le richieste pubblicate dai clienti e candidati ai lavori compatibili con la tua zona, le tue attrezzature e i servizi che offri.",
       type: "job"
     },
     {
       number: "3",
-      title: "Ricevi i dati e lavora",
-      desc: "Se il cliente accetta la tua candidatura, ricevi i dati precisi del lavoro. Il pagamento viene gestito direttamente tra cliente e pilota, fuori dalla piattaforma.",
+      title: "Se vieni scelto, organizza il lavoro",
+      desc: "Quando un cliente accetta la tua candidatura, trovi nella dashboard i dati necessari per organizzare il servizio. Il pagamento del lavoro viene gestito direttamente tra cliente e pilota, al di fuori di DroneGuard.",
       type: "earnings"
     }
   ]
@@ -32,12 +32,14 @@ export default function HowItWorks() {
 
         {/* TITLE */}
         <h2 className="text-3xl font-bold font-[var(--font-krona)] sm:text-4xl md:text-5xl">
-          Come funziona ( Piloti )        </h2>
+          Come funziona per i piloti
+        </h2>
 
         {/* SUBTITLE */}
         <p className="text-gray-300 mt-4 max-w-3xl mx-auto text-lg md:text-xl leading-relaxed">
-          Iscriviti, trova lavori nella bacheca e candidati. Se vieni scelto, ricevi i dettagli precisi del lavoro direttamente nella tua dashboard.
-        </p>
+  Crea il tuo profilo, consulta le richieste disponibili e candidati
+  ai lavori più adatti alle tue competenze.
+</p>
 
         {/* GRID */}
         <div className="mt-16 grid gap-8 md:grid-cols-3">
@@ -88,17 +90,18 @@ export default function HowItWorks() {
                       </p>
 
                       <p className="mt-2 text-base leading-6 text-gray-700">
-                        Drone, città, servizi e certificazioni in evidenza.
-                      </p>
+  Città, esperienza, drone, servizi e certificazioni.
+</p>
 
                     </div>
 
                   </div>
 
-                 <Link href="/register">
-  <button className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#7B5CFF] to-[#A855F7] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90">
-    Completa profilo
-  </button>
+                 <Link
+  href="/register?type=pilot"
+  className="mt-5 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#7B5CFF] to-[#A855F7] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90"
+>
+  Crea profilo pilota
 </Link>
 
                 </div>
@@ -165,12 +168,12 @@ export default function HowItWorks() {
                         <div>
 
                           <p className="text-2xl font-bold">
-                            Lavoro accettato
-                          </p>
+  Candidatura accettata
+</p>
 
                           <p className="mt-3 text-base leading-6 text-gray-700">
-                            Contatti e dettagli disponibili in “Dati lavoro”.
-                          </p>
+  I dati necessari per organizzare il servizio sono disponibili nella sezione “Dati lavoro”.
+</p>
 
                         </div>
 

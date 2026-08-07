@@ -57,18 +57,20 @@ export default function PilotCitiesStats() {
 
       <div className="relative z-10 mx-auto max-w-5xl text-center">
         <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-500/10 px-4 py-2 text-sm text-green-300">
-          <Users size={16} />
-          {totalPilots} piloti disponibili
-        </div>
+  <Users size={16} />
+  {totalPilots}{" "}
+  {totalPilots === 1 ? "pilota registrato" : "piloti registrati"}
+</div>
 
         <h2 className="text-3xl font-bold sm:text-4xl">
-          Piloti drone già presenti in Italia
-        </h2>
+  Piloti registrati su DroneGuard in Italia
+</h2>
 
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-gray-300 sm:text-base">
-          Pubblica una richiesta e raggiungi piloti registrati nella tua zona.
-          Le città mostrate sono aggiornate in base ai profili reali presenti sulla piattaforma.
-        </p>
+  Pubblica una richiesta per permettere ai piloti registrati di
+  visualizzarla e candidarsi. Le città mostrate vengono aggiornate
+  in base ai profili presenti sulla piattaforma.
+</p>
 
         <div className="relative mt-8">
           <button

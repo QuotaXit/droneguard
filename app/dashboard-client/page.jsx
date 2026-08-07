@@ -26,99 +26,160 @@ export default function ClientDashboard() {
 
   const [publishedJobs, setPublishedJobs] = useState(0)
 
+  const [emailVerified, setEmailVerified] = useState(false)
+
   const router = useRouter()
 
-  useEffect(() => {
+  const profileName = [
+  userData?.name,
+  userData?.surname
+]
+  .map((value) => String(value || "").trim())
+  .filter(Boolean)
+  .join(" ")
 
-    const getUser = async () => {
+const profileInitials = [
+  userData?.name,
+  userData?.surname
+]
+  .map((value) =>
+    String(value || "")
+      .trim()
+      .charAt(0)
+      .toUpperCase()
+  )
+  .filter(Boolean)
+  .join("")
+  .slice(0, 2) || "DG"
 
-      console.log("[dashboard-client] Starting session check", {
-        timestamp: new Date().toISOString()
-      })
+    useEffect(() => {
+    let active = true
 
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
+    const loadDashboard = async () => {
+      try {
+        const {
+          data: { user },
+          error: authError
+        } = await supabase.auth.getUser()
 
-      console.log("[dashboard-client] Session check result:", {
-        userId: user?.id,
-        sessionExists: !!user,
-        userEmail: user?.email,
-        timestamp: new Date().toISOString()
-      })
+        if (!active) return
 
-      if (!user) {
+        if (authError || !user) {
+          router.replace("/login")
+          return
+        }
 
-        console.warn("[dashboard-client] No user found, will redirect after 300ms delay")
+        setEmailVerified(
+  Boolean(
+    user.email_confirmed_at ||
+    user.confirmed_at
+  )
+)
 
-        // ⏱️ Debounce 300ms per permettere a Navbar di caricare l'auth
-        const timeoutId = setTimeout(() => {
+        const {
+          data: profile,
+          error: profileError
+        } = await supabase
+          .from("users")
+          .select(
+            "id, role, name, surname, avatar_url, city, company_name, vat_number, credits"
+          )
+          .eq("id", user.id)
+          .maybeSingle()
 
-          console.log("[dashboard-client] Executing redirect to /login")
+        if (!active) return
 
-          router.push("/login")
+        if (profileError) {
+          console.error(
+            "Errore caricamento profilo cliente:",
+            profileError
+          )
 
-        }, 300)
+          router.replace("/login")
+          return
+        }
 
-        return () => clearTimeout(timeoutId)
+        if (!profile) {
+          console.error(
+            "Profilo cliente non trovato per l'utente:",
+            user.id
+          )
+
+          router.replace("/login")
+          return
+        }
+
+        if (!isClient(profile.role)) {
+          router.replace(
+            getDashboardPath(profile.role)
+          )
+
+          return
+        }
+
+        const [
+          publishedResult,
+          completedResult
+        ] = await Promise.all([
+          supabase
+            .from("jobs")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("user_id", user.id),
+
+          supabase
+            .from("jobs")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("user_id", user.id)
+            .eq("status", "completed")
+        ])
+
+        if (!active) return
+
+        if (publishedResult.error) {
+          console.error(
+            "Errore conteggio lavori pubblicati:",
+            publishedResult.error
+          )
+        }
+
+        if (completedResult.error) {
+          console.error(
+            "Errore conteggio lavori completati:",
+            completedResult.error
+          )
+        }
+
+        setUserData(profile)
+        setPublishedJobs(
+          publishedResult.count || 0
+        )
+        setCompletedJobs(
+          completedResult.count || 0
+        )
+      } catch (error) {
+        console.error(
+          "Errore imprevisto dashboard cliente:",
+          error
+        )
+
+        if (active) {
+          router.replace("/login")
+        }
       }
-
-      // 🔥 DATI UTENTE
-      const { data } = await supabase
-        .from("users")
-        .select("*")
-        .eq("id", user.id)
-        .single()
-
-      console.log("[dashboard-client] User data loaded:", {
-        userId: user.id,
-        role: data?.role
-      })
-
-      // 🔥 PROTEZIONE ROLE-BASED - SOLO CLIENT POSSONO ACCEDERE A /DASHBOARD-CLIENT
-      if (!isClient(data?.role)) {
-        console.log("[dashboard-client] ROLE PROTECTION TRIGGERED")
-        console.log("[dashboard-client] REDIRECT SOURCE: app/dashboard-client/page.jsx")
-        console.log("[dashboard-client] USER ID:", user.id)
-        console.log("[dashboard-client] ROLE FROM USERS:", data?.role)
-        
-        const correctPath = getDashboardPath(data?.role)
-        console.log("[dashboard-client] FINAL REDIRECT:", correctPath)
-        
-        router.replace(correctPath)
-        return
-      }
-
-      setUserData(data)
-
-      // 🔥 LAVORI PUBBLICATI
-      const { count: published } = await supabase
-        .from("jobs")
-        .select("*", {
-          count: "exact",
-          head: true
-        })
-        .eq("user_id", user.id)
-
-      setPublishedJobs(published || 0)
-
-      // 🔥 LAVORI COMPLETATI
-      const { count: completed } = await supabase
-        .from("jobs")
-        .select("*", {
-          count: "exact",
-          head: true
-        })
-        .eq("user_id", user.id)
-        .eq("status", "completed")
-
-      setCompletedJobs(completed || 0)
-
     }
 
-    getUser()
+    loadDashboard()
 
-  }, [])
+    return () => {
+      active = false
+    }
+  }, [router])
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -138,95 +199,143 @@ export default function ClientDashboard() {
               Menu
             </h2>
 
-            <ul className="space-y-5 text-base text-gray-300 sm:text-lg lg:space-y-6">
+                        <ul className="space-y-2 text-base text-gray-300">
 
-<Link href="/dashboard-client/in-progress">
-  <div className="flex items-center gap-3">
-    ⏳ Lavori in corso
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/dashboard-client/in-progress"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="flex h-5 w-5 items-center justify-center"
+                  >
+                    ⏳
+                  </span>
 
-
-              <Link href="/dashboard-client/create-job">
-                <div className="flex items-center gap-3 cursor-pointer hover:text-green-400 transition">
-                  <Plane size={20} />
-                  Richiedi volo
-                </div>
-              </Link>
-
-              <Link href="/dashboard-client/jobs">
-                <li className="flex items-center gap-3 cursor-pointer hover:text-white">
-                  <Briefcase size={20} />
-                  Lavori attivi
-                </li>
-              </Link>
-
-              <Link href="/dashboard-client/history">
-                <li className="flex items-center gap-3 cursor-pointer hover:text-white">
-                  <History size={20} />
-                  Storico lavori
-                </li>
-              </Link>
-
-              <Link href="/dashboard-client/credits">
-                <li className="flex items-center gap-3 cursor-pointer hover:text-white">
-                  <CreditCard size={20} />
-                  Crediti
-                </li>
-              </Link>
-
-              <Link href="/dashboard-client/settings">
-                <li className="flex items-center gap-3 cursor-pointer hover:text-white">
-                  <Settings size={20} />
-                  Impostazioni
-                </li>
-              </Link>
-
-              <div className="border-t border-white/10 my-6" />
-              <div className="space-y-3 text-sm text-gray-300">
-
-                <Link 
-                href="/faq">FAQ
+                  <span>Lavori in corso</span>
                 </Link>
+              </li>
 
-  <Link href="/come-funziona">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Come funziona
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/dashboard-client/create-job"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-green-500/10 hover:text-green-300"
+                >
+                  <Plane size={20} />
+                  <span>Richiedi volo</span>
+                </Link>
+              </li>
 
-<Link href="/contattaci">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Contattaci
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/dashboard-client/jobs"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <Briefcase size={20} />
+                  <span>Lavori attivi</span>
+                </Link>
+              </li>
 
-<Link href="/privacy-policy">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Privacy e Policy
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/dashboard-client/history"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <History size={20} />
+                  <span>Storico lavori</span>
+                </Link>
+              </li>
 
-</div>
+              <li>
+                <Link
+                  href="/dashboard-client/credits"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <CreditCard size={20} />
+                  <span>Crediti</span>
+                </Link>
+              </li>
 
-<div className="border-t border-white/10 my-6" />
+              <li>
+                <Link
+                  href="/dashboard-client/settings"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <Settings size={20} />
+                  <span>Impostazioni</span>
+                </Link>
+              </li>
 
               <li
-                onClick={async () => {
+                aria-hidden="true"
+                className="my-5 border-t border-white/10"
+              />
 
-                  await supabase.auth.signOut()
+              <li>
+                <Link
+                  href="/faq"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  FAQ
+                </Link>
+              </li>
 
-                  await supabase.auth.signOut()
+              <li>
+                <Link
+                  href="/come-funziona"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Come funziona
+                </Link>
+              </li>
 
-window.location.href = "/"
+              <li>
+                <Link
+                  href="/contattaci"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Contattaci
+                </Link>
+              </li>
 
-                  router.push("/")
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Privacy e Termini
+                </Link>
+              </li>
 
-                }}
-                className="flex items-center gap-3 cursor-pointer hover:text-red-400"
-              >
-                <LogOut size={20} />
-                Logout
+              <li
+                aria-hidden="true"
+                className="my-5 border-t border-white/10"
+              />
+
+              <li>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const { error } =
+                      await supabase.auth.signOut()
+
+                    if (error) {
+                      console.error(
+                        "Errore durante il logout:",
+                        error
+                      )
+
+                      return
+                    }
+
+                    window.location.href = "/"
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-red-500/10 hover:text-red-300"
+                >
+                  <LogOut size={20} />
+                  <span>Logout</span>
+                </button>
               </li>
 
             </ul>
@@ -240,23 +349,38 @@ window.location.href = "/"
   </h2>
 
   {/* AVATAR */}
+{userData?.avatar_url ? (
   <img
-    src={
-      userData?.avatar_url ||
-      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?q=80&w=400"
-    }
-    className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border border-white/20"
+    src={userData.avatar_url}
+    alt={`Foto profilo di ${profileName || "cliente"}`}
+    width={96}
+    height={96}
+    className="mx-auto mb-4 h-24 w-24 rounded-full border border-white/20 object-cover"
   />
+) : (
+  <div
+    aria-label={`Iniziali di ${profileName || "cliente"}`}
+    className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full border border-green-400/30 bg-gradient-to-br from-green-400/20 to-cyan-400/20 text-2xl font-bold text-green-300"
+  >
+    {profileInitials}
+  </div>
+)}
 
   {/* NOME */}
-  <h3 className="text-lg font-semibold">
-    {userData?.name || "Nome"} {userData?.surname || ""}
-  </h3>
+<h3 className="text-lg font-semibold">
+  {profileName || "Profilo cliente"}
+</h3>
 
   {/* BADGE */}
+  {emailVerified ? (
   <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
     ✅ Mail verificata
   </span>
+) : (
+  <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200">
+    ⚠️ Mail non verificata
+  </span>
+)}
 
   {/* INFO */}
 <div className="mt-6 space-y-4 text-center">
@@ -289,11 +413,12 @@ window.location.href = "/"
 </div>
 
   {/* CTA */}
-  <Link href="/dashboard-client/settings">
-    <button className="mt-5 border border-white/30 px-4 py-2 rounded-lg text-sm hover:bg-white/10 transition">
-      Modifica profilo
-    </button>
-  </Link>
+<Link
+  href="/dashboard-client/settings"
+  className="mt-5 inline-flex items-center justify-center rounded-lg border border-white/30 px-4 py-2 text-sm font-medium transition hover:bg-white/10"
+>
+  Modifica profilo
+</Link>
 
 </div>
 
@@ -358,17 +483,15 @@ window.location.href = "/"
             </div>
 
             {/* CTA */}
-            <div className="mt-8">
-
-              <Link href="/dashboard-client/create-job">
-
-                <button className="w-full py-3 rounded-lg bg-green-500 text-black font-medium hover:bg-green-400 transition">
-                  Pubblica un lavoro
-                </button>
-
-              </Link>
-
-            </div>
+<div className="mt-8">
+  <Link
+    href="/dashboard-client/create-job"
+    className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-500 px-4 py-3 font-semibold text-black transition hover:bg-green-400"
+  >
+    <Plane size={20} />
+    Richiedi un volo
+  </Link>
+</div>
 
                     </div>
 

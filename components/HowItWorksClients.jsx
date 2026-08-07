@@ -1,23 +1,23 @@
 import Link from "next/link"
 
 export default function HowItWorksClients() {
-  const steps = [
+    const steps = [
     {
       number: "1",
-      title: "Pubblica il tuo lavoro",
-      desc: "Descrivi il servizio che ti serve: riprese aeree, fotografie, eventi, matrimoni, edilizia, ispezioni, agricoltura o altri lavori con drone. La pubblicazione richiede solo pochi minuti.",
+      title: "Pubblica la tua richiesta",
+      desc: "Descrivi il servizio con drone di cui hai bisogno, indica luogo, data e informazioni utili. La richiesta sarà visibile ai piloti presenti sulla piattaforma.",
       type: "publish",
     },
     {
       number: "2",
-      title: "Ricevi candidature",
-      desc: "I piloti drone interessati possono candidarsi al tuo annuncio. Potrai valutare i professionisti disponibili, la città, i servizi offerti e le informazioni del loro profilo.",
+      title: "Ricevi le candidature",
+      desc: "I piloti interessati possono candidarsi alla tua richiesta. Puoi consultare le informazioni disponibili sui loro profili e scegliere quello più adatto alle tue esigenze.",
       type: "applications",
     },
     {
       number: "3",
       title: "Scegli il pilota",
-      desc: "Quando trovi il professionista giusto, accetti la candidatura e invii i dettagli precisi del lavoro. Il pilota riceverà le informazioni necessarie per organizzare e svolgere il servizio.",
+      desc: "Accetta la candidatura che preferisci e condividi i dati necessari per organizzare il servizio. Il pagamento del lavoro viene gestito direttamente tra cliente e pilota, al di fuori di DroneGuard.",
       type: "choose",
     },
   ]
@@ -28,12 +28,13 @@ export default function HowItWorksClients() {
 
       <div className="relative z-10 mx-auto max-w-7xl text-center">
         <h2 className="text-3xl font-bold font-[var(--font-krona)] sm:text-4xl md:text-5xl">
-          Come funziona ( Clienti )
+          Come funziona per i clienti
         </h2>
 
         <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-gray-300 md:text-xl">
-          Pubblica la tua richiesta e ricevi candidature da piloti drone professionisti in tutta Italia.
-        </p>
+  Pubblica ciò di cui hai bisogno, ricevi le candidature dei piloti
+  e scegli liberamente con chi organizzare il servizio.
+</p>
 
         <div className="mt-16 grid gap-8 md:grid-cols-3">
           {steps.map((step, i) => (
@@ -71,11 +72,12 @@ export default function HowItWorksClients() {
                     🎥 Riprese video e foto aeree
                   </div>
 
-                  <Link href="/register">
-                    <button className="mt-5 w-full rounded-xl bg-gradient-to-r from-[#22C55E] to-[#14B8A6] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90">
-                      Pubblica il tuo lavoro
-                    </button>
-                  </Link>
+                  <Link
+  href="/register?type=cliente"
+  className="mt-5 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#22C55E] to-[#14B8A6] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90"
+>
+  Richiedi un volo
+</Link>
                 </div>
               )}
 
@@ -126,11 +128,12 @@ export default function HowItWorksClients() {
                         </div>
                       </div>
 
-                      <Link href="/register">
-                        <button className="mt-6 w-full rounded-xl bg-gradient-to-r from-[#22C55E] to-[#14B8A6] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90">
-                          Inizia ora
-                        </button>
-                      </Link>
+                      <Link
+  href="/register?type=cliente"
+  className="mt-6 flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[#22C55E] to-[#14B8A6] px-4 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90"
+>
+  Crea account cliente
+</Link>
                     </div>
                   </div>
                 </div>

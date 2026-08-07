@@ -1,8 +1,4 @@
 import {
-  randomUUID
-} from "node:crypto"
-
-import {
   NextResponse
 } from "next/server"
 
@@ -47,7 +43,11 @@ function jsonError(
       ...extra
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0"
+      }
     }
   )
 }
@@ -95,28 +95,40 @@ function normalizeDateFilter(
     return null
   }
 
-  if (
-    !/^\d{4}-\d{2}-\d{2}$/.test(
-      normalizedValue
-    )
-  ) {
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})$/
+      .exec(normalizedValue)
+
+  if (!match) {
     return null
   }
 
-  const suffix =
-    endOfDay
-      ? "T23:59:59.999Z"
-      : "T00:00:00.000Z"
+  const year =
+    Number(match[1])
+
+  const month =
+    Number(match[2])
+
+  const day =
+    Number(match[3])
 
   const date =
     new Date(
-      `${normalizedValue}${suffix}`
+      Date.UTC(
+        year,
+        month - 1,
+        day,
+        endOfDay ? 23 : 0,
+        endOfDay ? 59 : 0,
+        endOfDay ? 59 : 0,
+        endOfDay ? 999 : 0
+      )
     )
 
   if (
-    Number.isNaN(
-      date.getTime()
-    )
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
   ) {
     return null
   }
@@ -1054,7 +1066,7 @@ export async function POST(request) {
   }
 
   const retryIdempotencyKey =
-    `admin-retry:${originalDelivery.id}:${randomUUID()}`
+  `admin-retry:${originalDelivery.id}`
 
   let retryResult
 
@@ -1153,6 +1165,22 @@ export async function POST(request) {
     )
   }
 
+  if (retryResult.inProgress) {
+  return jsonError(
+    "Il reinvio di questa email è già in corso.",
+    409,
+    {
+      deliveryId:
+        retryResult.deliveryId ||
+        null,
+
+      status:
+        retryResult.status ||
+        "sending"
+    }
+  )
+}
+
   if (
     retryResult.success !==
     true
@@ -1178,11 +1206,14 @@ export async function POST(request) {
     )
   }
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
 
     message:
-      "Email reinviata correttamente.",
+      retryResult.alreadyProcessed
+        ? "Questa email era già stata reinviata correttamente."
+        : "Email reinviata correttamente.",
 
     deliveryId:
       retryResult.deliveryId,
@@ -1193,5 +1224,12 @@ export async function POST(request) {
 
     status:
       retryResult.status
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }

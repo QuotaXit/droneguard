@@ -23,8 +23,8 @@ export default function Footer() {
           </Link>
 
           <Link href="/privacy-policy" className="transition hover:text-white">
-            Privacy Policy
-          </Link>
+  Privacy e Termini
+</Link>
 
           <Link href="/cookie-policy" className="transition hover:text-white">
             Cookie Policy
@@ -41,7 +41,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-6 text-center text-xs text-gray-500">
-          © 2026 DroneGuard.it - Tutti i diritti riservati
+          © 2026 DroneGuard.it — Tutti i diritti riservati
         </div>
 
       </div>

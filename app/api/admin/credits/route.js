@@ -98,15 +98,17 @@ export async function GET(request) {
   )
 
   const allowedReasons = new Set([
-    "all",
-    "opening_balance",
-    "signup_bonus",
-    "job_publish",
-    "job_application",
-    "stripe_purchase",
-    "admin_adjustment",
-    "refund"
-  ])
+  "all",
+  "opening_balance",
+  "signup_bonus",
+  "job_publish",
+  "job_application",
+  "stripe_purchase",
+  "admin_adjustment",
+  "refund",
+  "payment_refund_reservation",
+  "payment_refund_rollback"
+])
 
   if (!allowedReasons.has(reason)) {
     return jsonError(
@@ -512,17 +514,18 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const requestOrigin = request.headers.get("origin")
+  const requestOrigin =
+  request.headers.get("origin")
 
-  if (
-    requestOrigin &&
-    requestOrigin !== request.nextUrl.origin
-  ) {
-    return jsonError(
-      "Origine della richiesta non autorizzata.",
-      403
-    )
-  }
+if (
+  !requestOrigin ||
+  requestOrigin !== request.nextUrl.origin
+) {
+  return jsonError(
+    "Origine della richiesta non autorizzata.",
+    403
+  )
+}
 
   const { user, access } = await getTeamAccess()
 

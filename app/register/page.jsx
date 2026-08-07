@@ -6,6 +6,7 @@ import {
   useState
 } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import { toast } from "sonner"
 import { italianCities } from "@/app/data/italianCities"
@@ -78,6 +79,7 @@ export default function RegisterPage() {
   const [searchDrone, setSearchDrone] = useState("")
   const [loading, setLoading] = useState(false)
   const [acceptedRules, setAcceptedRules] = useState(false)
+  const [acceptedLegal, setAcceptedLegal] = useState(false)
   const [
     registrationStatusLoading,
     setRegistrationStatusLoading
@@ -411,6 +413,34 @@ export default function RegisterPage() {
     setAcceptedRules(false)
   }
 
+   useEffect(() => {
+    const requestedType = new URLSearchParams(
+      window.location.search
+    ).get("type")
+
+    const normalizedType = String(
+      requestedType || ""
+    )
+      .trim()
+      .toLowerCase()
+
+    if (
+      normalizedType === "cliente" ||
+      normalizedType === "client" ||
+      normalizedType === "customer"
+    ) {
+      setType("cliente")
+      return
+    }
+
+    if (
+      normalizedType === "pilot" ||
+      normalizedType === "pilota"
+    ) {
+      setType("pilot")
+    }
+  }, [])
+
   useEffect(() => {
     const closeAll = () => {
       setOpenCert(false)
@@ -488,22 +518,34 @@ export default function RegisterPage() {
         return
       }
 
+            if (!nome.trim()) {
+        toast.error("Inserisci il nome.")
+        return
+      }
+
+      if (!cognome.trim()) {
+        toast.error("Inserisci il cognome.")
+        return
+      }
+
+      if (!citta) {
+        toast.error("Seleziona la città.")
+        return
+      }
+
       if (!password || password.length < 6) {
         toast.error("La password deve contenere almeno 6 caratteri.")
         return
       }
 
+      if (!acceptedLegal) {
+  toast.error(
+    "Devi accettare la Privacy Policy e i Termini di utilizzo."
+  )
+  return
+}
+
       if (type === "pilot") {
-        if (!nome.trim()) {
-          toast.error("Inserisci il nome.")
-          return
-        }
-
-        if (!cognome.trim()) {
-          toast.error("Inserisci il cognome.")
-          return
-        }
-
         if (certificazioni.length === 0) {
           toast.error("Seleziona almeno una certificazione.")
           return
@@ -520,37 +562,14 @@ export default function RegisterPage() {
         }
 
         if (!acceptedRules) {
-          toast.error("Devi accettare la dichiarazione prima di registrarti.")
+          toast.error(
+            "Devi accettare la dichiarazione del pilota prima di registrarti."
+          )
           return
         }
-      }
-
-      if (type === "pilot" && !acceptedRules) {
-        toast.error("Devi accettare la dichiarazione prima di registrarti.")
-        return
       }
 
       if (type === "cliente") {
-        if (!nome.trim()) {
-          toast.error("Inserisci il nome.")
-          return
-        }
-
-        if (!cognome.trim()) {
-          toast.error("Inserisci il cognome.")
-          return
-        }
-
-        if (!citta) {
-          toast.error("Seleziona la città.")
-          return
-       }
-
-        if (!citta) {
-          toast.error("Seleziona la città.")
-          return
-        }
-
         if (!ragioneSociale.trim()) {
           toast.error("Inserisci ragione sociale o nome attività.")
           return
@@ -565,22 +584,27 @@ export default function RegisterPage() {
         return
       }
 
-      if (!password || password.length < 6) {
-        toast.error("La password deve contenere almeno 6 caratteri.")
-        return
-      }
+   const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  window.location.origin
+).replace(/\/+$/, "")
+
+const emailRedirectTo = `${siteUrl}/auth/callback`
 
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: normalizedEmail,
         password,
         options: {
-          emailRedirectTo: "https://www.droneguard.it/auth/callback",
+          emailRedirectTo,
           data: {
             role: type,
             username,
             name: nome,
             surname: cognome,
             city: citta || "",
+            legal_accepted: true,
+            legal_accepted_at: new Date().toISOString(),
+            legal_document_version: "2026-05-31",
             company_name: ragioneSociale || "",
             vat_number: partitaIva || "",
             certifications: type === "pilot" ? certificazioni.join(", ") : "",
@@ -833,6 +857,38 @@ export default function RegisterPage() {
 
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" />
 
+        <div className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
+  <input
+    id="acceptedLegal"
+    type="checkbox"
+    checked={acceptedLegal}
+    onChange={(e) => setAcceptedLegal(e.target.checked)}
+    className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-green-500"
+  />
+
+  <div>
+    Dichiaro di aver letto la{" "}
+    <Link
+      href="/privacy-policy"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
+    >
+      Privacy Policy
+    </Link>
+    {" "}e accetto i{" "}
+    <Link
+      href="/privacy-policy"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
+    >
+      Termini di utilizzo
+    </Link>
+    .
+  </div>
+</div>
+
           {type === "pilot" && (
             <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
               <input
@@ -851,14 +907,15 @@ export default function RegisterPage() {
                     <button
             type="submit"
             disabled={
-              loading ||
-              registrationStatusLoading ||
-              !registrationsEnabled ||
-              (
-                type === "pilot" &&
-                !acceptedRules
-              )
-            }
+  loading ||
+  registrationStatusLoading ||
+  !registrationsEnabled ||
+  !acceptedLegal ||
+  (
+    type === "pilot" &&
+    !acceptedRules
+  )
+}
             className="w-full rounded-lg bg-green-500 py-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading

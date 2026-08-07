@@ -51,6 +51,20 @@ function toDateTimeLocal(value) {
     .slice(0, 16)
 }
 
+function dateTimeLocalToIso(value) {
+  if (!value) {
+    return null
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return null
+  }
+
+  return date.toISOString()
+}
+
 function StatusBadge({
   enabled,
   activeLabel = "Attivo",
@@ -419,12 +433,14 @@ if (
               form.maintenanceMessage.trim(),
 
             maintenanceStartsAt:
-              form.maintenanceStartsAt ||
-              null,
+  dateTimeLocalToIso(
+    form.maintenanceStartsAt
+  ),
 
-            maintenanceEndsAt:
-              form.maintenanceEndsAt ||
-              null,
+maintenanceEndsAt:
+  dateTimeLocalToIso(
+    form.maintenanceEndsAt
+  ),
 
            reason:
   form.reason.trim()

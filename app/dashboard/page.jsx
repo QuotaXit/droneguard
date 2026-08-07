@@ -27,7 +27,6 @@ import {
 } from "lucide-react"
 
 const ACTIVE_JOB_STATUSES = ["assigned", "accepted", "in_progress"]
-const APPLICATION_ACTIVE_STATUSES = ["pending"]
 
 
 function getFullName(userData) {
@@ -128,6 +127,8 @@ export default function Dashboard() {
   const [applications, setApplications] = useState(0)
   const [credits, setCredits] = useState(0)
   const [upcomingJobs, setUpcomingJobs] = useState([])
+  const [emailVerified, setEmailVerified] = useState(false)
+
 
   const [showCertRequest, setShowCertRequest] = useState(false)
   const [certFile, setCertFile] = useState(null)
@@ -135,172 +136,181 @@ export default function Dashboard() {
   const [certMessage, setCertMessage] = useState("")
 
 
-  useEffect(() => {
-    const getUser = async () => {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
+    useEffect(() => {
+    let active = true
 
-      console.log("DASHBOARD AUTH USER:", user)
-      console.log("DASHBOARD AUTH USER ID:", user?.id)
-
-      if (!user) {
-        setTimeout(() => {
-          router.push("/login")
-        }, 300)
-
-        return
-      }
-
-      const { data, error } = await supabase
-        .from("users")
-        .select("id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified,cert_request_sent")
-        .eq("id", user.id)
-        .maybeSingle()
-
-      if (error) {
-        console.error("[DASHBOARD] Error loading user profile:", error)
-        console.log("[DASHBOARD] REDIRECT SOURCE: app/dashboard/page.jsx (query error)")
-        console.log("[DASHBOARD] USER ID:", user.id)
-        console.log("[DASHBOARD] FINAL REDIRECT: /login")
-        router.replace("/login")
-        return
-      }
-
-      if (!data) {
-        console.error("[DASHBOARD] User profile not found in database")
-        console.log("[DASHBOARD] REDIRECT SOURCE: app/dashboard/page.jsx (profile missing)")
-        console.log("[DASHBOARD] USER ID:", user.id)
-        console.log("[DASHBOARD] FINAL REDIRECT: /login")
-        console.warn("[DASHBOARD] DO NOT CREATE USER HERE - Profile must exist from registration")
-        router.replace("/login")
-        return
-      }
-
-      if (!isPilot(data.role)) {
-        console.log("[DASHBOARD] ROLE PROTECTION TRIGGERED - User is not a pilot")
-        console.log("[DASHBOARD] REDIRECT SOURCE: app/dashboard/page.jsx")
-        console.log("[DASHBOARD] USER ID:", user.id)
-        console.log("[DASHBOARD] ROLE FROM USERS:", data.role)
-
-        const correctPath = getDashboardPath(data.role)
-        console.log("[DASHBOARD] FINAL REDIRECT:", correctPath)
-
-        router.replace(correctPath)
-        return
-      }
-
-      console.log("DASHBOARD USER DATA:", data)
-
-      setUserData(data)
-      setCredits(data?.credits || 0)
-
-      const { count: completed } = await supabase
-        .from("applications")
-        .select("*", {
-          count: "exact",
-          head: true
-        })
-        .eq("pilot_id", user.id)
-        .eq("status", "completed")
-
-      setCompletedJobs(completed || 0)
-
-      const { count: waiting } = await supabase
-        .from("applications")
-        .select("*", {
-          count: "exact",
-          head: true
-        })
-        .eq("pilot_id", user.id)
-        .eq("status", "pending")
-
-      setActiveJobs(waiting || 0)
-
-      const { count: assignedCount } = await supabase
-        .from("jobs")
-        .select("*", {
-          count: "exact",
-          head: true
-        })
-        .eq("assigned_pilot", user.id)
-        .in("status", ACTIVE_JOB_STATUSES)
-
-      setApplications(assignedCount || 0)
-
-      const {
-        data: assignedJobs,
-        error: assignedJobsError
-      } = await supabase
-        .from("jobs")
-        .select("*")
-        .eq("assigned_pilot", user.id)
-        .in("status", ACTIVE_JOB_STATUSES)
-
-      if (assignedJobsError) {
-        console.error("Errore caricamento jobs assegnati:", assignedJobsError)
-      }
-
-      const {
-        data: acceptedApplications,
-        error: acceptedApplicationsError
-      } = await supabase
-        .from("applications")
-        .select("job_id")
-        .eq("pilot_id", user.id)
-        .in("status", APPLICATION_ACTIVE_STATUSES)
-
-      if (acceptedApplicationsError) {
-        console.error("Errore caricamento applications accettate:", acceptedApplicationsError)
-      }
-
-      const applicationJobIds = [
-        ...new Set(
-          (acceptedApplications || [])
-            .map((application) => application.job_id)
-            .filter(Boolean)
-        )
-      ]
-
-      let applicationJobs = []
-
-      if (applicationJobIds.length > 0) {
+    const loadDashboard = async () => {
+      try {
         const {
-          data: jobsFromApplications,
-          error: jobsFromApplicationsError
-        } = await supabase
-          .from("jobs")
-          .select("*")
-          .in("id", applicationJobIds)
-          .in("status", ACTIVE_JOB_STATUSES)
+          data: { user },
+          error: authError
+        } = await supabase.auth.getUser()
 
-        if (jobsFromApplicationsError) {
-          console.error("Errore caricamento jobs da applications:", jobsFromApplicationsError)
-        } else {
-          applicationJobs = jobsFromApplications || []
+        if (!active) return
+
+        if (authError || !user) {
+          router.replace("/login")
+          return
+        }
+
+        setEmailVerified(
+  Boolean(
+    user.email_confirmed_at ||
+    user.confirmed_at
+  )
+)
+
+        const {
+          data: profile,
+          error: profileError
+        } = await supabase
+          .from("users")
+          .select(
+            "id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified,cert_request_sent"
+          )
+          .eq("id", user.id)
+          .maybeSingle()
+
+        if (!active) return
+
+        if (profileError) {
+          console.error(
+            "Errore caricamento profilo pilota:",
+            profileError
+          )
+
+          router.replace("/login")
+          return
+        }
+
+        if (!profile) {
+          console.error(
+            "Profilo pilota non trovato per l'utente:",
+            user.id
+          )
+
+          router.replace("/login")
+          return
+        }
+
+        if (!isPilot(profile.role)) {
+          router.replace(
+            getDashboardPath(profile.role)
+          )
+
+          return
+        }
+
+        const [
+          completedResult,
+          pendingApplicationsResult,
+          assignedJobsResult
+        ] = await Promise.all([
+          supabase
+            .from("jobs")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("assigned_pilot", user.id)
+            .eq("status", "completed"),
+
+          supabase
+            .from("applications")
+            .select("*", {
+              count: "exact",
+              head: true
+            })
+            .eq("pilot_id", user.id)
+            .eq("status", "pending"),
+
+          supabase
+            .from("jobs")
+            .select("*", {
+              count: "exact"
+            })
+            .eq("assigned_pilot", user.id)
+            .in("status", ACTIVE_JOB_STATUSES)
+        ])
+
+        if (!active) return
+
+        if (completedResult.error) {
+          console.error(
+            "Errore conteggio lavori completati:",
+            completedResult.error
+          )
+        }
+
+        if (pendingApplicationsResult.error) {
+          console.error(
+            "Errore conteggio candidature in attesa:",
+            pendingApplicationsResult.error
+          )
+        }
+
+        if (assignedJobsResult.error) {
+          console.error(
+            "Errore caricamento lavori assegnati:",
+            assignedJobsResult.error
+          )
+        }
+
+        const orderedUpcomingJobs = sortJobsByDate(
+          assignedJobsResult.data || []
+        )
+
+        setUserData(profile)
+        setCredits(Number(profile.credits || 0))
+
+        setCompletedJobs(
+          completedResult.count || 0
+        )
+
+        setActiveJobs(
+          pendingApplicationsResult.count || 0
+        )
+
+        setApplications(
+          assignedJobsResult.count || 0
+        )
+
+        setUpcomingJobs(orderedUpcomingJobs)
+      } catch (error) {
+        console.error(
+          "Errore imprevisto dashboard pilota:",
+          error
+        )
+
+        if (active) {
+          router.replace("/login")
         }
       }
-
-      const mergedJobsMap = new Map()
-
-      ;[...(assignedJobs || []), ...applicationJobs].forEach((job) => {
-        if (!job?.id) return
-        mergedJobsMap.set(job.id, job)
-      })
-
-      const orderedUpcomingJobs = sortJobsByDate(
-        Array.from(mergedJobsMap.values())
-      )
-
-      console.log("PILOT UPCOMING JOBS:", orderedUpcomingJobs)
-
-      setUpcomingJobs(orderedUpcomingJobs)
     }
 
-    getUser()
+    loadDashboard()
+
+    return () => {
+      active = false
+    }
   }, [router])
 
   const fullName = getFullName(userData)
+
+const profileInitials = [
+  userData?.name,
+  userData?.surname
+]
+  .map((value) =>
+    String(value || "")
+      .trim()
+      .charAt(0)
+      .toUpperCase()
+  )
+  .filter(Boolean)
+  .join("")
+  .slice(0, 2) || "DG"
+
   const displayPosition = getDisplayPosition(userData)
 
   const handleCertificationRequest = async (event) => {
@@ -386,20 +396,22 @@ export default function Dashboard() {
   }
 }
 
-const hasVerifiedCertification =
-  userData?.cert_a1a3_verified ||
-  userData?.cert_a2_verified ||
-  userData?.cert_sts_verified ||
-  userData?.cert_sts01_verified ||
-  userData?.cert_sts02_verified ||
-  userData?.cert_specific_verified ||
-  userData?.cert_open_verified ||
-  userData?.cert_cro_verified ||
-  userData?.cert_luc_verified ||
-  userData?.cert_bvlos_verified ||
-  userData?.cert_notturno_verified ||
-  userData?.cert_termografia_verified ||
-  userData?.cert_fpv_racing_verified
+ const hasVerifiedCertification = Boolean(
+    userData?.cert_enac_verified ||
+    userData?.cert_a1a3_verified ||
+    userData?.cert_a2_verified ||
+    userData?.cert_sts_verified ||
+    userData?.cert_sts01_verified ||
+    userData?.cert_sts02_verified ||
+    userData?.cert_specific_verified ||
+    userData?.cert_open_verified ||
+    userData?.cert_cro_verified ||
+    userData?.cert_luc_verified ||
+    userData?.cert_bvlos_verified ||
+    userData?.cert_notturno_verified ||
+    userData?.cert_termografia_verified ||
+    userData?.cert_fpv_racing_verified
+  )
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -412,88 +424,139 @@ const hasVerifiedCertification =
               Menu
             </h2>
 
-            <div className="space-y-5 text-base text-gray-300 sm:text-lg lg:space-y-6">
-              <Link href="/dashboard/jobs">
-                <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+                        <ul className="space-y-2 text-base text-gray-300">
+
+              <li>
+                <Link
+                  href="/dashboard/jobs"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
                   <Briefcase size={20} />
-                  Storico lavori
-                </div>
-              </Link>
+                  <span>Storico lavori</span>
+                </Link>
+              </li>
 
-              <Link href="/dashboard/jobs-board">
-                <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+              <li>
+                <Link
+                  href="/dashboard/jobs-board"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-green-500/10 hover:text-green-300"
+                >
                   <FileText size={20} />
-                  Bacheca lavori
-                </div>
-              </Link>
+                  <span>Bacheca lavori</span>
+                </Link>
+              </li>
 
-              <Link href="/dashboard/job-data">
-                <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+              <li>
+                <Link
+                  href="/dashboard/job-data"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
                   <ClipboardList size={20} />
-                  Dati lavoro
-                </div>
-              </Link>
+                  <span>Dati lavoro</span>
+                </Link>
+              </li>
 
-<Link href="/dashboard/reviews">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
-    <Star size={20} />
-    Recensioni
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/dashboard/reviews"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  <Star size={20} />
+                  <span>Recensioni</span>
+                </Link>
+              </li>
 
-
-              <Link href="/dashboard/credits">
-                <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+              <li>
+                <Link
+                  href="/dashboard/credits"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
                   <CreditCard size={20} />
-                  Crediti
-                </div>
-              </Link>
+                  <span>Crediti</span>
+                </Link>
+              </li>
 
-              <Link href="/dashboard/settings">
-                <div className="flex items-center gap-3 hover:text-white transition cursor-pointer">
+              <li>
+                <Link
+                  href="/dashboard/settings"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                >
                   <Settings size={20} />
-                  Impostazioni
-                </div>
-              </Link>
+                  <span>Impostazioni</span>
+                </Link>
+              </li>
 
-              <div className="border-t border-white/10 my-6" />
+              <li aria-hidden="true" className="py-3">
+                <div className="border-t border-white/10" />
+              </li>
 
-              <div
-                onClick={async () => {
-                  await supabase.auth.signOut()
-                  router.refresh()
-                  router.push("/")
-                }}
-                className="hover:text-red-400 cursor-pointer flex items-center gap-3 transition"
-              >
-                <LogOut size={20} />
-                Logout
-              </div>
-              <div className="border-t border-white/10 my-6" />
+              <li>
+                <Link
+                  href="/faq"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  FAQ
+                </Link>
+              </li>
 
-<Link 
- href="/faq">FAQ
-</Link>              
+              <li>
+                <Link
+                  href="/come-funziona"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Come funziona
+                </Link>
+              </li>
 
-<Link href="/come-funziona">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Come funziona
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/contattaci"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Contattaci
+                </Link>
+              </li>
 
-<Link href="/contattaci">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Contattaci
-  </div>
-</Link>
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
+                >
+                  Privacy e Termini
+                </Link>
+              </li>
 
-<Link href="/privacy-policy">
-  <div className="flex items-center gap-3 hover:text-white transition cursor-pointer text-base">
-    Privacy e Policy
-  </div>
-</Link>
+              <li aria-hidden="true" className="py-3">
+                <div className="border-t border-white/10" />
+              </li>
+
+              <li>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const { error } =
+                      await supabase.auth.signOut()
+
+                    if (error) {
+                      console.error(
+                        "Errore durante il logout:",
+                        error
+                      )
+
+                      return
+                    }
+
+                    window.location.href = "/"
+                  }}
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-red-500/10 hover:text-red-300"
+                >
+                  <LogOut size={20} />
+                  <span>Logout</span>
+                </button>
+              </li>
+
+            </ul>
             </div>
-          </div>
 
           <div className="lg:col-span-3 lg:order-3">
             <div className="border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md">
@@ -502,14 +565,22 @@ const hasVerifiedCertification =
               </h2>
 
               <div className="text-center">
-                <img
-                  src={
-                    userData?.avatar_url ||
-                    "https://images.unsplash.com/photo-1508614589041-895b88991e3e?q=80&w=400"
-                  }
-                  alt={fullName}
-                  className="w-20 h-20 rounded-full object-cover mx-auto mb-4"
-                />
+                {userData?.avatar_url ? (
+  <img
+    src={userData.avatar_url}
+    alt={`Foto profilo di ${fullName}`}
+    width={80}
+    height={80}
+    className="mx-auto mb-4 h-20 w-20 rounded-full border border-white/20 object-cover"
+  />
+) : (
+  <div
+    aria-label={`Iniziali di ${fullName}`}
+    className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-green-400/30 bg-gradient-to-br from-green-400/20 to-cyan-400/20 text-xl font-bold text-green-300"
+  >
+    {profileInitials}
+  </div>
+)}
 
                 <h3 className="text-xl font-semibold">
                   {fullName}
@@ -517,12 +588,19 @@ const hasVerifiedCertification =
 
                 <div className="mt-3 space-y-2">
   <div className="flex items-center justify-center gap-2">
-    <Mail size={14} />
-    <span className="text-xs bg-green-500 px-3 py-1 rounded-full inline-flex items-center gap-1">
+  <Mail size={14} />
+
+  {emailVerified ? (
+    <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
       <BadgeCheck size={13} />
-      mail verificata
+      Mail verificata
     </span>
-  </div>
+  ) : (
+    <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200">
+      ⚠️ Mail non verificata
+    </span>
+  )}
+</div>
 
   <div className="flex flex-col items-center gap-2">
 
@@ -531,7 +609,14 @@ const hasVerifiedCertification =
 
   <div className="grid grid-cols-2 gap-2 w-full max-w-[260px] mx-auto">
 
-    {userData?.cert_a1a3_verified && (
+  {userData?.cert_enac_verified && (
+    <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
+      <ShieldCheck size={13} />
+      ENAC verificata
+    </span>
+  )}
+
+  {userData?.cert_a1a3_verified && (
       <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
         <BadgeCheck size={13} />
         A1/A3 verificata
@@ -772,6 +857,13 @@ const hasVerifiedCertification =
                       {userData?.bio || "Nessuna bio inserita"}
                     </p>
                   </div>
+<Link
+  href="/dashboard/settings"
+  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+>
+  <Settings size={18} />
+  Modifica profilo
+</Link>
                 </div>
               </div>
             </div>
@@ -805,7 +897,7 @@ const hasVerifiedCertification =
                     <Plane size={22} />
 
                     <p className="text-gray-300">
-                      Candidature inviate
+                      Candidature in attesa
                     </p>
                   </div>
 
@@ -819,7 +911,7 @@ const hasVerifiedCertification =
                     <FileText size={22} />
 
                     <p className="text-gray-300">
-                      In attesa
+                      Lavori attivi
                     </p>
                   </div>
 
@@ -880,11 +972,12 @@ const hasVerifiedCertification =
                         {getStatusLabel(job.status)}
                       </p>
 
-                      <Link href={`/dashboard/job-data?jobId=${job.id}`}>
-                        <button className="mt-4 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold transition hover:bg-white/10">
-                          Vedi dati lavoro
-                        </button>
-                      </Link>
+                      <Link
+  href={`/dashboard/job-data?jobId=${job.id}`}
+  className="mt-4 flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold transition hover:bg-white/10"
+>
+  Vedi dati lavoro
+</Link>
                     </div>
                   ))}
                 </div>
