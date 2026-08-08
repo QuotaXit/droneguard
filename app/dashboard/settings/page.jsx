@@ -526,367 +526,311 @@ const { data, error } = await supabase
   const displayPosition = getDisplayPosition(city, location)
 
   return (
-    <div className="min-h-screen flex flex-col text-white">
-      <Navbar logged />
+  <div className="min-h-screen flex flex-col text-white">
+    <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] p-4 md:p-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-12">
-          <div className="space-y-6 lg:col-span-4">
-            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
-              <div className="flex flex-col items-center text-center">
-                <label className="group relative cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={uploadAvatar}
-                    className="hidden"
+    <main className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+
+        {/* HEADER */}
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-400">
+            Area personale
+          </p>
+
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
+            Impostazioni pilota
+          </h1>
+
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400 sm:text-base">
+            Gestisci il profilo professionale, i dati di accesso
+            e le preferenze del tuo account DroneGuard.
+          </p>
+        </div>
+
+        {/* PROFILO + INFORMAZIONI PROFESSIONALI */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
+
+          {/* COLONNA SINISTRA */}
+          <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
+
+            {/* PROFILO */}
+            <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#140a3a] shadow-xl shadow-black/10">
+              <div className="p-6">
+                <div className="flex flex-col items-center text-center">
+                  <label className="group relative cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={uploadAvatar}
+                      className="hidden"
+                    />
+
+                    <img
+                      src={
+                        avatar ||
+                        "https://images.unsplash.com/photo-1508614589041-895b88991e3e?q=80&w=400"
+                      }
+                      alt={fullName}
+                      className="h-28 w-28 rounded-full border-2 border-white/20 object-cover shadow-lg"
+                    />
+
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition group-hover:opacity-100">
+                      <span className="text-xs font-semibold">
+                        Cambia foto
+                      </span>
+                    </div>
+                  </label>
+
+                  <h2 className="mt-4 text-2xl font-bold">
+                    {fullName}
+                  </h2>
+
+                  <span className="mt-2 inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1 text-xs font-semibold text-green-400">
+                    Pilota verificato
+                  </span>
+                </div>
+
+                <div className="mt-6 space-y-2 border-t border-white/10 pt-5">
+                  <ProfileInfoRow
+                    label="Esperienza"
+                    value={experience || "Non impostata"}
                   />
 
-                  <img
-                    src={
-                      avatar ||
-                      "https://images.unsplash.com/photo-1508614589041-895b88991e3e?q=80&w=400"
+                  <ProfileInfoRow
+                    label="Posizione"
+                    value={displayPosition}
+                  />
+
+                  <ProfileInfoRow
+                    label="Drone"
+                    value={
+                      drone.length > 0
+                        ? drone.join(", ")
+                        : "Non impostato"
                     }
-                    alt={fullName}
-                    className="h-32 w-32 rounded-full border-2 border-white/20 object-cover"
                   />
 
-                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition group-hover:opacity-100">
-                    <span className="text-sm font-medium">Cambia foto</span>
-                  </div>
-                </label>
+                  <ProfileInfoRow
+                    label="Servizio"
+                    value={
+                      services.length > 0
+                        ? services.join(" • ")
+                        : "Non inserito"
+                    }
+                  />
 
-                <h2 className="mt-5 text-3xl font-bold">{fullName}</h2>
+                  <ProfileInfoRow
+                    label="Certificato"
+                    value={
+                      certifications.length > 0
+                        ? certifications.join(", ")
+                        : "Nessuna"
+                    }
+                  />
+                </div>
 
-                <p className="mt-2 text-sm font-medium text-green-400">
-                  Pilota verificato
-                </p>
+                <div className="mt-5 border-t border-white/10 pt-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                    Biografia
+                  </p>
 
-                <div className="mt-6 w-full border-t border-white/10 pt-5">
-                  <div className="space-y-3">
-                    <ProfileInfoRow
-                      label="Esperienza"
-                      value={experience || "Non impostata"}
-                    />
-
-                    <ProfileInfoRow
-                      label="Posizione"
-                      value={displayPosition}
-                    />
-
-                    <ProfileInfoRow
-                      label="Drone"
-                      value={drone.length > 0 ? drone.join(", ") : "Non impostato"}
-                    />
-
-                    <ProfileInfoRow
-  label="Servizio"
-  value={
-    services.length > 0
-      ? services.join(" • ")
-      : "Non inserito"
-  }
-/>
-
-                    <ProfileInfoRow
-                      label="Certificato"
-                      value={certifications.length > 0 ? certifications.join(", ") : "Nessuna"}
-                    />
-                  </div>
-
-                  <div className="mt-5 border-t border-white/10 pt-5">
-                    <p className="mb-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
-                      Biografia
-                    </p>
-
-                    <p className="rounded-xl bg-white/[0.03] px-4 py-4 text-center text-sm leading-relaxed text-gray-200">
-                      {bio || "Nessuna bio inserita"}
-                    </p>
-                  </div>
+                  <p className="mt-3 rounded-2xl bg-white/[0.03] px-4 py-3 text-sm leading-6 text-gray-300">
+                    {bio || "Nessuna bio inserita"}
+                  </p>
                 </div>
               </div>
-            </div>
+            </section>
 
-            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
-              <h3 className="mb-4 text-lg font-semibold">Statistiche</h3>
+            {/* STATISTICHE */}
+            <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold">
+                    Statistiche
+                  </h3>
 
-              <div className="space-y-4">
-                <div className="rounded-xl bg-white/5 p-4">
-                  <p className="text-sm text-gray-400">Candidature Inviate</p>
-                  <h2 className="mt-2 text-3xl font-bold">{totalFlights}</h2>
-                </div>
-
-                <div className="rounded-xl bg-white/5 p-4">
-                  <p className="text-sm text-gray-400">Lavori completati</p>
-                  <h2 className="mt-2 text-3xl font-bold">{completedJobs}</h2>
-                </div>
-
-                <div className="rounded-xl bg-white/5 p-4">
-                  <p className="text-sm text-gray-400">In attesa</p>
-                  <h2 className="mt-2 text-3xl font-bold">{activeJobs}</h2>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Attività del tuo profilo
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className="space-y-6 lg:col-span-8">
-            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 md:p-8">
-              <h2 className="mb-8 text-2xl font-bold sm:text-3xl">
+              <div className="grid grid-cols-3 gap-2">
+                <div className="rounded-2xl bg-white/[0.04] px-2 py-4 text-center">
+                  <p className="text-2xl font-bold">
+                    {totalFlights}
+                  </p>
+
+                  <p className="mt-1 text-[11px] leading-4 text-gray-500">
+                    Candidature
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-white/[0.04] px-2 py-4 text-center">
+                  <p className="text-2xl font-bold text-green-400">
+                    {completedJobs}
+                  </p>
+
+                  <p className="mt-1 text-[11px] leading-4 text-gray-500">
+                    Completati
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-white/[0.04] px-2 py-4 text-center">
+                  <p className="text-2xl font-bold text-yellow-300">
+                    {activeJobs}
+                  </p>
+
+                  <p className="mt-1 text-[11px] leading-4 text-gray-500">
+                    In corso
+                  </p>
+                </div>
+              </div>
+            </section>
+          </aside>
+
+          {/* INFORMAZIONI PROFESSIONALI */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6 lg:p-8">
+            <div className="mb-7 border-b border-white/10 pb-5">
+              <h2 className="text-2xl font-bold">
                 Informazioni professionali
               </h2>
 
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Nome
-                    </label>
+              <p className="mt-2 text-sm leading-6 text-gray-400">
+                Queste informazioni compongono il tuo profilo pilota.
+              </p>
+            </div>
 
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    />
-                  </div>
+            <div className="space-y-6">
 
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Cognome
-                    </label>
-
-                    <input
-                      value={surname}
-                      onChange={(e) => setSurname(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    />
-                  </div>
-                </div>
-
+              {/* NOME / COGNOME */}
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
-                  <div className="mb-2 flex justify-between">
-                    <label className="text-sm text-gray-400">
-                      Bio professionale
-                    </label>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Nome
+                  </label>
 
-                    <span className="text-sm text-gray-500">
-                      {bio.length}/120
-                    </span>
-                  </div>
-
-                  <textarea
-                    maxLength={120}
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    className="h-36 w-full resize-none rounded-2xl border border-white/10 bg-black/20 p-4"
+                  <input
+                    value={name}
+                    onChange={(e) =>
+                      setName(e.target.value)
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
                   />
                 </div>
 
-<div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                 <div>
-  <label className="mb-2 block text-sm text-gray-400">
-    Drone
-  </label>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Cognome
+                  </label>
 
-  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-    <div className="mb-3 flex flex-wrap gap-2">
-      {drone.length > 0 ? (
-        drone.map((item) => (
-          <div
-            key={item}
-            className="flex items-center gap-2 rounded-full bg-green-500 px-3 py-1 text-sm font-medium text-black"
-          >
-            {item}
+                  <input
+                    value={surname}
+                    onChange={(e) =>
+                      setSurname(e.target.value)
+                    }
+                    className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
+                  />
+                </div>
+              </div>
 
-            <button
-              type="button"
-              onClick={() =>
-                setDrone(drone.filter((d) => d !== item))
-              }
-              className="text-black opacity-70 hover:opacity-100"
-            >
-              ×
-            </button>
-          </div>
-        ))
-      ) : (
-        <p className="text-sm text-gray-500">
-          Seleziona massimo 3 droni
-        </p>
-      )}
-    </div>
+              {/* BIO */}
+              <div>
+                <div className="mb-2 flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-400">
+                    Bio professionale
+                  </label>
 
-    <select
-      onChange={(e) => {
-        const value = e.target.value
+                  <span className="text-xs text-gray-500">
+                    {bio.length}/120
+                  </span>
+                </div>
 
-        if (!value) return
+                <textarea
+                  maxLength={120}
+                  value={bio}
+                  onChange={(e) =>
+                    setBio(e.target.value)
+                  }
+                  placeholder="Descrivi brevemente la tua esperienza..."
+                  className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
 
-        if (drone.includes(value)) return
+              {/* DRONE + CERTIFICAZIONI */}
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-        if (drone.length >= 3) {
-          toast.error("Puoi selezionare massimo 3 droni.")
-          return
-        }
+                {/* DRONE */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Drone
+                  </label>
 
-        setDrone([...drone, value])
-      }}
-      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
-      defaultValue=""
-    >
-      <option value="" disabled>
-        Seleziona drone
-      </option>
+                  <div className="min-h-[132px] rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="mb-3 flex min-h-[32px] flex-wrap gap-2">
+                      {drone.length > 0 ? (
+                        drone.map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-center gap-2 rounded-full bg-green-500 px-3 py-1.5 text-xs font-semibold text-black"
+                          >
+                            {item}
 
-      {droneList.map((item) => (
-        <option key={item} value={item}>
-          {item}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-                  <div>
-  <label className="mb-2 block text-sm text-gray-400">
-    Certificazioni
-  </label>
-
-  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-    <div className="mb-3 flex flex-wrap gap-2">
-      {certifications.length > 0 ? (
-        certifications.map((item) => (
-          <div
-            key={item}
-            className="flex items-center gap-2 rounded-full bg-blue-500 px-3 py-1 text-sm font-medium text-white"
-          >
-            {item}
-
-            <button
-              type="button"
-              onClick={() =>
-                setCertifications(
-                  certifications.filter((c) => c !== item)
-                )
-              }
-              className="text-white opacity-70 hover:opacity-100"
-            >
-              ×
-            </button>
-          </div>
-        ))
-      ) : (
-        <p className="text-sm text-gray-500">
-          Seleziona massimo 3 certificazioni
-        </p>
-      )}
-    </div>
-
-    <select
-      onChange={(e) => {
-        const value = e.target.value
-
-        if (!value) return
-
-        if (certifications.includes(value)) return
-
-        if (certifications.length >= 3) {
-          toast.error("Puoi selezionare massimo 3 certificazioni.")
-          return
-        }
-
-        setCertifications([...certifications, value])
-      }}
-      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
-      defaultValue=""
-    >
-      <option value="" disabled>
-        Seleziona certificazione
-      </option>
-
-      {certificationsList.map((item) => (
-        <option key={item} value={item}>
-          {item}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-                  <div>
-  <label className="mb-2 block text-sm text-gray-400">
-    Servizi offerti
-  </label>
-
-  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-    <div className="mb-3 flex flex-wrap gap-2">
-      {services.length > 0 ? (
-        services.map((item) => (
-          <div
-            key={item}
-            className="flex items-center gap-2 rounded-full bg-purple-500 px-3 py-1 text-sm font-medium text-white"
-          >
-            {item}
-
-            <button
-              type="button"
-              onClick={() =>
-                setServices(services.filter((s) => s !== item))
-              }
-              className="text-white opacity-70 hover:opacity-100"
-            >
-              ×
-            </button>
-          </div>
-        ))
-      ) : (
-        <p className="text-sm text-gray-500">
-          Seleziona massimo 3 servizi
-        </p>
-      )}
-    </div>
-
-    <select
-      onChange={(e) => {
-        const value = e.target.value
-
-        if (!value) return
-
-        if (services.includes(value)) return
-
-        if (services.length >= 3) {
-          toast.error("Puoi selezionare massimo 3 servizi.")
-          return
-        }
-
-        setServices([...services, value])
-      }}
-      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-white"
-      defaultValue=""
-    >
-      <option value="" disabled>
-        Seleziona servizio
-      </option>
-
-      {servicesList.map((item) => (
-        <option key={item} value={item}>
-          {item}
-        </option>
-      ))}
-    </select>
-  </div>
-</div>
-                  <div>
-                    <label className="mb-2 block text-sm text-gray-400">
-                      Esperienza
-                    </label>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDrone(
+                                  drone.filter(
+                                    (d) => d !== item
+                                  )
+                                )
+                              }
+                              className="text-black/60 transition hover:text-black"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          Seleziona massimo 3 droni
+                        </p>
+                      )}
+                    </div>
 
                     <select
-                      value={experience}
-                      onChange={(e) => setExperience(e.target.value)}
-                      className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                    >
-                      <option value="">Seleziona</option>
+                      onChange={(e) => {
+                        const value =
+                          e.target.value
 
-                      {experienceList.map((item) => (
-                        <option key={item} value={item}>
+                        if (!value) return
+                        if (drone.includes(value)) return
+
+                        if (drone.length >= 3) {
+                          toast.error(
+                            "Puoi selezionare massimo 3 droni."
+                          )
+                          return
+                        }
+
+                        setDrone([
+                          ...drone,
+                          value
+                        ])
+                      }}
+                      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-sm text-white outline-none"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Seleziona drone
+                      </option>
+
+                      {droneList.map((item) => (
+                        <option
+                          key={item}
+                          value={item}
+                        >
                           {item}
                         </option>
                       ))}
@@ -894,162 +838,501 @@ const { data, error } = await supabase
                   </div>
                 </div>
 
-                <div className="relative">
-                  <label className="mb-2 block text-sm text-gray-400">
-                    Posizione
+                {/* CERTIFICAZIONI */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Certificazioni
                   </label>
 
-                  <select
-  value={location}
-  onChange={(e) => {
-    setLocation(e.target.value)
-    setCity(e.target.value)
-  }}
-  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-white"
->
-  <option value="">Seleziona città</option>
+                  <div className="min-h-[132px] rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="mb-3 flex min-h-[32px] flex-wrap gap-2">
+                      {certifications.length > 0 ? (
+                        certifications.map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-center gap-2 rounded-full bg-blue-500 px-3 py-1.5 text-xs font-semibold text-white"
+                          >
+                            {item}
 
-  {italianCities.map((cityName) => (
-    <option key={cityName} value={cityName}>
-      {cityName}
-    </option>
-  ))}
-</select>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setCertifications(
+                                  certifications.filter(
+                                    (c) =>
+                                      c !== item
+                                  )
+                                )
+                              }
+                              className="text-white/60 transition hover:text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          Seleziona massimo 3 certificazioni
+                        </p>
+                      )}
+                    </div>
 
-</div>
+                    <select
+                      onChange={(e) => {
+                        const value =
+                          e.target.value
+
+                        if (!value) return
+                        if (
+                          certifications.includes(
+                            value
+                          )
+                        ) {
+                          return
+                        }
+
+                        if (
+                          certifications.length >= 3
+                        ) {
+                          toast.error(
+                            "Puoi selezionare massimo 3 certificazioni."
+                          )
+                          return
+                        }
+
+                        setCertifications([
+                          ...certifications,
+                          value
+                        ])
+                      }}
+                      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-sm text-white outline-none"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Seleziona certificazione
+                      </option>
+
+                      {certificationsList.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* SERVIZI + ESPERIENZA */}
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                {/* SERVIZI */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Servizi offerti
+                  </label>
+
+                  <div className="min-h-[132px] rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <div className="mb-3 flex min-h-[32px] flex-wrap gap-2">
+                      {services.length > 0 ? (
+                        services.map((item) => (
+                          <div
+                            key={item}
+                            className="flex items-center gap-2 rounded-full bg-purple-500 px-3 py-1.5 text-xs font-semibold text-white"
+                          >
+                            {item}
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setServices(
+                                  services.filter(
+                                    (s) => s !== item
+                                  )
+                                )
+                              }
+                              className="text-white/60 transition hover:text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          Seleziona massimo 3 servizi
+                        </p>
+                      )}
+                    </div>
+
+                    <select
+                      onChange={(e) => {
+                        const value =
+                          e.target.value
+
+                        if (!value) return
+                        if (
+                          services.includes(value)
+                        ) {
+                          return
+                        }
+
+                        if (services.length >= 3) {
+                          toast.error(
+                            "Puoi selezionare massimo 3 servizi."
+                          )
+                          return
+                        }
+
+                        setServices([
+                          ...services,
+                          value
+                        ])
+                      }}
+                      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3 text-sm text-white outline-none"
+                      defaultValue=""
+                    >
+                      <option value="" disabled>
+                        Seleziona servizio
+                      </option>
+
+                      {servicesList.map((item) => (
+                        <option
+                          key={item}
+                          value={item}
+                        >
+                          {item}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* ESPERIENZA */}
+                <div>
+                  <label className="mb-2 block text-sm font-medium text-gray-400">
+                    Esperienza
+                  </label>
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <select
+                      value={experience}
+                      onChange={(e) =>
+                        setExperience(
+                          e.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-[#140a3a] p-3.5 text-white outline-none"
+                    >
+                      <option value="">
+                        Seleziona esperienza
+                      </option>
+
+                      {experienceList.map(
+                        (item) => (
+                          <option
+                            key={item}
+                            value={item}
+                          >
+                            {item}
+                          </option>
+                        )
+                      )}
+                    </select>
+
+                    <p className="mt-3 text-xs leading-5 text-gray-500">
+                      Indica gli anni di esperienza come pilota.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* POSIZIONE */}
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-400">
+                  Posizione
+                </label>
+
+                <select
+                  value={location}
+                  onChange={(e) => {
+                    setLocation(e.target.value)
+                    setCity(e.target.value)
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none transition focus:border-green-400/50"
+                >
+                  <option value="">
+                    Seleziona città
+                  </option>
+
+                  {italianCities.map(
+                    (cityName) => (
+                      <option
+                        key={cityName}
+                        value={cityName}
+                      >
+                        {cityName}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+
+              {/* SALVATAGGIO */}
+              <div className="flex justify-end border-t border-white/10 pt-6">
                 <button
                   onClick={saveProfile}
                   disabled={loading}
-                  className="w-full rounded-2xl bg-green-500 py-5 text-lg font-bold text-black transition hover:bg-green-400 disabled:opacity-60"
+                  className="w-full rounded-xl bg-green-500 px-8 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >
-                  {loading ? "Salvataggio..." : "Salva modifiche"}
+                  {loading
+                    ? "Salvataggio..."
+                    : "Salva modifiche"}
                 </button>
               </div>
             </div>
+          </section>
+        </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
-              <h2 className="mb-6 text-2xl font-semibold">Email</h2>
+        {/* ACCOUNT */}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
 
-              <input
-                value={currentEmail}
-                disabled
-                autoComplete="off"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-white/10 p-4 text-gray-300"
-              />
+          {/* EMAIL */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+            <div className="mb-5 border-b border-white/10 pb-4">
+              <h2 className="text-xl font-bold">
+                Email
+              </h2>
 
-              <input
-                type="email"
-                placeholder="Nuova email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-                autoComplete="new-email"
-                name="new-email"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-transparent p-4 text-white placeholder:text-gray-400"
-              />
-
-              <input
-                type="email"
-                placeholder="Conferma nuova email"
-                value={confirmEmail}
-                onChange={(e) => setConfirmEmail(e.target.value)}
-                autoComplete="new-email-confirm"
-                name="confirm-new-email"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-transparent p-4 text-white placeholder:text-gray-400"
-              />
-
-              <button
-                onClick={updateEmail}
-                className="w-full rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400 sm:w-auto"
-              >
-                Aggiorna email
-              </button>
+              <p className="mt-1 text-sm text-gray-500">
+                Gestisci l'indirizzo email del tuo account.
+              </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
-              <h2 className="mb-6 text-2xl font-semibold">Sicurezza</h2>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Email attuale
+                </label>
 
-              <input
-                type="password"
-                placeholder="Password attuale"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                autoComplete="current-password"
-                name="current-password"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-transparent p-4 text-white placeholder:text-gray-400"
-              />
+                <input
+                  value={currentEmail}
+                  disabled
+                  autoComplete="off"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-gray-400"
+                />
+              </div>
 
-              <input
-                type="password"
-                placeholder="Nuova password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                autoComplete="new-password"
-                name="new-password"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-transparent p-4 text-white placeholder:text-gray-400"
-              />
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Nuova email
+                </label>
 
-              <input
-                type="password"
-                placeholder="Conferma nuova password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                name="confirm-new-password"
-                className="mb-5 w-full rounded-xl border border-white/20 bg-transparent p-4 text-white placeholder:text-gray-400"
-              />
+                <input
+                  type="email"
+                  placeholder="Inserisci la nuova email"
+                  value={newEmail}
+                  onChange={(e) =>
+                    setNewEmail(e.target.value)
+                  }
+                  autoComplete="new-email"
+                  name="new-email"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
 
-              <button
-                onClick={updatePassword}
-                className="w-full rounded-xl bg-green-500 px-6 py-4 text-black transition hover:bg-green-400 sm:w-auto"
-              >
-                Cambia password
-              </button>
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Conferma nuova email
+                </label>
+
+                <input
+                  type="email"
+                  placeholder="Ripeti la nuova email"
+                  value={confirmEmail}
+                  onChange={(e) =>
+                    setConfirmEmail(
+                      e.target.value
+                    )
+                  }
+                  autoComplete="new-email-confirm"
+                  name="confirm-new-email"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={updateEmail}
+                  className="rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+                >
+                  Aggiorna email
+                </button>
+              </div>
+            </div>
+          </section>
+
+          {/* SICUREZZA */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+            <div className="mb-5 border-b border-white/10 pb-4">
+              <h2 className="text-xl font-bold">
+                Sicurezza
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Modifica la password di accesso.
+              </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-[#140a3a] p-6">
-  <h2 className="mb-4 text-2xl font-semibold">
-    Notifiche Email
-  </h2>
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Password attuale
+                </label>
 
-  <label className="flex items-center gap-3 mb-5">
-    <input
-      type="checkbox"
-      checked={emailNewJobs}
-      onChange={(e) => setEmailNewJobs(e.target.checked)}
-    />
+                <input
+                  type="password"
+                  placeholder="Password attuale"
+                  value={currentPassword}
+                  onChange={(e) =>
+                    setCurrentPassword(
+                      e.target.value
+                    )
+                  }
+                  autoComplete="current-password"
+                  name="current-password"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
 
-    <span>
-      Ricevi email quando vengono pubblicati nuovi lavori
-    </span>
-  </label>
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Nuova password
+                </label>
 
-  <button
-    onClick={saveProfile}
-    className="rounded-xl bg-green-500 px-6 py-3 font-semibold text-black hover:bg-green-400"
-  >
-    Salva preferenze
-  </button>
-</div>
+                <input
+                  type="password"
+                  placeholder="Nuova password"
+                  value={newPassword}
+                  onChange={(e) =>
+                    setNewPassword(
+                      e.target.value
+                    )
+                  }
+                  autoComplete="new-password"
+                  name="new-password"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
 
-            <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6">
-              <h2 className="mb-3 text-2xl font-semibold text-red-400">
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Conferma nuova password
+                </label>
+
+                <input
+                  type="password"
+                  placeholder="Ripeti la nuova password"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(
+                      e.target.value
+                    )
+                  }
+                  autoComplete="new-password"
+                  name="confirm-new-password"
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none placeholder:text-gray-600 focus:border-green-400/50"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  onClick={updatePassword}
+                  className="rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+                >
+                  Cambia password
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        {/* NOTIFICHE */}
+        <section className="mt-6 rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-xl font-bold">
+                Notifiche email
+              </h2>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Scegli quali aggiornamenti ricevere via email.
+              </p>
+            </div>
+
+            <button
+              onClick={saveProfile}
+              className="rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+            >
+              Salva preferenze
+            </button>
+          </div>
+
+          <label className="mt-5 flex cursor-pointer items-center justify-between gap-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div>
+              <p className="font-medium text-gray-200">
+                Nuovi lavori pubblicati
+              </p>
+
+              <p className="mt-1 text-sm text-gray-500">
+                Ricevi un'email quando vengono pubblicati nuovi lavori.
+              </p>
+            </div>
+
+            <input
+              type="checkbox"
+              checked={emailNewJobs}
+              onChange={(e) =>
+                setEmailNewJobs(
+                  e.target.checked
+                )
+              }
+              className="h-5 w-5 shrink-0 accent-green-500"
+            />
+          </label>
+        </section>
+
+        {/* ZONA PERICOLO */}
+        <section className="mt-6 rounded-3xl border border-red-500/20 bg-red-500/[0.07] p-5 shadow-xl shadow-black/10 sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-red-400">
+                Zona pericolo
+              </p>
+
+              <h2 className="mt-2 text-xl font-bold text-red-300">
                 Elimina account
               </h2>
 
-              <p className="mb-6 text-gray-400">
-                Questa operazione è irreversibile, assicurati di non avere crediti.
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+                Questa operazione è irreversibile.
+                Assicurati di non avere crediti prima di procedere.
               </p>
-
-              <button
-                onClick={deleteAccount}
-                className="w-full rounded-lg bg-red-500 px-6 py-3 sm:w-auto"
-              >
-                Elimina account
-              </button>
             </div>
+
+            <button
+              onClick={deleteAccount}
+              className="shrink-0 rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-400"
+            >
+              Elimina account
+            </button>
           </div>
-        </div>
+        </section>
       </div>
-    </div>
-  )
+    </main>
+  </div>
+)
 }

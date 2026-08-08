@@ -13,18 +13,27 @@ export default function PilotCitiesStats() {
     const loadPilotCities = async () => {
       setLoading(true)
 
-      const { data, error } = await supabase.rpc("get_pilot_city_counts")
+      const { data, error } = await supabase.rpc(
+        "get_pilot_city_counts"
+      )
 
       if (error) {
-        console.error("Errore caricamento città piloti:", error)
+        console.error(
+          "Errore caricamento città piloti:",
+          error
+        )
+
         setLoading(false)
         return
       }
 
       const cityData = data || []
+
       setCities(cityData)
 
-      const total = cityData[0]?.total_pilots || 0
+      const total =
+        cityData[0]?.total_pilots || 0
+
       setTotalPilots(Number(total))
 
       setLoading(false)
@@ -35,104 +44,152 @@ export default function PilotCitiesStats() {
 
   if (loading) {
     return (
-      <section className="relative px-4 py-10 text-center text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
-        <div className="relative z-10">Caricamento città piloti...</div>
+      <section className="border-b border-white/5 bg-[#0C1230]">
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center text-sm text-gray-400 sm:px-6 lg:px-8">
+          Caricamento città piloti...
+        </div>
       </section>
     )
   }
 
   if (cities.length === 0) {
     return (
-      <section className="relative px-4 py-10 text-center text-white">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
-        <div className="relative z-10">Nessuna città pilota trovata.</div>
+      <section className="border-b border-white/5 bg-[#0C1230]">
+        <div className="mx-auto max-w-7xl px-4 py-16 text-center text-sm text-gray-400 sm:px-6 lg:px-8">
+          Nessuna città pilota trovata.
+        </div>
       </section>
     )
   }
 
   return (
-    <section className="relative px-4 py-16 text-white">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+    <section className="relative border-b border-white/5 bg-[#0C1230]">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
 
-      <div className="relative z-10 mx-auto max-w-5xl text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green-400/30 bg-green-500/10 px-4 py-2 text-sm text-green-300">
-  <Users size={16} />
-  {totalPilots}{" "}
-  {totalPilots === 1 ? "pilota registrato" : "piloti registrati"}
-</div>
+        {/* HEADER */}
+        <div className="mx-auto max-w-3xl text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-green-400/20 bg-green-400/[0.07] px-4 py-2 text-sm font-semibold text-green-300">
+            <Users size={16} />
 
-        <h2 className="text-3xl font-bold sm:text-4xl">
-  Piloti registrati su DroneGuard in Italia
-</h2>
+            <span>
+              {totalPilots}{" "}
+              {totalPilots === 1
+                ? "pilota registrato"
+                : "piloti registrati"}
+            </span>
+          </div>
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-gray-300 sm:text-base">
-  Pubblica una richiesta per permettere ai piloti registrati di
-  visualizzarla e candidarsi. Le città mostrate vengono aggiornate
-  in base ai profili presenti sulla piattaforma.
-</p>
+          <h2 className="mt-5 text-3xl font-black tracking-tight text-white sm:text-4xl">
+            Piloti DroneGuard in tutta Italia
+          </h2>
 
-        <div className="relative mt-8">
-          <button
-            type="button"
-            onClick={() => {
-              document.getElementById("cities-scroll")?.scrollBy({
-                left: -320,
-                behavior: "smooth",
-              })
-            }}
-            className="absolute left-0 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:flex"
-          >
-            ‹
-          </button>
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-400 sm:text-base">
+            Pubblica una richiesta e rendila visibile ai
+            piloti presenti sulla piattaforma. Le città vengono
+            aggiornate automaticamente in base ai profili registrati.
+          </p>
+        </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              document.getElementById("cities-scroll")?.scrollBy({
-                left: 320,
-                behavior: "smooth",
-              })
-            }}
-            className="absolute right-0 top-1/2 z-20 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 md:flex"
-          >
-            ›
-          </button>
+        {/* BOX CITTÀ */}
+        <div className="relative mt-10 overflow-hidden rounded-3xl border border-white/10 bg-[#10183B] p-4 shadow-2xl shadow-black/10 sm:p-6">
 
+          {/* TOP BAR */}
+          <div className="mb-5 flex items-center justify-between gap-4 border-b border-white/10 pb-5">
+            <div>
+              <p className="font-semibold text-white">
+                Presenza sul territorio
+              </p>
+
+              <p className="mt-1 text-xs text-gray-500">
+                Scopri dove sono presenti i piloti registrati
+              </p>
+            </div>
+
+            <div className="hidden items-center gap-2 md:flex">
+              <button
+                type="button"
+                aria-label="Città precedenti"
+                onClick={() => {
+                  document
+                    .getElementById("cities-scroll")
+                    ?.scrollBy({
+                      left: -320,
+                      behavior: "smooth"
+                    })
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-xl text-gray-300 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+              >
+                ‹
+              </button>
+
+              <button
+                type="button"
+                aria-label="Città successive"
+                onClick={() => {
+                  document
+                    .getElementById("cities-scroll")
+                    ?.scrollBy({
+                      left: 320,
+                      behavior: "smooth"
+                    })
+                }}
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-xl text-gray-300 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+              >
+                ›
+              </button>
+            </div>
+          </div>
+
+          {/* CITTÀ */}
           <div
             id="cities-scroll"
-            className="overflow-x-auto pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            <div className="grid min-w-max grid-flow-col grid-rows-3 gap-3 md:px-16">
+            <div className="grid min-w-max grid-flow-col grid-rows-2 gap-3 pb-1">
               {cities.map((item) => (
                 <div
                   key={item.city}
-                  className="w-64 rounded-2xl border border-white/10 bg-white/5 p-4 text-left transition hover:bg-white/10"
+                  className="group w-[230px] rounded-2xl border border-white/[0.08] bg-white/[0.035] p-4 text-left transition duration-200 hover:-translate-y-0.5 hover:border-green-400/20 hover:bg-white/[0.065]"
                 >
-                  <div className="mb-2 flex items-center gap-2 text-green-300">
-                    <MapPin size={16} />
-                    <span className="text-sm font-semibold">{item.city}</span>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-400/10 text-green-400">
+                      <MapPin size={17} />
+                    </div>
+
+                    <span className="rounded-full bg-white/[0.05] px-2.5 py-1 text-xs text-gray-400">
+                      {Number(item.count)}{" "}
+                      {Number(item.count) === 1
+                        ? "pilota"
+                        : "piloti"}
+                    </span>
                   </div>
 
-                  <p className="text-sm text-gray-300">
-                    {Number(item.count)}{" "}
-                    {Number(item.count) === 1 ? "pilota" : "piloti"}
+                  <p className="mt-4 font-semibold text-gray-200 transition group-hover:text-white">
+                    {item.city}
                   </p>
                 </div>
               ))}
             </div>
           </div>
+
+          {cities.length > 12 && (
+            <p className="mt-4 text-center text-xs text-gray-500 md:hidden">
+              Scorri lateralmente per vedere altre città →
+            </p>
+          )}
         </div>
 
-        {cities.length > 12 && (
-          <p className="mt-2 text-sm text-gray-400">
-            Scorri verso destra per vedere altre città →
+        {/* FOOTER SEZIONE */}
+        <div className="mt-6 flex flex-col items-center justify-center gap-2 text-center">
+          <p className="text-sm text-gray-500">
+            Non trovi la tua città?
           </p>
-        )}
 
-        <p className="mt-6 text-sm text-gray-400">
-          Altre città si aggiungono automaticamente quando nuovi piloti completano il profilo.
-        </p>
+          <p className="text-sm text-gray-400">
+            Nuove località vengono aggiunte automaticamente
+            quando i piloti completano il proprio profilo.
+          </p>
+        </div>
       </div>
     </section>
   )
