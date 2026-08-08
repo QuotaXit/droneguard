@@ -11,6 +11,12 @@ import {
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
 
+const MAX_BODY_BYTES =
+  20_000
+
+const ROME_TIME_ZONE =
+  "Europe/Rome"
+
 function jsonError(message, status = 400) {
   return NextResponse.json(
     {
@@ -85,7 +91,7 @@ function rejectCrossOrigin(request) {
     request.headers.get("origin")
 
   if (
-    origin &&
+    !origin ||
     origin !== request.nextUrl.origin
   ) {
     return jsonError(
@@ -104,6 +110,53 @@ function cleanText(value, maxLength) {
     .slice(0, maxLength)
 }
 
+function getTimeZoneOffsetMs(
+  timestamp,
+  timeZone
+) {
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hourCycle: "h23"
+      }
+    )
+
+  const parts =
+    formatter.formatToParts(
+      new Date(timestamp)
+    )
+
+  const values = {}
+
+  for (const part of parts) {
+    if (part.type !== "literal") {
+      values[part.type] =
+        Number(part.value)
+    }
+  }
+
+  const representedAsUtc =
+    Date.UTC(
+      values.year,
+      values.month - 1,
+      values.day,
+      values.hour,
+      values.minute,
+      values.second
+    )
+
+  return representedAsUtc -
+    timestamp
+}
+
 function parseNullableDate(value) {
   if (
     value === null ||
@@ -113,17 +166,123 @@ function parseNullableDate(value) {
     return null
   }
 
-  const parsedDate = new Date(value)
+  const normalized =
+    String(value).trim()
+
+  const match =
+    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+      .exec(normalized)
+
+  if (!match) {
+    return undefined
+  }
+
+  const year =
+    Number(match[1])
+
+  const month =
+    Number(match[2])
+
+  const day =
+    Number(match[3])
+
+  const hour =
+    Number(match[4])
+
+  const minute =
+    Number(match[5])
+
+  const wallClockUtc =
+    Date.UTC(
+      year,
+      month - 1,
+      day,
+      hour,
+      minute,
+      0,
+      0
+    )
+
+  const validationDate =
+    new Date(wallClockUtc)
 
   if (
-    Number.isNaN(
-      parsedDate.getTime()
-    )
+    validationDate.getUTCFullYear() !== year ||
+    validationDate.getUTCMonth() !==
+      month - 1 ||
+    validationDate.getUTCDate() !== day ||
+    validationDate.getUTCHours() !== hour ||
+    validationDate.getUTCMinutes() !==
+      minute
   ) {
     return undefined
   }
 
-  return parsedDate.toISOString()
+  let candidate =
+    wallClockUtc
+
+  for (let index = 0; index < 4; index++) {
+    const offset =
+      getTimeZoneOffsetMs(
+        candidate,
+        ROME_TIME_ZONE
+      )
+
+    const nextCandidate =
+      wallClockUtc - offset
+
+    if (
+      nextCandidate === candidate
+    ) {
+      break
+    }
+
+    candidate =
+      nextCandidate
+  }
+
+  const formatter =
+    new Intl.DateTimeFormat(
+      "en-CA",
+      {
+        timeZone:
+          ROME_TIME_ZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hourCycle: "h23"
+      }
+    )
+
+  const parts =
+    formatter.formatToParts(
+      new Date(candidate)
+    )
+
+  const values = {}
+
+  for (const part of parts) {
+    if (part.type !== "literal") {
+      values[part.type] =
+        Number(part.value)
+    }
+  }
+
+  if (
+    values.year !== year ||
+    values.month !== month ||
+    values.day !== day ||
+    values.hour !== hour ||
+    values.minute !== minute
+  ) {
+    return undefined
+  }
+
+  return new Date(
+    candidate
+  ).toISOString()
 }
 
 function normalizeSettings(row) {
@@ -461,15 +620,66 @@ export async function PATCH(request) {
     )
   }
 
-  let body
+  const contentLength =
+  Number(
+    request.headers.get(
+      "content-length"
+    ) || 0
+  )
 
-  try {
-    body = await request.json()
-  } catch {
-    return jsonError(
-      "Dati della richiesta non validi."
-    )
-  }
+if (
+  Number.isFinite(contentLength) &&
+  contentLength > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let rawBody
+
+try {
+  rawBody =
+    await request.text()
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  Buffer.byteLength(
+    rawBody,
+    "utf8"
+  ) > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let body
+
+try {
+  body =
+    JSON.parse(rawBody)
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  !body ||
+  typeof body !== "object" ||
+  Array.isArray(body)
+) {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
 
   const maintenanceTitle =
     cleanText(
@@ -616,11 +826,12 @@ export async function PATCH(request) {
     )
   }
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
 
     message:
-  "Configurazione della manutenzione aggiornata correttamente.",
+      "Configurazione della manutenzione aggiornata correttamente.",
 
     settings:
       normalizeSettings(data),
@@ -634,7 +845,15 @@ export async function PATCH(request) {
         "Membro Team",
 
       roleKey:
-        access.roleKey || null
+        access.roleKey ||
+        null
     }
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }

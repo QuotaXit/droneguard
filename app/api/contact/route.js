@@ -6,15 +6,23 @@ import {
   sendTrackedEmail
 } from "@/lib/email/send-tracked-email"
 
+import {
+  consumeRateLimit
+} from "@/lib/security/rate-limit"
+
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
+
+const MAX_BODY_BYTES =
+  20_000
 
 const EMAIL_PATTERN =
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 function jsonError(
   message,
-  status = 400
+  status = 400,
+  extraHeaders = {}
 ) {
   return Response.json(
     {
@@ -22,7 +30,12 @@ function jsonError(
       error: message
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0",
+        ...extraHeaders
+      }
     }
   )
 }
@@ -137,16 +150,128 @@ export async function POST(request) {
       )
     }
 
-    let body
+    const requestIp =
+  getRequestIp(request)
 
-    try {
-      body =
-        await request.json()
-    } catch {
-      return jsonError(
-        "Dati della richiesta non validi."
-      )
+const rateLimit =
+  await consumeRateLimit({
+    key:
+      `contact:${requestIp}`,
+
+    limit:
+      5,
+
+    windowSeconds:
+      15 * 60
+  })
+
+if (!rateLimit.success) {
+  return jsonError(
+    "Servizio temporaneamente non disponibile. Riprova più tardi.",
+    503
+  )
+}
+
+if (!rateLimit.allowed) {
+  const retryAfter =
+    Math.max(
+      1,
+      rateLimit.retryAfterSeconds
+    )
+
+  return jsonError(
+    "Hai effettuato troppi invii. Riprova tra qualche minuto.",
+    429,
+    {
+      "Retry-After":
+        String(retryAfter)
     }
+  )
+}
+
+    const contentLength =
+  Number(
+    request.headers.get(
+      "content-length"
+    ) || 0
+  )
+
+if (
+  Number.isFinite(contentLength) &&
+  contentLength > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let rawBody
+
+try {
+  rawBody =
+    await request.text()
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  Buffer.byteLength(
+    rawBody,
+    "utf8"
+  ) > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let body
+
+try {
+  body =
+    JSON.parse(rawBody)
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  !body ||
+  typeof body !== "object" ||
+  Array.isArray(body)
+) {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+const honeypot =
+  String(
+    body?.website || ""
+  )
+    .trim()
+    .slice(0, 200)
+
+if (honeypot) {
+  return Response.json(
+    {
+      success: true,
+      message:
+        "Messaggio inviato correttamente."
+    },
+    {
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0"
+      }
+    }
+  )
+}
 
     const name =
       normalizeText(
@@ -223,9 +348,6 @@ export async function POST(request) {
         "Il messaggio deve contenere almeno 10 caratteri."
       )
     }
-
-    const requestIp =
-      getRequestIp(request)
 
     const idempotencyKey =
       createContactIdempotencyKey({
@@ -334,14 +456,15 @@ export async function POST(request) {
           idempotencyKey,
 
         metadata: {
-          submittedRole:
-            role,
+  submittedRole:
+    role,
 
-          requestIp,
+  duplicateWindowMinutes:
+    10,
 
-          duplicateWindowMinutes:
-            10
-        },
+  rateLimit:
+    "5_per_15_minutes"
+},
 
         maxAttempts:
           3
@@ -374,19 +497,23 @@ export async function POST(request) {
       )
     }
 
-    return Response.json({
-      success: true,
+    return Response.json(
+  {
+    success: true,
 
-      message:
-        emailResult
-          .alreadyProcessed
-          ? "Il messaggio era già stato ricevuto."
-          : "Messaggio inviato correttamente.",
-
-      deliveryId:
-        emailResult.deliveryId ||
-        null
-    })
+    message:
+      emailResult
+        .alreadyProcessed
+        ? "Il messaggio era già stato ricevuto."
+        : "Messaggio inviato correttamente."
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
   } catch (error) {
     console.error(
       "[contact] Errore imprevisto:",

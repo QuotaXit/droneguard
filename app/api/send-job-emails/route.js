@@ -1,3 +1,7 @@
+import {
+  randomUUID
+} from "node:crypto"
+
 import { NextResponse } from "next/server"
 
 import {
@@ -12,15 +16,26 @@ import {
   createServerSupabaseClient
 } from "@/lib/supabase/server"
 
+import {
+  consumeRateLimit
+} from "@/lib/security/rate-limit"
+
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
+
+const MAX_BODY_BYTES =
+  10_000
+
+  const DISPATCH_LEASE_SECONDS =
+  30 * 60
 
 const UUID_PATTERN =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 function jsonError(
   message,
-  status = 400
+  status = 400,
+  extraHeaders = {}
 ) {
   return NextResponse.json(
     {
@@ -28,7 +43,32 @@ function jsonError(
       error: message
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0",
+
+        ...extraHeaders
+      }
+    }
+  )
+}
+
+function jsonSuccess(
+  payload,
+  status = 200,
+  extraHeaders = {}
+) {
+  return NextResponse.json(
+    payload,
+    {
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0",
+
+        ...extraHeaders
+      }
     }
   )
 }
@@ -123,7 +163,145 @@ function splitIntoChunks(
   return chunks
 }
 
+async function completeJobEmailDispatch({
+  adminSupabase,
+  jobId,
+  userId,
+  claimToken,
+  sent,
+  failed,
+  alreadyProcessed,
+  recipients
+}) {
+  try {
+    const {
+      data,
+      error
+    } = await adminSupabase.rpc(
+      "complete_job_email_dispatch",
+      {
+        p_job_id:
+          jobId,
+
+        p_actor_user_id:
+          userId,
+
+        p_claim_token:
+          claimToken,
+
+        p_sent_count:
+          sent,
+
+        p_failed_count:
+          failed,
+
+        p_already_processed_count:
+          alreadyProcessed,
+
+        p_recipient_count:
+          recipients
+      }
+    )
+
+    if (error) {
+      console.error(
+        "[send-job-emails] Chiusura dispatch fallita:",
+        error
+      )
+
+      return false
+    }
+
+    return (
+      data?.success === true
+    )
+  } catch (error) {
+    console.error(
+      "[send-job-emails] Errore chiusura dispatch:",
+      error
+    )
+
+    return false
+  }
+}
+
+async function failJobEmailDispatch({
+  adminSupabase,
+  jobId,
+  userId,
+  claimToken,
+  errorMessage,
+  sent = 0,
+  failed = 0,
+  alreadyProcessed = 0,
+  recipients = 0
+}) {
+  try {
+    const {
+      error
+    } = await adminSupabase.rpc(
+      "fail_job_email_dispatch",
+      {
+        p_job_id:
+          jobId,
+
+        p_actor_user_id:
+          userId,
+
+        p_claim_token:
+          claimToken,
+
+        p_error:
+          String(
+            errorMessage ||
+              "Errore invio notifiche"
+          ).slice(0, 1000),
+
+        p_sent_count:
+          sent,
+
+        p_failed_count:
+          failed,
+
+        p_already_processed_count:
+          alreadyProcessed,
+
+        p_recipient_count:
+          recipients
+      }
+    )
+
+    if (error) {
+      console.error(
+        "[send-job-emails] Registrazione fallimento dispatch non riuscita:",
+        error
+      )
+
+      return false
+    }
+
+    return true
+  } catch (error) {
+    console.error(
+      "[send-job-emails] Errore registrazione fallimento dispatch:",
+      error
+    )
+
+    return false
+  }
+}
+
 export async function POST(request) {
+  let dispatchContext =
+    null
+
+  let dispatchCounts = {
+    sent: 0,
+    failed: 0,
+    alreadyProcessed: 0,
+    recipients: 0
+  }
+
   try {
     if (!hasValidOrigin(request)) {
       return jsonError(
@@ -152,15 +330,102 @@ export async function POST(request) {
       )
     }
 
-    let body
+    const rateLimit =
+  await consumeRateLimit({
+    key:
+      `send-job-emails:${user.id}`,
 
-    try {
-      body = await request.json()
-    } catch {
-      return jsonError(
-        "Dati della richiesta non validi."
-      )
+    limit:
+      5,
+
+    windowSeconds:
+      15 * 60
+  })
+
+if (!rateLimit.success) {
+  return jsonError(
+    "Servizio temporaneamente non disponibile. Riprova più tardi.",
+    503
+  )
+}
+
+if (!rateLimit.allowed) {
+  const retryAfter =
+    Math.max(
+      1,
+      rateLimit.retryAfterSeconds
+    )
+
+  return jsonError(
+    "Hai effettuato troppe richieste. Riprova tra qualche minuto.",
+    429,
+    {
+      "Retry-After":
+        String(retryAfter)
     }
+  )
+}
+
+    const contentLength =
+  Number(
+    request.headers.get(
+      "content-length"
+    ) || 0
+  )
+
+if (
+  Number.isFinite(contentLength) &&
+  contentLength > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let rawBody
+
+try {
+  rawBody =
+    await request.text()
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  Buffer.byteLength(
+    rawBody,
+    "utf8"
+  ) > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let body
+
+try {
+  body =
+    JSON.parse(rawBody)
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  !body ||
+  typeof body !== "object" ||
+  Array.isArray(body)
+) {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
 
     const jobId =
       String(
@@ -279,6 +544,115 @@ export async function POST(request) {
       )
     }
 
+    const claimToken =
+  randomUUID()
+
+const {
+  data: dispatchClaim,
+  error: dispatchClaimError
+} = await adminSupabase.rpc(
+  "claim_job_email_dispatch",
+  {
+    p_job_id:
+      job.id,
+
+    p_actor_user_id:
+      user.id,
+
+    p_claim_token:
+      claimToken,
+
+    p_lease_seconds:
+      DISPATCH_LEASE_SECONDS
+  }
+)
+
+if (dispatchClaimError) {
+  console.error(
+    "[send-job-emails] Claim dispatch fallito:",
+    dispatchClaimError
+  )
+
+  return jsonError(
+    "Non è stato possibile avviare l'invio delle notifiche.",
+    500
+  )
+}
+
+if (
+  !dispatchClaim ||
+  typeof dispatchClaim !==
+    "object"
+) {
+  return jsonError(
+    "Risposta dispatch non valida.",
+    500
+  )
+}
+
+if (
+  dispatchClaim.already_completed ===
+  true
+) {
+  return jsonSuccess({
+    success: true,
+
+    sent: 0,
+    failed: 0,
+    alreadyProcessed: 0,
+    recipients: 0,
+
+    dispatchAlreadyCompleted:
+      true,
+
+    message:
+      "Le notifiche per questo lavoro erano già state elaborate."
+  })
+}
+
+if (
+  dispatchClaim.in_progress ===
+  true
+) {
+  const retryAfter =
+    Math.max(
+      1,
+      Number(
+        dispatchClaim
+          .retry_after_seconds ||
+          1
+      )
+    )
+
+  return jsonError(
+    "L'invio delle notifiche per questo lavoro è già in corso.",
+    409,
+    {
+      "Retry-After":
+        String(retryAfter)
+    }
+  )
+}
+
+if (
+  dispatchClaim.claimed !==
+  true
+) {
+  return jsonError(
+    "Non è stato possibile acquisire l'invio delle notifiche.",
+    409
+  )
+}
+
+dispatchContext = {
+  adminSupabase,
+  jobId:
+    job.id,
+  userId:
+    user.id,
+  claimToken
+}
+
     const {
       data: pilotRows,
       error: pilotsError
@@ -307,16 +681,29 @@ export async function POST(request) {
       )
 
     if (pilotsError) {
-      console.error(
-        "[send-job-emails] Errore caricamento piloti:",
-        pilotsError
-      )
+  console.error(
+    "[send-job-emails] Errore caricamento piloti:",
+    pilotsError
+  )
 
-      return jsonError(
-        "Impossibile recuperare i destinatari.",
-        500
-      )
-    }
+  if (dispatchContext) {
+    await failJobEmailDispatch({
+      ...dispatchContext,
+
+      errorMessage:
+        pilotsError.message ||
+        "Errore caricamento destinatari"
+    })
+  }
+
+  dispatchContext =
+    null
+
+  return jsonError(
+    "Impossibile recuperare i destinatari.",
+    500
+  )
+}
 
     const pilots =
       (pilotRows || [])
@@ -344,17 +731,37 @@ export async function POST(request) {
           )
         })
 
-    if (pilots.length === 0) {
-      return NextResponse.json({
-        success: true,
-        sent: 0,
-        failed: 0,
-        alreadyProcessed: 0,
-        recipients: 0,
-        message:
-          "Nessun pilota ha attivato le notifiche per i nuovi lavori."
-      })
-    }
+   if (pilots.length === 0) {
+  const dispatchCompleted =
+    await completeJobEmailDispatch({
+      ...dispatchContext,
+
+      sent: 0,
+      failed: 0,
+      alreadyProcessed: 0,
+      recipients: 0
+    })
+
+  if (!dispatchCompleted) {
+    return jsonError(
+      "Le notifiche non sono state finalizzate correttamente.",
+      500
+    )
+  }
+
+  dispatchContext =
+    null
+
+  return jsonSuccess({
+    success: true,
+    sent: 0,
+    failed: 0,
+    alreadyProcessed: 0,
+    recipients: 0,
+    message:
+      "Nessun pilota ha attivato le notifiche per i nuovi lavori."
+  })
+}
 
     const siteUrl =
       String(
@@ -590,30 +997,70 @@ export async function POST(request) {
           result.success !== true
       ).length
 
-    return NextResponse.json({
-      success: true,
+    dispatchCounts = {
+  sent,
+  failed,
+  alreadyProcessed,
 
-      sent,
-      failed,
-      alreadyProcessed,
+  recipients:
+    pilots.length
+}
 
-      recipients:
-        pilots.length,
+const dispatchCompleted =
+  await completeJobEmailDispatch({
+    ...dispatchContext,
+    ...dispatchCounts
+  })
 
-      message:
-        failed > 0
-          ? "Le notifiche sono state elaborate, ma alcuni invii verranno mostrati come falliti nel pannello Team."
-          : "Notifiche dei nuovi lavori elaborate correttamente."
-    })
+if (!dispatchCompleted) {
+  return jsonError(
+    "Le notifiche sono state elaborate, ma non è stato possibile finalizzare il dispatch.",
+    500
+  )
+}
+
+dispatchContext =
+  null
+
+return jsonSuccess({
+  success: true,
+
+  sent,
+  failed,
+  alreadyProcessed,
+
+  recipients:
+    pilots.length,
+
+  message:
+    failed > 0
+      ? "Le notifiche sono state elaborate, ma alcuni invii verranno mostrati come falliti nel pannello Team."
+      : "Notifiche dei nuovi lavori elaborate correttamente."
+})
+
   } catch (error) {
-    console.error(
-      "[send-job-emails] Errore imprevisto:",
-      error
-    )
+  console.error(
+    "[send-job-emails] Errore imprevisto:",
+    error
+  )
 
-    return jsonError(
-      "Errore imprevisto durante l'invio delle notifiche.",
-      500
-    )
+  if (dispatchContext) {
+    await failJobEmailDispatch({
+      ...dispatchContext,
+      ...dispatchCounts,
+
+      errorMessage:
+        error?.message ||
+        "Errore imprevisto durante l'invio delle notifiche."
+    })
+
+    dispatchContext =
+      null
   }
+
+  return jsonError(
+    "Errore imprevisto durante l'invio delle notifiche.",
+    500
+  )
+}
 }

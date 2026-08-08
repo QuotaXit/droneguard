@@ -6,6 +6,8 @@ import { createAdminSupabaseClient } from "@/lib/supabase/admin"
 export const dynamic = "force-dynamic"
 
 const PAGE_SIZE = 20
+const MAX_BODY_BYTES =
+  20_000
 
 function jsonError(message, status = 400) {
   return NextResponse.json(
@@ -14,7 +16,11 @@ function jsonError(message, status = 400) {
       error: message
     },
     {
-      status
+      status,
+      headers: {
+        "Cache-Control":
+          "private, no-store, max-age=0"
+      }
     }
   )
 }
@@ -33,7 +39,7 @@ function sanitizeSearch(value) {
   return String(value || "")
     .trim()
     .slice(0, 100)
-    .replace(/[^\p{L}\p{N}@._,'’\-\/\s]/gu, " ")
+    .replace(/[^\p{L}\p{N}@._'’\-\/\s]/gu, " ")
     .replace(/\s+/g, " ")
     .trim()
 }
@@ -642,10 +648,10 @@ export async function PATCH(request) {
     request.headers.get("origin")
 
   if (
-    requestOrigin &&
-    requestOrigin !==
-      request.nextUrl.origin
-  ) {
+  !requestOrigin ||
+  requestOrigin !==
+    request.nextUrl.origin
+) {
     return jsonError(
       "Origine della richiesta non autorizzata.",
       403
@@ -671,15 +677,66 @@ export async function PATCH(request) {
     )
   }
 
-  let body
+  const contentLength =
+  Number(
+    request.headers.get(
+      "content-length"
+    ) || 0
+  )
 
-  try {
-    body = await request.json()
-  } catch {
-    return jsonError(
-      "Dati della richiesta non validi."
-    )
-  }
+if (
+  Number.isFinite(contentLength) &&
+  contentLength > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let rawBody
+
+try {
+  rawBody =
+    await request.text()
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  Buffer.byteLength(
+    rawBody,
+    "utf8"
+  ) > MAX_BODY_BYTES
+) {
+  return jsonError(
+    "Richiesta troppo grande.",
+    413
+  )
+}
+
+let body
+
+try {
+  body =
+    JSON.parse(rawBody)
+} catch {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
+
+if (
+  !body ||
+  typeof body !== "object" ||
+  Array.isArray(body)
+) {
+  return jsonError(
+    "Dati della richiesta non validi."
+  )
+}
 
   const action = String(
     body?.action || ""
@@ -1039,9 +1096,17 @@ export async function PATCH(request) {
       "Lavoro riaperto correttamente."
   }
 
-  return NextResponse.json({
+  return NextResponse.json(
+  {
     success: true,
     message: messages[action],
     result: data || null
-  })
+  },
+  {
+    headers: {
+      "Cache-Control":
+        "private, no-store, max-age=0"
+    }
+  }
+)
 }

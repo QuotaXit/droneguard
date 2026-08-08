@@ -16,12 +16,13 @@ import {
 
 export default function ContattaciPage() {
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    role: "",
-    subject: "",
-    message: ""
-  })
+  name: "",
+  email: "",
+  role: "",
+  subject: "",
+  message: "",
+  website: ""
+})
 
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState("")
@@ -58,15 +59,16 @@ export default function ContattaciPage() {
 
       setSuccess("Messaggio inviato correttamente. Ti risponderemo appena possibile.")
       setForm({
-        name: "",
-        email: "",
-        role: "",
-        subject: "",
-        message: ""
-      })
-    } catch (err) {
-      setError("Errore imprevisto. Riprova più tardi.")
-    } finally {
+  name: "",
+  email: "",
+  role: "",
+  subject: "",
+  message: "",
+  website: ""
+})
+    } catch {
+  setError("Errore imprevisto. Riprova più tardi.")
+} finally {
       setLoading(false)
     }
   }
@@ -138,6 +140,24 @@ export default function ContattaciPage() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-5">
+              <div
+  aria-hidden="true"
+  className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden"
+>
+  <label htmlFor="website">
+    Sito web
+  </label>
+
+  <input
+    id="website"
+    name="website"
+    type="text"
+    value={form.website}
+    onChange={handleChange}
+    tabIndex={-1}
+    autoComplete="off"
+  />
+</div>
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                   <div>
                     <label className="mb-2 block text-sm text-gray-400">

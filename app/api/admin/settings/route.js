@@ -16,21 +16,28 @@ export const dynamic =
 export const runtime =
   "nodejs"
 
+  const MAX_BODY_BYTES =
+20_000
+
 function jsonError(
-  message,
-  status = 400,
-  extra = {}
+message,
+status = 400,
+extra = {}
 ) {
-  return NextResponse.json(
-    {
-      success: false,
-      error: message,
-      ...extra
-    },
-    {
-      status
-    }
-  )
+return NextResponse.json(
+{
+success: false,
+error: message,
+...extra
+},
+{
+status,
+headers: {
+"Cache-Control":
+"private, no-store, max-age=0"
+}
+}
+)
 }
 
 function getPermissions(access) {
@@ -387,16 +394,66 @@ export async function PATCH(
     )
   }
 
-  let body
+  const contentLength =
+Number(
+request.headers.get(
+"content-length"
+) || 0
+)
 
-  try {
-    body =
-      await request.json()
-  } catch {
-    return jsonError(
-      "Dati della richiesta non validi."
-    )
-  }
+if (
+Number.isFinite(contentLength) &&
+contentLength > MAX_BODY_BYTES
+) {
+return jsonError(
+"Richiesta troppo grande.",
+413
+)
+}
+
+let rawBody
+
+try {
+rawBody =
+await request.text()
+} catch {
+return jsonError(
+"Dati della richiesta non validi."
+)
+}
+
+if (
+Buffer.byteLength(
+rawBody,
+"utf8"
+) > MAX_BODY_BYTES
+) {
+return jsonError(
+"Richiesta troppo grande.",
+413
+)
+}
+
+let body
+
+try {
+body =
+JSON.parse(rawBody)
+} catch {
+return jsonError(
+"Dati della richiesta non validi."
+)
+}
+
+if (
+!body ||
+typeof body !== "object" ||
+Array.isArray(body)
+) {
+return jsonError(
+"Dati della richiesta non validi."
+)
+}
 
   const booleanFields = [
     "registrationsEnabled",
@@ -419,9 +476,11 @@ export async function PATCH(
   }
 
   const reason =
-    String(
-      body?.reason || ""
-    ).trim()
+String(
+body?.reason || ""
+)
+.replace(/\u0000/g, "")
+.trim()
 
   if (
     reason.length < 10 ||
@@ -481,25 +540,33 @@ export async function PATCH(
   const settings =
     mapSettings(data)
 
-  return NextResponse.json({
-    success: true,
+  return NextResponse.json(
+{
+success: true,
 
-    message:
-      "Impostazioni operative aggiornate correttamente.",
+message:
+"Impostazioni operative aggiornate correttamente.",
 
-    settings,
+settings,
 
-    updater: {
-      userId:
-        user.id,
+updater: {
+userId:
+user.id,
 
-      displayName:
-        access.display_name ||
-        "Membro Team",
+displayName:
+access.display_name ||
+"Membro Team",
 
-      roleKey:
-        access.role_key ||
-        ""
-    }
-  })
+roleKey:
+access.role_key ||
+""
+}
+},
+{
+headers: {
+"Cache-Control":
+"private, no-store, max-age=0"
+}
+}
+)
 }
