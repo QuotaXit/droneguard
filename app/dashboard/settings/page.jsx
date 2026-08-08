@@ -181,7 +181,6 @@ export default function SettingsPage() {
   const [city, setCity] = useState("")
   const [location, setLocation] = useState("")
   const [drone, setDrone] = useState([])
-  const [addressResults, setAddressResults] = useState([])
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState("")
   const [emailNewJobs, setEmailNewJobs] = useState(true)
@@ -215,16 +214,6 @@ export default function SettingsPage() {
     setEmailNewJobs(profileData.email_new_jobs ?? true)
   }, [])
 
-  const searchAddress = async (value) => {
-    if (value.length < 3) {
-      setAddressResults([])
-      return
-    }
-
-    const res = await fetch(`/api/address-search?q=${value}`)
-    const data = await res.json()
-    setAddressResults(data)
-  }
 
   const loadUser = useCallback(async () => {
     const {
@@ -927,29 +916,7 @@ const { data, error } = await supabase
   ))}
 </select>
 
-                  {addressResults.length > 0 && (
-                    <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#1b114d]">
-                      {addressResults.map((item) => (
-                        <div
-                          key={item.place_id}
-                          onClick={() => {
-  const cleanCity = item.display_name
-    .split(",")[0]
-    .trim()
-
-  setLocation(cleanCity)
-  setCity(cleanCity)
-  setAddressResults([])
-}}
-                          className="cursor-pointer border-b border-white/5 p-4 hover:bg-white/10"
-                        >
-                          {item.display_name}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
+</div>
                 <button
                   onClick={saveProfile}
                   disabled={loading}

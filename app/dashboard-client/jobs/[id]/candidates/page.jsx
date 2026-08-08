@@ -300,23 +300,40 @@ export default function CandidatesPage() {
     setShowDetailsModal(true)
   }
 
-  const searchAddress = async (value) => {
-    setExactLocation(value)
+  const searchAddress = async () => {
+  const query = exactLocation.trim()
 
-    if (value.length < 3) {
+  if (query.length < 3) {
+    setAddressResults([])
+    return
+  }
+
+  try {
+    const res = await fetch(
+      `/api/address-search?q=${encodeURIComponent(query)}`
+    )
+
+    if (!res.ok) {
       setAddressResults([])
       return
     }
 
-    try {
-      const res = await fetch(`/api/address-search?q=${encodeURIComponent(value)}`)
-      const data = await res.json()
-      setAddressResults(Array.isArray(data) ? data : [])
-    } catch (error) {
-      console.log("ADDRESS SEARCH ERROR:", error)
-      setAddressResults([])
-    }
+    const data = await res.json()
+
+    setAddressResults(
+      Array.isArray(data)
+        ? data
+        : []
+    )
+  } catch (error) {
+    console.error(
+      "[candidates] Address search error:",
+      error
+    )
+
+    setAddressResults([])
   }
+}
 
     const sendJobDetails = async () => {
     if (sendingDetails) {
@@ -1008,12 +1025,37 @@ export default function CandidatesPage() {
 
             <div className="grid gap-5 md:grid-cols-2">
               <div className="relative">
-                <input
-                  placeholder="Posizione precisa"
-                  value={exactLocation}
-                  onChange={(e) => searchAddress(e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
-                />
+                <div className="flex gap-2">
+  <input
+    placeholder="Posizione precisa"
+    value={exactLocation}
+    onChange={(e) => {
+      setExactLocation(
+        e.target.value
+      )
+
+      setAddressResults([])
+    }}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        searchAddress()
+      }
+    }}
+    className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
+  />
+
+  <button
+    type="button"
+    onClick={searchAddress}
+    disabled={
+      exactLocation.trim().length < 3
+    }
+    className="shrink-0 rounded-2xl border border-white/10 px-4 py-3 font-medium hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    Cerca
+  </button>
+</div>
 
                 {addressResults.length > 0 && (
                   <div className="absolute left-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#1b114d]">

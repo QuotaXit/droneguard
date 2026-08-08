@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { supabase } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import Navbar from "@/components/Navbar"
@@ -16,34 +16,48 @@ export default function CreateJob() {
 
   const [creating, setCreating] = useState(false)
 
-  useEffect(() => {
-    const searchLocations = async () => {
-      if (location.trim().length < 3) {
-        setLocationSuggestions([])
-        setShowLocationSuggestions(false)
-        return
-      }
+  const searchLocations = async () => {
+  const query = location.trim()
 
-      try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=6&countrycodes=it&q=${encodeURIComponent(
-            location
-          )}`
-        )
+  if (query.length < 3) {
+    setLocationSuggestions([])
+    setShowLocationSuggestions(false)
+    return
+  }
 
-        const data = await res.json()
+  try {
+    const res = await fetch(
+      `/api/address-search?q=${encodeURIComponent(query)}`
+    )
 
-        setLocationSuggestions(data || [])
-        setShowLocationSuggestions(true)
-      } catch (error) {
-        console.log(error)
-      }
+    if (!res.ok) {
+      setLocationSuggestions([])
+      setShowLocationSuggestions(false)
+      return
     }
 
-    const timer = setTimeout(searchLocations, 500)
+    const data = await res.json()
 
-    return () => clearTimeout(timer)
-  }, [location])
+    const results =
+      Array.isArray(data)
+        ? data
+        : []
+
+    setLocationSuggestions(results)
+
+    setShowLocationSuggestions(
+      results.length > 0
+    )
+  } catch (error) {
+    console.error(
+      "[create-job] Address search error:",
+      error
+    )
+
+    setLocationSuggestions([])
+    setShowLocationSuggestions(false)
+  }
+}
 
 
   const handleCreateJob = async (e) => {
@@ -201,18 +215,34 @@ if (!createdJobId) {
 
             {/* LUOGO */}
             <div className="relative">
-              <input
-                placeholder="Luogo"
-                required
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                onFocus={() => {
-                  if (locationSuggestions.length > 0) {
-                    setShowLocationSuggestions(true)
-                  }
-                }}
-                className="w-full p-3 rounded-lg bg-transparent border border-white/20"
-              />
+              <div className="flex gap-2">
+  <input
+    placeholder="Luogo"
+    required
+    value={location}
+    onChange={(e) => {
+      setLocation(e.target.value)
+      setLocationSuggestions([])
+      setShowLocationSuggestions(false)
+    }}
+    onKeyDown={(e) => {
+      if (e.key === "Enter") {
+        e.preventDefault()
+        searchLocations()
+      }
+    }}
+    className="w-full p-3 rounded-lg bg-transparent border border-white/20"
+  />
+
+  <button
+    type="button"
+    onClick={searchLocations}
+    disabled={location.trim().length < 3}
+    className="shrink-0 rounded-lg border border-white/20 px-4 py-3 text-sm font-medium hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+  >
+    Cerca
+  </button>
+</div>
 
               {showLocationSuggestions && locationSuggestions.length > 0 && (
                 <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-64 overflow-y-auto rounded-xl border border-white/20 bg-[#140a3a] shadow-xl">
