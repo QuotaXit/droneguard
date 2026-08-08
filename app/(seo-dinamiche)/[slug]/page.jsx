@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation"
+import Link from "next/link"
 import Navbar from "@/components/Navbar"
 import { allSeoPages } from "@/lib/seo/allSeoPages"
 
@@ -16,13 +17,45 @@ export async function generateMetadata({ params }) {
   if (!page) {
     return {
       title: "Pagina non trovata | DroneGuard",
-      description: "Pagina non trovata"
+      description: "Pagina non trovata",
+      robots: {
+        index: false,
+        follow: false
+      }
     }
   }
 
+  const canonical =
+    `https://www.droneguard.it/${page.slug}`
+
   return {
     title: page.title,
-    description: page.description
+    description: page.description,
+
+    alternates: {
+      canonical
+    },
+
+    openGraph: {
+      title: page.title,
+      description: page.description,
+      url: canonical,
+      siteName: "DroneGuard",
+      locale: "it_IT",
+      type: "website"
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1
+      }
+    }
   }
 }
 
@@ -79,12 +112,12 @@ export default async function Page({ params }) {
             Descrivi il servizio drone di cui hai bisogno, indica la zona e ricevi candidature da piloti disponibili. Puoi confrontare i candidati e scegliere quello più adatto al tuo lavoro.
           </p>
 
-          <a
+          <Link
   href="/register"
   className="inline-flex rounded-full bg-green-400 px-6 py-3 font-semibold text-[#0B0F2A] transition hover:bg-green-300"
 >
   Registrati e pubblica il lavoro
-</a>
+</Link>
         </div>
       </section>
     </main>

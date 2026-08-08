@@ -22,8 +22,10 @@ export const krona = Krona_One({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.droneguard.it"),
   title: "DroneGuard",
-  description: "Drone services marketplace",
+  description:
+    "DroneGuard è il marketplace italiano che mette in contatto clienti e piloti drone per servizi, sopralluoghi, riprese, ispezioni e lavori professionali.",
 };
 
 export default function RootLayout({
@@ -33,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html
-      lang="en"
+      lang="it"
       className={`${geistSans.variable} ${geistMono.variable} ${krona.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">

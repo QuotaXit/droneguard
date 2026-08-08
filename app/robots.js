@@ -2,8 +2,8 @@ export default function robots() {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
+      allow: "/"
     },
-    sitemap: "https://droneguard.it/sitemap.xml",
+    sitemap: "https://www.droneguard.it/sitemap.xml"
   }
 }
