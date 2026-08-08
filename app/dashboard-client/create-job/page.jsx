@@ -14,7 +14,6 @@ export default function CreateJob() {
   const [locationSuggestions, setLocationSuggestions] = useState([])
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
 
-  const [images, setImages] = useState([])
   const [creating, setCreating] = useState(false)
 
   useEffect(() => {
@@ -46,32 +45,6 @@ export default function CreateJob() {
     return () => clearTimeout(timer)
   }, [location])
 
-  // 🚀 UPLOAD IMMAGINI
-  const uploadImages = async (files) => {
-    const urls = []
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i]
-      const fileName = `${Date.now()}-${file.name}`
-
-      const { error } = await supabase.storage
-        .from("jobs")
-        .upload(fileName, file)
-
-      if (error) {
-        console.log(error)
-        continue
-      }
-
-      const { data } = supabase.storage
-        .from("jobs")
-        .getPublicUrl(fileName)
-
-      urls.push(data.publicUrl)
-    }
-
-    return urls
-  }
 
   const handleCreateJob = async (e) => {
     e.preventDefault()
@@ -87,11 +60,7 @@ export default function CreateJob() {
 
       if (!user) return
 
-
-      // 🚀 UPLOAD FOTO
-      const imageUrls = await uploadImages(images)
-
-      // Crea il lavoro e scala 5 crediti nella stessa transazione
+// Crea il lavoro e scala 5 crediti nella stessa transazione
 const requestId = crypto.randomUUID()
 
 const { data: createdJobId, error: createError } = await supabase.rpc(
@@ -102,9 +71,9 @@ const { data: createdJobId, error: createError } = await supabase.rpc(
     p_description: description,
     p_location: location,
     p_job_date: date,
-    p_image1: imageUrls[0] || null,
-    p_image2: imageUrls[1] || null,
-    p_image3: imageUrls[2] || null
+p_image1: null,
+p_image2: null,
+p_image3: null
   }
 )
 
