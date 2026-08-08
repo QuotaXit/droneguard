@@ -400,6 +400,99 @@ if (
     setConfirmationOpen(false)
   }
 
+  const disableMaintenanceNow = async () => {
+  if (
+    !form ||
+    saving ||
+    !canManage
+  ) {
+    return
+  }
+
+  const reason =
+    form.reason.trim()
+
+  if (
+    reason.length < 10 ||
+    reason.length > 500
+  ) {
+    toast.error(
+      "Inserisci una motivazione di almeno 10 caratteri."
+    )
+
+    return
+  }
+
+  const confirmed =
+    window.confirm(
+      "Vuoi disattivare subito la manutenzione e riaprire DroneGuard?"
+    )
+
+  if (!confirmed) {
+    return
+  }
+
+  try {
+    setSaving(true)
+
+    const response = await fetch(
+      "/api/admin/maintenance",
+      {
+        method: "PATCH",
+
+        headers: {
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify({
+          maintenanceEnabled: false,
+
+          maintenanceTitle:
+            form.maintenanceTitle.trim(),
+
+          maintenanceMessage:
+            form.maintenanceMessage.trim(),
+
+          maintenanceStartsAt: null,
+          maintenanceEndsAt: null,
+
+          reason
+        })
+      }
+    )
+
+    const data =
+      await response.json()
+
+    if (!response.ok) {
+      toast.error(
+        data.error ||
+          "Impossibile disattivare la manutenzione."
+      )
+
+      return
+    }
+
+    toast.success(
+      "Manutenzione disattivata. DroneGuard è nuovamente accessibile."
+    )
+
+    await loadSettings()
+  } catch (error) {
+    console.error(
+      "Errore disattivazione manutenzione:",
+      error
+    )
+
+    toast.error(
+      "Errore durante la disattivazione della manutenzione."
+    )
+  } finally {
+    setSaving(false)
+  }
+}
+
   const saveSettings = async () => {
     if (
       !form ||
@@ -780,18 +873,33 @@ maintenanceEndsAt:
           </div>
 
           {canManage && (
-            <button
-              type="button"
-              onClick={openConfirmation}
-              disabled={
-                saving ||
-                !hasChanges
-              }
-              className="w-full rounded-xl bg-yellow-400 px-5 py-3 font-bold text-black hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              Verifica e salva modifiche
-            </button>
-          )}
+  <div className="space-y-3">
+    {settings.maintenanceEnabled && (
+      <button
+        type="button"
+        onClick={disableMaintenanceNow}
+        disabled={saving}
+        className="w-full rounded-xl bg-red-500 px-5 py-3 font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {saving
+          ? "Disattivazione..."
+          : "Disattiva manutenzione ora"}
+      </button>
+    )}
+
+    <button
+      type="button"
+      onClick={openConfirmation}
+      disabled={
+        saving ||
+        !hasChanges
+      }
+      className="w-full rounded-xl bg-yellow-400 px-5 py-3 font-bold text-black hover:bg-yellow-300 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      Verifica e salva modifiche
+    </button>
+  </div>
+)}
         </div>
       </section>
 
