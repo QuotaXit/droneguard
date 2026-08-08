@@ -102,60 +102,115 @@ export default function JobCard({ variant = 1 }) {
   const job = jobs[variant] || jobs[1]
 
   return (
-    <div className="grid gap-6 rounded-3xl border border-white/10 bg-[#0F1535]/80 p-5 shadow-xl backdrop-blur-md sm:p-6 lg:grid-cols-[220px_1fr_300px] lg:items-center">
-      <img
-        src={job.image}
-        alt={job.title}
-        className="h-56 w-full rounded-2xl object-cover lg:h-52"
-      />
+  <article className="group flex h-full flex-col overflow-hidden rounded-3xl border border-white/[0.08] bg-[#111735] transition duration-300 hover:-translate-y-1 hover:border-blue-400/20 hover:bg-[#141D40]">
 
-      <div className="text-white">
-        <span className="mb-4 inline-flex rounded-lg bg-blue-500/20 px-3 py-1 text-xs font-bold text-blue-200">
+    {/* TESTATA CARD */}
+    <div className="border-b border-white/[0.07] p-5 sm:p-6">
+      <div className="flex items-start justify-between gap-3">
+        <span className="inline-flex rounded-full border border-blue-400/20 bg-blue-400/[0.08] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-blue-300">
           {job.tag}
         </span>
 
-        <p className="mb-4 text-xs uppercase tracking-[0.2em] text-gray-500">
-  ESEMPIO ANNUNCIO
-</p>
-
-        <h3 className="text-2xl font-bold">
-          {job.title}
-        </h3>
-
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-300">
-          {job.desc}
-        </p>
-
-        <div className="mt-5 space-y-3 text-base text-gray-300">
-          <p>
-            🏢 Cliente: {job.client}
-          </p>
-
-          <p>
-            📄 Brief: {job.brief}
-          </p>
-        </div>
-
-        <p className="mt-5 text-sm text-gray-400">
-          📍 {job.location} · {job.published}
-        </p>
+        <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-gray-600">
+          Esempio
+        </span>
       </div>
 
-      <div className="rounded-2xl border border-white/10 bg-black/10 p-5">
-        <div className="space-y-3 text-sm text-gray-300">
-          <p>💰 Compenso: Inserisci il tuo prezzo</p>
-          <p>📅 Scadenza: {job.deadline}</p>
-          <p>◇ Tipologia: {job.type}</p>
-        </div>
+      <h3 className="mt-5 text-xl font-bold leading-snug text-white">
+        {job.title}
+      </h3>
 
-        <button
-  type="button"
-  onClick={handleOpenJobsBoard}
-  className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#60a5fa] via-[#3b82f6] to-[#6366f1] px-6 py-4 text-base font-semibold text-white shadow-[0_0_20px_rgba(96,165,250,0.6)] transition hover:scale-105"
->
-  Scopri la Bacheca lavori
-</button>
-      </div>
+      <p className="mt-3 text-sm leading-6 text-gray-400">
+        {job.desc}
+      </p>
     </div>
-  )
+
+    {/* DATI */}
+    <div className="flex flex-1 flex-col p-5 sm:p-6">
+
+      <div className="space-y-3">
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-gray-600">
+            Cliente
+          </p>
+
+          <p className="mt-1 text-sm font-medium text-gray-200">
+            {job.client}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] p-3">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-gray-600">
+            Brief
+          </p>
+
+          <p className="mt-1 text-sm leading-5 text-gray-300">
+            {job.brief}
+          </p>
+        </div>
+      </div>
+
+      {/* META */}
+      <div className="mt-5 grid grid-cols-2 gap-2">
+        <div className="rounded-xl bg-white/[0.035] p-3">
+          <p className="text-[10px] uppercase tracking-wider text-gray-600">
+            Posizione
+          </p>
+
+          <p className="mt-1 text-xs font-medium text-gray-300">
+            📍 {job.location}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-white/[0.035] p-3">
+          <p className="text-[10px] uppercase tracking-wider text-gray-600">
+            Tipologia
+          </p>
+
+          <p className="mt-1 text-xs font-medium text-gray-300">
+            ◇ {job.type}
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-white/[0.035] p-3">
+          <p className="text-[10px] uppercase tracking-wider text-gray-600">
+            Compenso
+          </p>
+
+          <p className="mt-1 text-xs font-medium text-gray-300">
+            Inserisci il tuo prezzo
+          </p>
+        </div>
+
+        <div className="rounded-xl bg-white/[0.035] p-3">
+          <p className="text-[10px] uppercase tracking-wider text-gray-600">
+            Scadenza
+          </p>
+
+          <p className="mt-1 text-xs font-medium text-gray-300">
+            {job.deadline}
+          </p>
+        </div>
+      </div>
+
+      {/* PUBBLICAZIONE */}
+      <div className="mt-4 flex items-center justify-between border-t border-white/[0.07] pt-4">
+        <span className="text-xs text-gray-600">
+          {job.published}
+        </span>
+
+        <span className="h-2 w-2 rounded-full bg-green-400" />
+      </div>
+
+      {/* CTA */}
+      <button
+        type="button"
+        onClick={handleOpenJobsBoard}
+        className="mt-5 w-full rounded-xl border border-blue-400/20 bg-blue-500/10 px-5 py-3.5 text-sm font-bold text-blue-200 transition hover:border-blue-400/30 hover:bg-blue-500/20 hover:text-white"
+      >
+        Scopri la Bacheca lavori
+      </button>
+    </div>
+  </article>
+)
 }

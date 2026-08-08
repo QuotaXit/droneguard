@@ -76,48 +76,126 @@ export default function CTA() {
   }
 
   return (
-    <section className="relative overflow-hidden px-4 pb-8 pt-16 text-white sm:px-6 sm:pb-10 sm:pt-20 lg:px-8 lg:pb-12 lg:pt-24">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+  <section className="relative overflow-hidden border-b border-white/5 bg-[#0A0F27]">
+    {/* SFONDO */}
+    <div className="pointer-events-none absolute inset-0">
+      <div className="absolute left-1/2 top-1/2 h-[480px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-500/[0.055] blur-[130px]" />
+    </div>
 
-      <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center justify-between gap-10 md:flex-row">
-        <div className="max-w-xl text-center md:text-left">
-          <h2 className="text-3xl font-bold leading-tight sm:text-4xl">
-            Il prossimo volo parte da qui
-          </h2>
+    <div className="relative z-10 mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+      <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-[#111735] shadow-2xl shadow-black/20">
 
-          <p className="mt-4 leading-7 text-gray-300">
-            Cerchi un pilota oppure nuove opportunità di lavoro?
-            Entra in DroneGuard e utilizza la piattaforma in base
-            alle tue esigenze.
-          </p>
+        {/* DECORAZIONI */}
+        <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-green-500/[0.08] blur-[90px]" />
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <button
-              type="button"
-              onClick={() => handleRoleAction("pilot")}
-              className="w-full rounded-full border border-white/20 bg-white/10 px-7 py-3 font-semibold text-white transition hover:scale-105 hover:bg-white/15 sm:w-auto"
-            >
-              Cerca lavoro
-            </button>
+        <div className="pointer-events-none absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-blue-500/[0.06] blur-[100px]" />
 
-            <button
-              type="button"
-              onClick={() => handleRoleAction("cliente")}
-              className="w-full rounded-full bg-green-500 px-7 py-3 font-semibold text-black shadow-lg transition hover:scale-105 hover:bg-green-400 sm:w-auto"
-            >
-              Richiedi un volo
-            </button>
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr]">
+
+          {/* TESTO */}
+          <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-12">
+            <div className="inline-flex w-fit rounded-full border border-green-400/20 bg-green-400/[0.07] px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-green-300">
+              DroneGuard
+            </div>
+
+            <h2 className="mt-5 max-w-xl text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
+              Il prossimo volo
+              <span className="block text-green-400">
+                parte da qui
+              </span>
+            </h2>
+
+            <p className="mt-5 max-w-xl text-sm leading-7 text-gray-400 sm:text-base">
+              Cerchi nuove opportunità di lavoro oppure hai
+              bisogno di un servizio con drone? Scegli il percorso
+              più adatto e accedi a DroneGuard.
+            </p>
+
+            {/* PERCORSI */}
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+              {/* PILOTA */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleRoleAction("pilot")
+                }
+                className="group rounded-2xl bg-green-500 p-4 text-left text-black transition hover:-translate-y-0.5 hover:bg-green-400"
+              >
+                <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-black/60">
+                  Sei un pilota?
+                </span>
+
+                <span className="mt-1 flex items-center justify-between gap-3 text-base font-black">
+                  Cerca lavoro
+
+                  <span className="transition group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </button>
+
+              {/* CLIENTE */}
+              <button
+                type="button"
+                onClick={() =>
+                  handleRoleAction("cliente")
+                }
+                className="group rounded-2xl border border-white/15 bg-white/[0.05] p-4 text-left text-white transition hover:-translate-y-0.5 hover:border-white/25 hover:bg-white/[0.09]"
+              >
+                <span className="block text-xs font-semibold uppercase tracking-[0.12em] text-gray-500">
+                  Sei un cliente?
+                </span>
+
+                <span className="mt-1 flex items-center justify-between gap-3 text-base font-black">
+                  Pubblica lavoro
+
+                  <span className="transition group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </button>
+            </div>
+
+            {/* MICRO INFO */}
+            <div className="mt-7 flex flex-wrap gap-x-5 gap-y-2 text-xs text-gray-500">
+              <span className="flex items-center gap-2">
+                <span className="text-green-400">✓</span>
+                Registrazione semplice
+              </span>
+
+              <span className="flex items-center gap-2">
+                <span className="text-green-400">✓</span>
+                Piloti in tutta Italia
+              </span>
+            </div>
+          </div>
+
+          {/* IMMAGINE */}
+          <div className="relative min-h-[300px] overflow-hidden border-t border-white/10 lg:min-h-[470px] lg:border-l lg:border-t-0">
+            <img
+              src="/images/droneguard-cta.png"
+              alt="Drone utilizzato per un servizio tramite DroneGuard"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+
+            {/* OVERLAY */}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#111735] via-transparent to-transparent lg:bg-gradient-to-r lg:from-[#111735]/60 lg:via-transparent lg:to-transparent" />
+
+            {/* BADGE */}
+            <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/10 bg-black/40 p-4 backdrop-blur-md sm:bottom-6 sm:left-6 sm:right-auto sm:min-w-[260px]">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green-400">
+                Marketplace italiano
+              </p>
+
+              <p className="mt-1 text-sm font-semibold text-white">
+                Clienti e piloti drone, nello stesso posto.
+              </p>
+            </div>
           </div>
         </div>
-
-        <div className="h-[260px] w-full overflow-hidden rounded-3xl border border-white/20 shadow-2xl md:w-[520px]">
-          <img
-            src="/images/droneguard-cta.png"
-            alt="Drone utilizzato per un servizio tramite DroneGuard"
-            className="h-full w-full object-cover"
-          />
-        </div>
       </div>
-    </section>
-  )
+    </div>
+  </section>
+)
 }

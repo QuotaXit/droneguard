@@ -109,7 +109,7 @@ export default function Hero() {
         <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-gray-400 sm:text-lg sm:leading-8">
           Un marketplace per piloti di droni e clienti.
           Trova lavori o richiedi un volo e gestisci tutto
-          in un'unica piattaforma.
+          in un&apos;unica piattaforma.
         </p>
 
         {/* CTA */}
