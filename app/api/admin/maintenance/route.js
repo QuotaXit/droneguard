@@ -159,23 +159,40 @@ function getTimeZoneOffsetMs(
 
 function parseNullableDate(value) {
   if (
-    value === null ||
-    value === undefined ||
-    value === ""
+  value === null ||
+  value === undefined ||
+  value === ""
+) {
+  return null
+}
+
+const normalized =
+  String(value).trim()
+
+const match =
+  /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
+    .exec(normalized)
+
+/*
+ * Se arriva una data ISO completa, per esempio:
+ * 2026-08-31T21:59:00.000Z
+ *
+ * la accettiamo direttamente.
+ */
+if (!match) {
+  const parsedDate =
+    new Date(normalized)
+
+  if (
+    Number.isNaN(
+      parsedDate.getTime()
+    )
   ) {
-    return null
-  }
-
-  const normalized =
-    String(value).trim()
-
-  const match =
-    /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/
-      .exec(normalized)
-
-  if (!match) {
     return undefined
   }
+
+  return parsedDate.toISOString()
+}
 
   const year =
     Number(match[1])
