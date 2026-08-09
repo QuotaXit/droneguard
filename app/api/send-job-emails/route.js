@@ -163,6 +163,138 @@ function splitIntoChunks(
   return chunks
 }
 
+function calculateDistanceKm(
+  latitude1,
+  longitude1,
+  latitude2,
+  longitude2
+) {
+  const parseCoordinate = (
+    value,
+    min,
+    max
+  ) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+      return null
+    }
+
+    const number =
+      Number(value)
+
+    if (
+      !Number.isFinite(number) ||
+      number < min ||
+      number > max
+    ) {
+      return null
+    }
+
+    return number
+  }
+
+  const lat1 =
+    parseCoordinate(
+      latitude1,
+      -90,
+      90
+    )
+
+  const lon1 =
+    parseCoordinate(
+      longitude1,
+      -180,
+      180
+    )
+
+  const lat2 =
+    parseCoordinate(
+      latitude2,
+      -90,
+      90
+    )
+
+  const lon2 =
+    parseCoordinate(
+      longitude2,
+      -180,
+      180
+    )
+
+  if (
+    lat1 === null ||
+    lon1 === null ||
+    lat2 === null ||
+    lon2 === null
+  ) {
+    return null
+  }
+
+  const toRadians = (degrees) =>
+    degrees * (Math.PI / 180)
+
+  const earthRadiusKm =
+    6371.0088
+
+  const deltaLatitude =
+    toRadians(
+      lat2 - lat1
+    )
+
+  const deltaLongitude =
+    toRadians(
+      lon2 - lon1
+    )
+
+  const firstLatitude =
+    toRadians(lat1)
+
+  const secondLatitude =
+    toRadians(lat2)
+
+  const haversine =
+    Math.sin(
+      deltaLatitude / 2
+    ) ** 2 +
+    Math.cos(firstLatitude) *
+      Math.cos(secondLatitude) *
+      Math.sin(
+        deltaLongitude / 2
+      ) ** 2
+
+  /*
+   * Protezione da eventuali piccoli errori
+   * floating-point oltre l'intervallo 0-1.
+   */
+  const safeHaversine =
+    Math.min(
+      1,
+      Math.max(
+        0,
+        haversine
+      )
+    )
+
+  const centralAngle =
+    2 *
+    Math.atan2(
+      Math.sqrt(
+        safeHaversine
+      ),
+      Math.sqrt(
+        1 - safeHaversine
+      )
+    )
+
+  return (
+    earthRadiusKm *
+    centralAngle
+  )
+}
+
 async function completeJobEmailDispatch({
   adminSupabase,
   jobId,
@@ -462,13 +594,15 @@ if (
       adminSupabase
         .from("jobs")
         .select(`
-          id,
-          user_id,
-          title,
-          location,
-          job_date,
-          status
-        `)
+  id,
+  user_id,
+  title,
+  location,
+  job_date,
+  status,
+  latitude,
+  longitude
+`)
         .eq("id", jobId)
         .eq("user_id", user.id)
         .maybeSingle()
@@ -659,15 +793,19 @@ dispatchContext = {
     } = await adminSupabase
       .from("users")
       .select(`
-        id,
-        email,
-        name,
-        surname,
-        role,
-        banned,
-        account_status,
-        email_new_jobs
-      `)
+  id,
+  email,
+  name,
+  surname,
+  role,
+  banned,
+  account_status,
+  email_new_jobs,
+  base_latitude,
+  base_longitude,
+  operating_radius_km,
+  email_jobs_within_radius
+`)
       .in(
         "role",
         [
@@ -706,30 +844,114 @@ dispatchContext = {
 }
 
     const pilots =
-      (pilotRows || [])
-        .filter((pilot) => {
-          const accountStatus =
-            String(
-              pilot.account_status ||
-                "active"
-            )
-              .trim()
-              .toLowerCase()
+  (pilotRows || [])
+    .map((pilot) => {
+      const accountStatus =
+        String(
+          pilot.account_status ||
+            "active"
+        )
+          .trim()
+          .toLowerCase()
 
-          return (
-            normalizeRole(
-              pilot.role
-            ) === "pilot" &&
-            pilot.banned !== true &&
-            accountStatus ===
-              "active" &&
-            Boolean(
-              String(
-                pilot.email || ""
-              ).trim()
-            )
-          )
-        })
+      const validPilot =
+        normalizeRole(
+          pilot.role
+        ) === "pilot" &&
+        pilot.banned !== true &&
+        accountStatus ===
+          "active" &&
+        Boolean(
+          String(
+            pilot.email || ""
+          ).trim()
+        )
+
+      if (!validPilot) {
+        return null
+      }
+
+
+      /*
+       * Il filtro geografico è facoltativo.
+       *
+       * false = continua a ricevere tutti
+       * i nuovi lavori, come prima.
+       */
+      const radiusFilterEnabled =
+        pilot.email_jobs_within_radius ===
+        true
+
+      if (!radiusFilterEnabled) {
+        return {
+          ...pilot,
+          distanceKm: null
+        }
+      }
+
+
+      /*
+       * Raggio 0 = Tutta Italia.
+       */
+      const radiusKm =
+        Number(
+          pilot.operating_radius_km
+        )
+
+      if (radiusKm === 0) {
+        return {
+          ...pilot,
+          distanceKm: null
+        }
+      }
+
+
+      /*
+       * Se il pilota ha scelto esplicitamente
+       * il filtro per distanza, ma non abbiamo
+       * coordinate valide, non gli mandiamo
+       * un'email potenzialmente fuori zona.
+       */
+      const distanceKm =
+        calculateDistanceKm(
+          pilot.base_latitude,
+          pilot.base_longitude,
+          job.latitude,
+          job.longitude
+        )
+
+      if (
+        !Number.isFinite(distanceKm)
+      ) {
+        return null
+      }
+
+
+      /*
+       * Difesa ulteriore nel caso di dati DB
+       * anomali.
+       */
+      if (
+        !Number.isFinite(radiusKm) ||
+        radiusKm < 10 ||
+        radiusKm > 500
+      ) {
+        return null
+      }
+
+
+      if (
+        distanceKm > radiusKm
+      ) {
+        return null
+      }
+
+      return {
+        ...pilot,
+        distanceKm
+      }
+    })
+    .filter(Boolean)
 
    if (pilots.length === 0) {
   const dispatchCompleted =
@@ -820,6 +1042,15 @@ dispatchContext = {
                   .join(" ")
                   .trim()
 
+                  const distanceText =
+  Number.isFinite(
+    pilot.distanceKm
+  )
+    ? `${Math.round(
+        pilot.distanceKm
+      )} km circa`
+    : null
+
               try {
                 const result =
                   await sendTrackedEmail({
@@ -882,6 +1113,19 @@ dispatchContext = {
                                 ${safeLocation}
                               </p>
 
+                              ${
+  distanceText
+    ? `
+      <p style="color:#cbd5e1;">
+        <strong style="color:white;">
+          Distanza dalla tua base:
+        </strong>
+        ${escapeHtml(distanceText)}
+      </p>
+    `
+    : ""
+}
+
                               <p style="color:#cbd5e1;">
                                 <strong style="color:white;">Data:</strong>
                                 ${safeDate}
@@ -908,14 +1152,25 @@ dispatchContext = {
                     `,
 
                     text: [
-                      "Nuovo lavoro disponibile su DroneGuard",
-                      "",
-                      `Titolo: ${job.title || "Nuovo lavoro"}`,
-                      `Luogo: ${job.location || "Non indicato"}`,
-                      `Data: ${formattedDate}`,
-                      "",
-                      jobUrl
-                    ].join("\n"),
+  "Nuovo lavoro disponibile su DroneGuard",
+  "",
+  `Titolo: ${
+    job.title ||
+    "Nuovo lavoro"
+  }`,
+  `Luogo: ${
+    job.location ||
+    "Non indicato"
+  }`,
+  ...(distanceText
+    ? [
+        `Distanza dalla tua base: ${distanceText}`
+      ]
+    : []),
+  `Data: ${formattedDate}`,
+  "",
+  jobUrl
+].join("\n"),
 
                     sourceType:
                       "job",
@@ -930,12 +1185,25 @@ dispatchContext = {
                       user.id,
 
                     metadata: {
-                      jobId:
-                        job.id,
+  jobId:
+    job.id,
 
-                      clientUserId:
-                        user.id
-                    },
+  clientUserId:
+    user.id,
+
+  distanceKm:
+    Number.isFinite(
+      pilot.distanceKm
+    )
+      ? Number(
+          pilot.distanceKm.toFixed(2)
+        )
+      : null,
+
+  radiusFiltered:
+    pilot.email_jobs_within_radius ===
+      true
+}
 
                     maxAttempts:
                       3

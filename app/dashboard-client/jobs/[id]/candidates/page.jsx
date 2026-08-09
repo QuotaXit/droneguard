@@ -163,6 +163,9 @@ export default function CandidatesPage() {
   const [pilotReviews, setPilotReviews] = useState([])
   const [reviewsLoading, setReviewsLoading] = useState(false)
 
+  const [compareIds, setCompareIds] = useState([])
+  const [showCompareModal, setShowCompareModal] = useState(false)
+
   const [meetingPoint, setMeetingPoint] = useState("")
   const [exactLocation, setExactLocation] = useState("")
   const [phone, setPhone] = useState("")
@@ -224,14 +227,72 @@ export default function CandidatesPage() {
     let pilots = []
 
     if (pilotIds.length > 0) {
-      const result = await supabase.from("users").select("*").in("id", pilotIds)
-      pilots = result.data || []
-      console.log("CANDIDATES PILOTS ERROR:", result.error)
+  const result = await supabase.rpc(
+    "get_client_visible_pilots",
+    {
+      p_pilot_ids: pilotIds
     }
+  )
 
-    const pilotsMap = new Map((pilots || []).map((pilot) => [pilot.id, pilot]))
+  pilots = result.data || []
 
-    // 🔥 CARICA JOB_ASSIGNMENTS PER OGNI CANDIDATO
+  if (result.error) {
+    console.error(
+      "CANDIDATES PILOTS ERROR:",
+      result.error
+    )
+  }
+}
+
+    const pilotsMap = new Map(
+  (pilots || []).map((pilot) => [
+    pilot.id,
+    pilot
+  ])
+)
+
+const reviewStatsMap = new Map()
+
+if (pilotIds.length > 0) {
+  const {
+    data: reviewsData,
+    error: reviewsError
+  } = await supabase
+    .from("reviews")
+    .select("pilot_id,rating")
+    .in("pilot_id", pilotIds)
+
+  if (reviewsError) {
+    console.error(
+      "CANDIDATES REVIEW STATS ERROR:",
+      reviewsError
+    )
+  } else {
+    for (const review of reviewsData || []) {
+      if (!review?.pilot_id) continue
+
+      const current =
+        reviewStatsMap.get(review.pilot_id) || {
+          total: 0,
+          count: 0
+        }
+
+      const rating = Number(review.rating)
+
+      if (Number.isFinite(rating)) {
+        current.total += rating
+        current.count += 1
+      }
+
+      reviewStatsMap.set(
+        review.pilot_id,
+        current
+      )
+    }
+  }
+}
+
+// 🔥 CARICA JOB_ASSIGNMENTS PER OGNI CANDIDATO
     const finalCandidates = await Promise.all(
       (apps || []).map(async (application) => {
         const profileId = application.pilot_id || application.user_id
@@ -261,17 +322,47 @@ export default function CandidatesPage() {
               assignment.notes
             ))
 
-        return {
-          ...application,
-          pilot_id: application.pilot_id || application.user_id,
-          pilot: pilotProfile,
-          assignment: assignment || null,
-          hasSentDetails: hasSentDetails || false
-        }
+        const reviewStats =
+  reviewStatsMap.get(profileId) || {
+    total: 0,
+    count: 0
+  }
+
+return {
+  ...application,
+  pilot_id:
+    application.pilot_id ||
+    application.user_id,
+
+  pilot: pilotProfile,
+
+  assignment:
+    assignment || null,
+
+  hasSentDetails:
+    hasSentDetails || false,
+
+  reviewCount:
+    reviewStats.count,
+
+  averageRating:
+    reviewStats.count > 0
+      ? reviewStats.total /
+        reviewStats.count
+      : null
+}
       })
     )
 
     setCandidates(finalCandidates)
+    setCompareIds((current) =>
+  current.filter((applicationId) =>
+    finalCandidates.some(
+      (candidate) =>
+        candidate.id === applicationId
+    )
+  )
+)
   }, [params?.id, loadJob])
 
   useEffect(() => {
@@ -771,6 +862,43 @@ export default function CandidatesPage() {
   setReviewsLoading(false)
 }
 
+const toggleCompareCandidate = (
+  applicationId
+) => {
+  setCompareIds((current) => {
+    if (
+      current.includes(
+        applicationId
+      )
+    ) {
+      return current.filter(
+        (id) =>
+          id !== applicationId
+      )
+    }
+
+    if (current.length >= 3) {
+      toast.error(
+        "Puoi confrontare massimo 3 piloti."
+      )
+
+      return current
+    }
+
+    return [
+      ...current,
+      applicationId
+    ]
+  })
+}
+
+const compareCandidates =
+  candidates.filter((candidate) =>
+    compareIds.includes(
+      candidate.id
+    )
+  )
+
   return (
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
@@ -810,6 +938,49 @@ export default function CandidatesPage() {
                 {candidates.length} candidati
               </div>
             </div>
+
+            {compareCandidates.length > 0 && (
+  <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p className="font-bold text-white">
+        {compareCandidates.length}
+        {" "}
+        {compareCandidates.length === 1
+          ? "pilota selezionato"
+          : "piloti selezionati"}
+      </p>
+
+      <p className="mt-1 text-sm text-gray-400">
+        Puoi confrontare da 2 a 3 candidati.
+      </p>
+    </div>
+
+    <div className="flex gap-3">
+      <button
+        type="button"
+        onClick={() =>
+          setCompareIds([])
+        }
+        className="rounded-xl border border-white/10 px-4 py-3 text-sm font-semibold text-gray-300 transition hover:bg-white/10"
+      >
+        Azzera
+      </button>
+
+      <button
+        type="button"
+        disabled={
+          compareCandidates.length < 2
+        }
+        onClick={() =>
+          setShowCompareModal(true)
+        }
+        className="rounded-xl bg-cyan-400 px-5 py-3 text-sm font-bold text-black transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        Confronta candidati
+      </button>
+    </div>
+  </div>
+)}
 
             {candidates.length === 0 && (
               <div className="py-16 text-center">
@@ -870,6 +1041,40 @@ export default function CandidatesPage() {
   <Star size={18} className="text-yellow-400" />
   Vedi recensioni pilota
 </button>
+
+<label
+  className={`mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition ${
+    compareIds.includes(application.id)
+      ? "border-cyan-400/30 bg-cyan-400/10"
+      : "border-white/[0.08] bg-black/20 hover:bg-white/[0.06]"
+  }`}
+>
+  <input
+    type="checkbox"
+    checked={
+      compareIds.includes(
+        application.id
+      )
+    }
+    onChange={() =>
+      toggleCompareCandidate(
+        application.id
+      )
+    }
+    className="h-4 w-4 accent-cyan-400"
+  />
+
+  <div>
+    <p className="text-sm font-bold text-white">
+      Confronta
+    </p>
+
+    <p className="mt-0.5 text-[11px] text-gray-500">
+      Seleziona fino a 3 piloti
+    </p>
+  </div>
+</label>
+
                           </div>
                         </div>
                       </div>
@@ -1209,6 +1414,388 @@ export default function CandidatesPage() {
         </div>
       )}
 
+
+    {showCompareModal && (
+  <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+    <div className="max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-3xl border border-white/10 bg-[#0D1230] p-5 shadow-2xl sm:p-7">
+
+      <div className="mb-7 flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+            Confronto piloti
+          </p>
+
+          <h2 className="mt-2 text-2xl font-black text-white sm:text-4xl">
+            Confronta i candidati
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-400">
+            Confronta offerta, esperienza,
+            attrezzatura, certificazioni e
+            recensioni prima di scegliere.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() =>
+            setShowCompareModal(false)
+          }
+          className="shrink-0 rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10"
+        >
+          <X size={20} />
+        </button>
+      </div>
+
+
+      <div className="overflow-x-auto rounded-3xl border border-white/10">
+        <table className="w-full min-w-[800px] border-collapse text-left">
+
+          <thead>
+            <tr className="bg-[#080C22]">
+              <th className="w-44 border-b border-white/10 p-4 text-sm text-gray-500">
+                Caratteristica
+              </th>
+
+              {compareCandidates.map(
+                (application) => {
+                  const pilotInfo =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <th
+                      key={application.id}
+                      className="min-w-[230px] border-b border-l border-white/10 p-5 align-top"
+                    >
+                      <div className="flex items-center gap-3">
+                        {pilotInfo.avatarUrl ? (
+                          <img
+                            src={
+                              pilotInfo.avatarUrl
+                            }
+                            alt={
+                              pilotInfo.fullName
+                            }
+                            className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/10"
+                            loading="lazy"
+                            decoding="async"
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-400/10 font-bold text-cyan-300">
+                            {
+                              pilotInfo.initials
+                            }
+                          </div>
+                        )}
+
+                        <div className="min-w-0">
+                          <p className="truncate font-bold text-white">
+                            {
+                              pilotInfo.fullName
+                            }
+                          </p>
+
+                          <p className="mt-1 text-xs text-gray-500">
+                            {
+                              pilotInfo.city
+                            }
+                          </p>
+                        </div>
+                      </div>
+                    </th>
+                  )
+                }
+              )}
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-white/[0.07]">
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Offerta
+              </td>
+
+              {compareCandidates.map(
+                (application) => (
+                  <td
+                    key={application.id}
+                    className="border-l border-white/[0.07] p-4 text-lg font-bold text-emerald-300"
+                  >
+                    {formatPrice(
+                      application.price ??
+                        application.offer_price ??
+                        null
+                    )}
+                  </td>
+                )
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Città
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4 text-sm text-white"
+                    >
+                      {info.city}
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Esperienza
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4 text-sm text-gray-200"
+                    >
+                      {info.experience}
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Drone
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4 text-sm text-gray-200"
+                    >
+                      {info.drone}
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Servizi
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4 text-sm leading-6 text-gray-200"
+                    >
+                      {info.services}
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Certificazioni
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4 text-sm leading-6 text-gray-200"
+                    >
+                      {
+                        info.certifications
+                      }
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Verifica DroneGuard
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const info =
+                    getPilotDisplayData(
+                      application.pilot
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4"
+                    >
+                      {info.verified ? (
+                        <span className="inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1 text-xs font-bold text-green-300">
+                          Verificato
+                        </span>
+                      ) : (
+                        <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold text-gray-400">
+                          Non verificato
+                        </span>
+                      )}
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Recensioni
+              </td>
+
+              {compareCandidates.map(
+                (application) => (
+                  <td
+                    key={application.id}
+                    className="border-l border-white/[0.07] p-4"
+                  >
+                    {application.reviewCount >
+                    0 ? (
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Star
+                            size={18}
+                            fill="currentColor"
+                            className="text-yellow-400"
+                          />
+
+                          <span className="font-bold text-white">
+                            {Number(
+                              application.averageRating
+                            ).toFixed(1)}
+                          </span>
+                        </div>
+
+                        <p className="mt-1 text-xs text-gray-500">
+                          {
+                            application.reviewCount
+                          }
+                          {" "}
+                          {application.reviewCount ===
+                          1
+                            ? "recensione"
+                            : "recensioni"}
+                        </p>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-500">
+                        Nessuna recensione
+                      </span>
+                    )}
+                  </td>
+                )
+              )}
+            </tr>
+
+
+            <tr>
+              <td className="p-4 text-sm font-semibold text-gray-500">
+                Stato candidatura
+              </td>
+
+              {compareCandidates.map(
+                (application) => {
+                  const status =
+                    getStatusMeta(
+                      application.status
+                    )
+
+                  return (
+                    <td
+                      key={application.id}
+                      className="border-l border-white/[0.07] p-4"
+                    >
+                      <span
+                        className={`inline-flex rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider ${status.className}`}
+                      >
+                        {status.label}
+                      </span>
+                    </td>
+                  )
+                }
+              )}
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+
+      <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <button
+          type="button"
+          onClick={() =>
+            setShowCompareModal(false)
+          }
+          className="rounded-xl border border-white/10 bg-white/5 px-6 py-3 font-semibold transition hover:bg-white/10"
+        >
+          Chiudi
+        </button>
+      </div>
+
     </div>
+  </div>
+)}
+
+ </div>
   )
 }
+

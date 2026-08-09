@@ -11,6 +11,9 @@ export default function CreateJob() {
   const [location, setLocation] = useState("")
   const [date, setDate] = useState("")
 
+  const [latitude, setLatitude] = useState(null)
+  const [longitude, setLongitude] = useState(null)
+
   const [locationSuggestions, setLocationSuggestions] = useState([])
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
 
@@ -74,20 +77,55 @@ export default function CreateJob() {
 
       if (!user) return
 
+      if (
+  !Number.isFinite(latitude) ||
+  !Number.isFinite(longitude)
+) {
+  toast.error(
+    "Cerca il luogo e selezionalo dall'elenco prima di pubblicare."
+  )
+
+  return
+}
+
 // Crea il lavoro e scala 5 crediti nella stessa transazione
 const requestId = crypto.randomUUID()
 
-const { data: createdJobId, error: createError } = await supabase.rpc(
+const {
+  data: createdJobId,
+  error: createError
+} = await supabase.rpc(
   "create_job_with_credit",
   {
-    p_request_id: requestId,
-    p_title: title,
-    p_description: description,
-    p_location: location,
-    p_job_date: date,
-p_image1: null,
-p_image2: null,
-p_image3: null
+    p_request_id:
+      requestId,
+
+    p_title:
+      title,
+
+    p_description:
+      description,
+
+    p_location:
+      location,
+
+    p_job_date:
+      date,
+
+    p_latitude:
+      latitude,
+
+    p_longitude:
+      longitude,
+
+    p_image1:
+      null,
+
+    p_image2:
+      null,
+
+    p_image3:
+      null
   }
 )
 
@@ -285,10 +323,14 @@ if (!createdJobId) {
                     required
                     value={location}
                     onChange={(e) => {
-                      setLocation(e.target.value)
-                      setLocationSuggestions([])
-                      setShowLocationSuggestions(false)
-                    }}
+  setLocation(e.target.value)
+
+  setLatitude(null)
+  setLongitude(null)
+
+  setLocationSuggestions([])
+  setShowLocationSuggestions(false)
+}}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault()
@@ -315,9 +357,30 @@ if (!createdJobId) {
                         key={item.place_id}
                         type="button"
                         onClick={() => {
-                          setLocation(item.display_name)
-                          setShowLocationSuggestions(false)
-                        }}
+  const nextLatitude =
+    Number(item.lat)
+
+  const nextLongitude =
+    Number(item.lon)
+
+  if (
+    !Number.isFinite(nextLatitude) ||
+    !Number.isFinite(nextLongitude)
+  ) {
+    toast.error(
+      "La località selezionata non contiene coordinate valide."
+    )
+
+    return
+  }
+
+  setLocation(item.display_name)
+  setLatitude(nextLatitude)
+  setLongitude(nextLongitude)
+
+  setLocationSuggestions([])
+  setShowLocationSuggestions(false)
+}}
                         className="w-full border-b border-white/5 px-4 py-3 text-left text-sm text-white transition hover:bg-white/10"
                       >
                         {item.display_name}
@@ -325,6 +388,21 @@ if (!createdJobId) {
                     ))}
                   </div>
                 )}
+
+         {Number.isFinite(latitude) &&
+ Number.isFinite(longitude) && (
+  <div className="mt-3 rounded-xl border border-green-400/15 bg-green-400/[0.06] px-4 py-3">
+    <p className="text-xs font-semibold text-green-300">
+      ✓ Località verificata
+    </p>
+
+    <p className="mt-1 text-xs text-gray-500">
+      Le coordinate verranno utilizzate soltanto
+      per calcolare la distanza dai piloti.
+    </p>
+  </div>
+)}
+
               </div>
             </div>
 

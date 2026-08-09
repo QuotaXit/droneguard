@@ -1,236 +1,292 @@
 import Link from "next/link"
 import Navbar from "@/components/Navbar"
+import Footer from "@/components/Footer"
 
 export const metadata = {
   title: "Cookie Policy | DroneGuard",
   description:
-    "Cookie Policy di DroneGuard. Informazioni sull'uso di cookie tecnici, preferenze, statistiche, marketing e strumenti di tracciamento presenti sul sito.",
+    "Informativa sui cookie tecnici, sulla memoria locale e sui servizi esterni utilizzati da DroneGuard.",
+}
+
+const CONTROLLER = {
+  name: "Silvio Gavioli",
+  address:
+    "Via Ferdinando Neri, n. [CIVICO], [CAP] [COMUNE] ([PROVINCIA]), Italia",
+  email: "assistenza@droneguard.it",
+}
+
+const ADDRESS_IS_INCOMPLETE = CONTROLLER.address.includes("[")
+
+function Section({ number, title, children }) {
+  return (
+    <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-2xl sm:p-8">
+      <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
+        {number}. {title}
+      </h2>
+      <div className="space-y-4 text-base leading-8 text-gray-300 sm:text-lg">
+        {children}
+      </div>
+    </section>
+  )
+}
+
+function ToolRow({ name, type, provider, purpose, duration }) {
+  return (
+    <div className="grid grid-cols-1 divide-y divide-white/10 text-sm text-gray-300 lg:grid-cols-5 lg:divide-x lg:divide-y-0">
+      <div className="p-4 font-semibold text-white break-words">{name}</div>
+      <div className="p-4">{type}</div>
+      <div className="p-4">{provider}</div>
+      <div className="p-4">{purpose}</div>
+      <div className="p-4">{duration}</div>
+    </div>
+  )
 }
 
 export default function CookiePolicyPage() {
   return (
-    <main className="min-h-screen bg-[#0B0F2A] text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] text-white">
       <Navbar />
 
-      <section className="mx-auto max-w-5xl px-6 py-20">
-        <div className="mb-12">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.25em] text-green-400">
-            Informativa Cookie
+      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+        <div className="mb-10">
+          <p className="mb-3 inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-sm font-semibold text-green-300">
+            Informativa cookie e tecnologie simili
           </p>
 
-          <h1 className="mb-6 text-4xl font-bold leading-tight md:text-6xl">
+          <h1 className="text-3xl font-bold sm:text-4xl lg:text-5xl">
             Cookie Policy
           </h1>
 
-          <p className="max-w-3xl text-lg leading-8 text-gray-300">
-            La presente Cookie Policy descrive le modalità con cui DroneGuard
-            utilizza cookie, tecnologie simili, strumenti di memorizzazione locale
-            e altri sistemi di tracciamento all’interno del sito web. Questa
-            informativa integra la Privacy Policy e serve a spiegare in modo
-            chiaro quali dati possono essere raccolti durante la navigazione, per
-            quali finalità vengono utilizzati e come l’utente può gestire le
-            proprie preferenze.
+          <p className="mt-5 text-base leading-8 text-gray-300 sm:text-lg">
+            Ultimo aggiornamento: 9 agosto 2026
+          </p>
+
+          <p className="mt-4 max-w-4xl text-base leading-8 text-gray-300 sm:text-lg">
+            Questa Cookie Policy descrive i cookie tecnici, la memoria locale del
+            browser e i collegamenti a servizi esterni presenti nella versione di
+            DroneGuard esaminata alla data di aggiornamento. Integra la{" "}
+            <Link
+              href="/privacy-policy"
+              className="font-semibold text-green-400 underline underline-offset-4 hover:text-green-300"
+            >
+              Privacy Policy
+            </Link>
+            .
           </p>
         </div>
 
-        <div className="space-y-8">
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">1. Titolare del trattamento</h2>
-            <p className="leading-8 text-gray-300">
-              Il titolare del trattamento dei dati personali raccolti tramite il
-              sito è il gestore di DroneGuard. Per richieste relative alla privacy,
-              alla protezione dei dati personali o all’utilizzo dei cookie, è
-              possibile contattare il titolare tramite i recapiti indicati nella
-              pagina Privacy Policy o nella sezione Contatti del sito.
+        {ADDRESS_IS_INCOMPLETE && (
+          <div className="mb-8 rounded-3xl border border-red-400/40 bg-red-400/10 p-5 text-red-100 sm:p-6">
+            <p className="font-bold">Dato da completare prima della pubblicazione</p>
+            <p className="mt-2 leading-7">
+              Inserisci civico, CAP, Comune e Provincia nell’indirizzo del titolare.
             </p>
-            <p className="mt-4 leading-8 text-gray-300">
-              Se nella tua Privacy Policy hai già indicato nome, cognome, email o
-              altri recapiti del titolare, gli stessi dati devono essere coerenti
-              anche con questa Cookie Policy.
-            </p>
-          </section>
+          </div>
+        )}
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">2. Cosa sono i cookie</h2>
-            <p className="leading-8 text-gray-300">
-              I cookie sono piccoli file di testo che i siti visitati inviano al
-              dispositivo dell’utente, dove vengono memorizzati per essere poi
-              ritrasmessi agli stessi siti alla visita successiva. I cookie possono
-              essere utilizzati per permettere il corretto funzionamento del sito,
-              ricordare preferenze, migliorare l’esperienza di navigazione,
-              raccogliere statistiche aggregate o, solo previo consenso, svolgere
-              attività di marketing e profilazione.
-            </p>
-          </section>
-
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">3. Tipologie di cookie utilizzate</h2>
-
-            <div className="space-y-6 text-gray-300">
-              <div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
-                  Cookie tecnici e necessari
-                </h3>
-                <p className="leading-8">
-                  Sono indispensabili per il corretto funzionamento del sito e per
-                  consentire all’utente di navigare tra le pagine, utilizzare le
-                  funzionalità richieste, mantenere la sicurezza del servizio e
-                  ricordare eventuali preferenze tecniche. Questi cookie non
-                  richiedono il consenso preventivo dell’utente, ma devono essere
-                  indicati nell’informativa.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
-                  Cookie di preferenza
-                </h3>
-                <p className="leading-8">
-                  Possono essere utilizzati per ricordare alcune scelte effettuate
-                  dall’utente, come la preferenza relativa all’accettazione o al
-                  rifiuto dei cookie, la lingua, eventuali impostazioni di
-                  visualizzazione o altre preferenze di navigazione.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
-                  Cookie statistici o analytics
-                </h3>
-                <p className="leading-8">
-                  Possono essere utilizzati per raccogliere informazioni aggregate
-                  sull’utilizzo del sito, sulle pagine visitate, sul numero di
-                  utenti, sul tempo di permanenza e sulle modalità di navigazione.
-                  Se configurati in modo da ridurre il potere identificativo e usati
-                  solo per statistiche aggregate, possono essere assimilati ai cookie
-                  tecnici. In caso contrario, vengono attivati solo previo consenso
-                  dell’utente.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="mb-2 text-xl font-semibold text-white">
-                  Cookie di marketing e profilazione
-                </h3>
-                <p className="leading-8">
-                  Possono essere utilizzati per mostrare annunci personalizzati,
-                  misurare campagne pubblicitarie, creare profili di interesse o
-                  collegare la navigazione dell’utente a piattaforme di terze parti.
-                  Questi cookie vengono installati solo dopo il consenso espresso
-                  dall’utente tramite il banner o il pannello di gestione delle
-                  preferenze.
-                </p>
-              </div>
+        <div className="space-y-10">
+          <Section number="1" title="Titolare e contatti">
+            <div className="rounded-2xl border border-white/10 bg-[#080C22] p-5">
+              <p>
+                <strong className="text-white">Titolare:</strong> {CONTROLLER.name}
+              </p>
+              <p>
+                <strong className="text-white">Qualifica:</strong> persona fisica
+              </p>
+              <p>
+                <strong className="text-white">Domicilio:</strong>{" "}
+                {CONTROLLER.address}
+              </p>
+              <p>
+                <strong className="text-white">Email:</strong>{" "}
+                <a
+                  href={`mailto:${CONTROLLER.email}`}
+                  className="font-semibold text-green-400 underline underline-offset-4 hover:text-green-300"
+                >
+                  {CONTROLLER.email}
+                </a>
+              </p>
             </div>
-          </section>
+          </Section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">4. Cookie di prima parte e di terze parti</h2>
-            <p className="leading-8 text-gray-300">
-              I cookie di prima parte sono installati direttamente da DroneGuard.
-              I cookie di terze parti, invece, sono installati da soggetti diversi
-              dal titolare del sito, ad esempio servizi esterni utilizzati per
-              statistiche, mappe, video incorporati, sicurezza, pubblicità o
-              strumenti di marketing.
-            </p>
-            <p className="mt-4 leading-8 text-gray-300">
-              Le terze parti sono autonome titolari del trattamento per le attività
-              svolte tramite i propri strumenti. Per questo motivo, l’utente è
-              invitato a consultare anche le rispettive informative privacy e cookie
-              policy dei servizi eventualmente presenti sul sito.
-            </p>
-          </section>
-
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">5. Strumenti che possono essere presenti sul sito</h2>
-            <p className="mb-6 leading-8 text-gray-300">
-              In base alla configurazione tecnica del sito, DroneGuard può utilizzare
-              o integrare i seguenti strumenti. L’attivazione effettiva dipende dai
-              servizi installati e dalle preferenze espresse dall’utente.
+          <Section number="2" title="Cosa sono cookie e tecnologie simili">
+            <p>
+              I cookie sono piccoli file che un sito può salvare nel browser per
+              riconoscere una sessione, mantenere l’accesso o ricordare impostazioni.
+              Il local storage è una memoria del browser simile, ma i suoi valori non
+              vengono inviati automaticamente al server a ogni richiesta.
             </p>
 
+            <p>
+              Gli strumenti strettamente necessari al servizio possono essere usati
+              senza consenso preventivo. Gli strumenti analytics non assimilabili ai
+              tecnici, pubblicitari o di profilazione richiedono invece il consenso
+              quando previsto dalla normativa.
+            </p>
+          </Section>
+
+          <Section number="3" title="Configurazione attuale di DroneGuard">
+            <div className="rounded-2xl border border-green-400/30 bg-green-400/10 p-5 text-green-100">
+              <p className="font-bold text-green-200">
+                Alla data di aggiornamento risultano attivi soltanto strumenti
+                tecnici o funzionali.
+              </p>
+              <p className="mt-2">
+                Nella versione applicativa analizzata non risultano installati Meta
+                Pixel, Google Analytics, Google Ads, Google Tag Manager, Microsoft
+                Clarity, Vercel Analytics, Hotjar, TikTok Pixel, LinkedIn Insight Tag
+                o altri sistemi pubblicitari e di profilazione.
+              </p>
+            </div>
+
+            <p>
+              In questa configurazione DroneGuard non utilizza il consenso cookie per
+              attivare analytics o marketing. Prima di introdurre uno di tali
+              strumenti, questa informativa e il meccanismo di consenso dovranno
+              essere aggiornati e lo script dovrà rimanere bloccato fino alla scelta
+              dell’utente.
+            </p>
+          </Section>
+
+          <Section number="4" title="Cookie e memoria locale utilizzati">
             <div className="overflow-hidden rounded-2xl border border-white/10">
-              <table className="w-full border-collapse text-left text-sm">
-                <thead className="bg-white/10 text-white">
-                  <tr>
-                    <th className="p-4">Categoria</th>
-                    <th className="p-4">Finalità</th>
-                    <th className="p-4">Consenso</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/10 text-gray-300">
-                  <tr>
-                    <td className="p-4 font-semibold text-white">Tecnici</td>
-                    <td className="p-4">Funzionamento del sito, sicurezza, preferenze cookie.</td>
-                    <td className="p-4">Non richiesto</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-white">Analytics</td>
-                    <td className="p-4">Statistiche aggregate su visite e utilizzo del sito.</td>
-                    <td className="p-4">Richiesto se non assimilabili ai tecnici</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-white">Marketing</td>
-                    <td className="p-4">Annunci, campagne pubblicitarie e misurazione conversioni.</td>
-                    <td className="p-4">Richiesto</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-semibold text-white">Terze parti</td>
-                    <td className="p-4">Servizi esterni come mappe, video, statistiche o pubblicità.</td>
-                    <td className="p-4">Dipende dalla finalità</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div className="grid grid-cols-1 divide-y divide-white/10 text-sm lg:grid-cols-5 lg:divide-x lg:divide-y-0">
+                <div className="bg-[#080C22] p-4 font-semibold text-white">Nome</div>
+                <div className="bg-[#080C22] p-4 font-semibold text-white">Tipo</div>
+                <div className="bg-[#080C22] p-4 font-semibold text-white">Fornitore</div>
+                <div className="bg-[#080C22] p-4 font-semibold text-white">Finalità</div>
+                <div className="bg-[#080C22] p-4 font-semibold text-white">Durata</div>
+              </div>
+
+              <ToolRow
+                name="Cookie con prefisso sb-…"
+                type="Cookie tecnico di prima parte"
+                provider="Supabase / DroneGuard"
+                purpose="Autenticazione, sessione, rinnovo dei token, conferma dell’accesso e sicurezza"
+                duration="Sessione o fino alla scadenza tecnica configurata; può essere rinnovato mentre l’account è utilizzato"
+              />
+
+              <ToolRow
+                name="droneguard-cookie-notice"
+                type="Local storage tecnico"
+                provider="DroneGuard"
+                purpose="Ricorda che l’utente ha visualizzato l’informativa sintetica sui soli strumenti tecnici"
+                duration="Massimo 6 mesi, salvo cancellazione anticipata dal browser o cambio di versione"
+              />
+
+              <ToolRow
+                name="pilot_job_earnings"
+                type="Local storage funzionale"
+                provider="DroneGuard"
+                purpose="Salva sul dispositivo del pilota gli importi che egli annota nello storico dei lavori"
+                duration="Fino alla modifica o cancellazione da parte dell’utente o del browser"
+              />
+
+              <ToolRow
+                name="droneguard-cookie-consent (versione precedente)"
+                type="Local storage legacy"
+                provider="DroneGuard"
+                purpose="Vecchia registrazione delle preferenze analytics e marketing; non attiva strumenti nella versione aggiornata"
+                duration="Rimossa dal nuovo componente o cancellabile dalle impostazioni del browser"
+              />
             </div>
-          </section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">6. Base giuridica del trattamento</h2>
-            <p className="leading-8 text-gray-300">
-              Per i cookie tecnici e necessari, la base giuridica è il legittimo
-              interesse del titolare a garantire il funzionamento corretto e sicuro
-              del sito e l’erogazione dei servizi richiesti dall’utente. Per i cookie
-              analytics non assimilabili ai tecnici, per i cookie di marketing, per
-              i cookie di profilazione e per altri strumenti di tracciamento non
-              necessari, la base giuridica è il consenso libero, specifico,
-              informato e revocabile dell’utente.
+            <p>
+              I nomi dei cookie Supabase possono variare in base al riferimento del
+              progetto e possono essere suddivisi in più parti quando il valore è
+              lungo. Sono necessari per mantenere la sessione dell’utente e non sono
+              usati per pubblicità.
             </p>
-          </section>
+          </Section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">7. Gestione del consenso</h2>
-            <p className="leading-8 text-gray-300">
-              Al primo accesso al sito può essere mostrato un banner cookie che
-              consente all’utente di accettare tutti i cookie, rifiutare quelli non
-              necessari o personalizzare le proprie preferenze. L’utente può
-              modificare o revocare il consenso in qualsiasi momento attraverso il
-              pannello di gestione cookie, se presente, oppure eliminando i cookie
-              direttamente dalle impostazioni del browser.
-            </p>
-            <p className="mt-4 leading-8 text-gray-300">
-              Il mancato consenso ai cookie non necessari non impedisce la
-              navigazione del sito, ma alcune funzionalità collegate a servizi di
-              terze parti potrebbero non essere disponibili o funzionare in modo
-              limitato.
-            </p>
-          </section>
-
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">8. Come disabilitare i cookie dal browser</h2>
-            <p className="leading-8 text-gray-300">
-              L’utente può gestire, bloccare o cancellare i cookie anche attraverso
-              le impostazioni del proprio browser. Le modalità variano in base al
-              browser utilizzato. Di norma è possibile accedere alla sezione
-              privacy, sicurezza o impostazioni del browser e scegliere se eliminare
-              i cookie esistenti, bloccare quelli futuri o ricevere un avviso prima
-              della loro installazione.
+          <Section number="5" title="Servizi esterni e cookie dei rispettivi domini">
+            <p>
+              Alcune funzioni collegano il browser o il server a servizi esterni.
+              Questi servizi possono ricevere indirizzo IP, user agent, data e ora e
+              altri dati tecnici della richiesta. Eventuali cookie impostati sui loro
+              domini sono disciplinati dalle rispettive informative.
             </p>
 
-            <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-[#080C22] p-5">
+                <h3 className="mb-2 text-lg font-semibold text-white">Stripe</h3>
+                <p>
+                  Quando l’utente viene reindirizzato al checkout, Stripe può usare
+                  cookie propri necessari a pagamento, sicurezza e prevenzione delle
+                  frodi. Tali cookie sono gestiti sul dominio di Stripe.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#080C22] p-5">
+                <h3 className="mb-2 text-lg font-semibold text-white">
+                  OpenStreetMap / Nominatim
+                </h3>
+                <p>
+                  La ricerca di una località può trasmettere al servizio il testo
+                  digitato e i dati tecnici della connessione. Non viene usato da
+                  DroneGuard per finalità pubblicitarie.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#080C22] p-5">
+                <h3 className="mb-2 text-lg font-semibold text-white">
+                  Unsplash e RandomUser
+                </h3>
+                <p>
+                  Alcune immagini decorative o predefinite sono richieste a server
+                  esterni, che possono ricevere dati tecnici della connessione.
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-[#080C22] p-5">
+                <h3 className="mb-2 text-lg font-semibold text-white">
+                  Supabase, Vercel, Resend e Aruba
+                </h3>
+                <p>
+                  Supportano autenticazione, hosting, email e infrastruttura. I
+                  trattamenti sono descritti più diffusamente nella Privacy Policy.
+                </p>
+              </div>
+            </div>
+          </Section>
+
+          <Section number="6" title="Banner e informativa sintetica">
+            <p>
+              Poiché nella configurazione attuale non risultano strumenti non
+              necessari, non viene richiesto di “accettare” o “rifiutare” cookie
+              pubblicitari. Il componente aggiornato mostra una semplice informativa
+              sui soli strumenti tecnici e memorizza per un massimo di sei mesi che
+              l’avviso è stato visualizzato.
+            </p>
+
+            <p>
+              Il collegamento “Informazioni cookie” nel footer consente di riaprire
+              l’avviso e consultare questa pagina. L’eventuale mancata conferma
+              dell’avviso non impedisce l’utilizzo del sito, perché non si tratta di
+              una richiesta di consenso.
+            </p>
+          </Section>
+
+          <Section number="7" title="Come cancellare cookie e memoria locale">
+            <p>
+              L’utente può cancellare cookie e dati locali dalle impostazioni del
+              browser. La rimozione dei cookie di autenticazione può disconnettere
+              l’account; la cancellazione di <code>pilot_job_earnings</code> elimina
+              dal dispositivo le annotazioni economiche inserite dal pilota.
+            </p>
+
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="rounded-2xl bg-white/[0.05] p-5">
                 <h3 className="mb-2 font-semibold text-white">Google Chrome</h3>
                 <p className="text-sm leading-7 text-gray-300">
-                  Impostazioni → Privacy e sicurezza → Cookie di terze parti.
+                  Impostazioni → Privacy e sicurezza → Dati dei siti e autorizzazioni.
+                </p>
+              </div>
+
+              <div className="rounded-2xl bg-white/[0.05] p-5">
+                <h3 className="mb-2 font-semibold text-white">Microsoft Edge</h3>
+                <p className="text-sm leading-7 text-gray-300">
+                  Impostazioni → Cookie e autorizzazioni sito → Gestisci ed elimina.
                 </p>
               </div>
 
@@ -244,87 +300,50 @@ export default function CookiePolicyPage() {
               <div className="rounded-2xl bg-white/[0.05] p-5">
                 <h3 className="mb-2 font-semibold text-white">Safari</h3>
                 <p className="text-sm leading-7 text-gray-300">
-                  Preferenze → Privacy → Gestione dati siti web.
-                </p>
-              </div>
-
-              <div className="rounded-2xl bg-white/[0.05] p-5">
-                <h3 className="mb-2 font-semibold text-white">Microsoft Edge</h3>
-                <p className="text-sm leading-7 text-gray-300">
-                  Impostazioni → Cookie e autorizzazioni sito → Gestisci ed elimina cookie.
+                  Impostazioni o Preferenze → Privacy → Gestisci dati siti web.
                 </p>
               </div>
             </div>
-          </section>
+          </Section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">9. Durata dei cookie</h2>
-            <p className="leading-8 text-gray-300">
-              I cookie possono avere durata di sessione, cioè vengono cancellati
-              alla chiusura del browser, oppure durata persistente, cioè restano
-              memorizzati sul dispositivo per un periodo determinato. La durata
-              dipende dalla finalità del cookie, dalla configurazione tecnica del
-              sito e dalle impostazioni delle eventuali terze parti.
+          <Section number="8" title="Trasferimenti internazionali">
+            <p>
+              I fornitori tecnici possono utilizzare infrastrutture o subfornitori
+              esterni allo Spazio Economico Europeo. Le garanzie e le informazioni
+              sui trasferimenti sono descritte nella Privacy Policy e nelle
+              informative dei singoli fornitori.
             </p>
-          </section>
+          </Section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">10. Trasferimento dei dati fuori dall’Unione Europea</h2>
-            <p className="leading-8 text-gray-300">
-              Alcuni servizi di terze parti eventualmente integrati nel sito possono
-              comportare il trasferimento di dati verso Paesi situati fuori dallo
-              Spazio Economico Europeo. In tali casi, il trasferimento avviene nel
-              rispetto delle garanzie previste dalla normativa applicabile, come
-              decisioni di adeguatezza, clausole contrattuali standard o ulteriori
-              misure di protezione adottate dai fornitori.
+          <Section number="9" title="Modifiche alla configurazione">
+            <p>
+              Ogni introduzione di analytics, pixel pubblicitari, remarketing,
+              mappe incorporate, video esterni o altri strumenti non necessari deve
+              essere preceduta da una verifica tecnica e giuridica. Quando richiesto,
+              lo strumento dovrà essere bloccato fino al consenso e questa Cookie
+              Policy dovrà indicare nome, fornitore, finalità e durata.
             </p>
-          </section>
+          </Section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">11. Diritti dell’utente</h2>
-            <p className="leading-8 text-gray-300">
-              L’utente può esercitare i diritti previsti dalla normativa in materia
-              di protezione dei dati personali, tra cui il diritto di accesso,
-              rettifica, cancellazione, limitazione del trattamento, opposizione e
-              portabilità dei dati, nei casi previsti dalla legge. L’utente può
-              inoltre revocare il consenso precedentemente prestato per i cookie non
-              necessari, senza pregiudicare la liceità del trattamento basata sul
-              consenso prima della revoca.
+          <Section number="10" title="Contatti">
+            <p>
+              Per informazioni su cookie, memoria locale e trattamento dei dati
+              personali puoi scrivere a:
             </p>
-          </section>
 
-          <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-8 shadow-2xl">
-            <h2 className="mb-4 text-2xl font-bold">12. Aggiornamenti della Cookie Policy</h2>
-            <p className="leading-8 text-gray-300">
-              DroneGuard può modificare la presente Cookie Policy in qualsiasi
-              momento, anche a seguito di aggiornamenti normativi, modifiche tecniche
-              del sito, introduzione di nuovi servizi o variazione degli strumenti di
-              tracciamento utilizzati. Gli utenti sono invitati a consultare
-              periodicamente questa pagina per verificare eventuali aggiornamenti.
-            </p>
-            <p className="mt-4 text-sm text-gray-400">
-              Ultimo aggiornamento: 1 giugno 2026
-            </p>
-          </section>
-
-          <div className="flex flex-col gap-4 rounded-3xl border border-green-400/30 bg-green-400/10 p-8 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h2 className="mb-2 text-2xl font-bold">Privacy e contatti</h2>
-              <p className="max-w-2xl leading-8 text-gray-300">
-                Per maggiori informazioni sul trattamento dei dati personali,
-                consulta anche la Privacy Policy di DroneGuard.
-              </p>
+            <div className="rounded-2xl border border-green-400/20 bg-green-400/10 p-5">
+              <a
+                href={`mailto:${CONTROLLER.email}`}
+                className="break-words text-lg font-semibold text-green-300 underline underline-offset-4 sm:text-xl"
+              >
+                {CONTROLLER.email}
+              </a>
             </div>
-
-            <Link
-              href="/privacy-policy"
-              className="rounded-full bg-green-400 px-6 py-3 text-center font-bold text-[#0B0F2A] transition hover:bg-green-300"
-            >
-              Vai alla Privacy Policy
-            </Link>
-          </div>
+          </Section>
         </div>
-      </section>
-    </main>
+      </main>
+
+      <Footer />
+    </div>
   )
 }

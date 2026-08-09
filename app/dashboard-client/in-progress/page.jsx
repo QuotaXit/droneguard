@@ -418,11 +418,17 @@ if (countError) {
   const openPilotDetails = async (pilotId) => {
     if (!pilotId) return
 
-    const { data, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", pilotId)
-      .maybeSingle()
+    const { data, error } = await supabase.rpc(
+  "get_client_visible_pilots",
+  {
+    p_pilot_ids: [pilotId]
+  }
+)
+
+const pilotProfile =
+  Array.isArray(data) && data.length > 0
+    ? data[0]
+    : null
 
     if (error) {
   console.error(
@@ -437,14 +443,13 @@ if (countError) {
   return
 }
 
-    if (!data) {
-      toast.error("Profilo pilota non trovato")
-      return
-    }
+    if (!pilotProfile) {
+  toast.error("Profilo pilota non trovato")
+  return
+}
 
-    setSelectedPilot(data)
-    setShowPilotModal(true)
-  }
+setSelectedPilot(pilotProfile)
+setShowPilotModal(true)
 
   const openJobDetailsModal = async (job) => {
     setSelectedJob(job)

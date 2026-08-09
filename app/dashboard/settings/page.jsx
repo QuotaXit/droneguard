@@ -51,6 +51,18 @@ const experienceList = [
   "5+ anni"
 ]
 
+const operatingRadiusOptions = [
+  { value: 10, label: "10 km" },
+  { value: 25, label: "25 km" },
+  { value: 50, label: "50 km" },
+  { value: 75, label: "75 km" },
+  { value: 100, label: "100 km" },
+  { value: 150, label: "150 km" },
+  { value: 250, label: "250 km" },
+  { value: 500, label: "500 km" },
+  { value: 0, label: "Tutta Italia" }
+]
+
 const droneList = [
 
   "DJI Air 2",
@@ -168,6 +180,136 @@ function ProfileInfoRow({ label, value }) {
   )
 }
 
+const availabilityWeekDays = [
+  "Lun",
+  "Mar",
+  "Mer",
+  "Gio",
+  "Ven",
+  "Sab",
+  "Dom"
+]
+
+function getRomeTodayParts() {
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        timeZone: "Europe/Rome",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }
+    ).formatToParts(new Date())
+
+  const values = {}
+
+  for (const part of parts) {
+    if (
+      part.type === "year" ||
+      part.type === "month" ||
+      part.type === "day"
+    ) {
+      values[part.type] =
+        Number(part.value)
+    }
+  }
+
+  return {
+    year: values.year,
+    month: values.month,
+    day: values.day
+  }
+}
+
+function createDateKey(
+  year,
+  month,
+  day
+) {
+  return [
+    year,
+    String(month).padStart(2, "0"),
+    String(day).padStart(2, "0")
+  ].join("-")
+}
+
+function getRomeTodayKey() {
+  const today =
+    getRomeTodayParts()
+
+  return createDateKey(
+    today.year,
+    today.month,
+    today.day
+  )
+}
+
+function getAvailabilityCalendar(
+  year,
+  month
+) {
+  const numberOfDays =
+    new Date(
+      Date.UTC(
+        year,
+        month,
+        0
+      )
+    ).getUTCDate()
+
+  const firstDay =
+    new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        1
+      )
+    ).getUTCDay()
+
+  /*
+   * JS: domenica = 0
+   * Calendario DroneGuard: lunedì = 0
+   */
+  const emptyBefore =
+    (firstDay + 6) % 7
+
+  return [
+    ...Array(emptyBefore).fill(null),
+
+    ...Array.from(
+      {
+        length:
+          numberOfDays
+      },
+      (_, index) =>
+        index + 1
+    )
+  ]
+}
+
+function getAvailabilityMonthLabel(
+  year,
+  month
+) {
+  return new Intl.DateTimeFormat(
+    "it-IT",
+    {
+      month: "long",
+      year: "numeric",
+      timeZone: "UTC"
+    }
+  ).format(
+    new Date(
+      Date.UTC(
+        year,
+        month - 1,
+        1
+      )
+    )
+  )
+}
+
 export default function SettingsPage() {
   const [user, setUser] = useState(null)
   const [userProfile, setUserProfile] = useState(null)
@@ -184,6 +326,41 @@ export default function SettingsPage() {
   const [loading, setLoading] = useState(false)
   const [avatar, setAvatar] = useState("")
   const [emailNewJobs, setEmailNewJobs] = useState(true)
+
+  const [baseLatitude, setBaseLatitude] = useState(null)
+  const [baseLongitude, setBaseLongitude] = useState(null)
+  const [operatingRadiusKm, setOperatingRadiusKm] = useState(50)
+  const [emailJobsWithinRadius, setEmailJobsWithinRadius] = useState(false)
+
+  const [
+  availabilityMonth,
+  setAvailabilityMonth
+] = useState(() => {
+  const today =
+    getRomeTodayParts()
+
+  return {
+    year: today.year,
+    month: today.month
+  }
+})
+
+const [
+  unavailableDates,
+  setUnavailableDates
+] = useState(
+  () => new Set()
+)
+
+const [
+  availabilityLoading,
+  setAvailabilityLoading
+] = useState(false)
+
+const [
+  availabilitySavingDate,
+  setAvailabilitySavingDate
+] = useState("")
 
   const [completedJobs, setCompletedJobs] = useState(0)
   const [activeJobs, setActiveJobs] = useState(0)
@@ -212,8 +389,202 @@ export default function SettingsPage() {
     setLocation(profileData.location || profileData.city || "")
     setAvatar(profileData.avatar_url || "")
     setEmailNewJobs(profileData.email_new_jobs ?? true)
+
+    const latitude =
+  profileData.base_latitude === null ||
+  profileData.base_latitude === undefined
+    ? null
+    : Number(profileData.base_latitude)
+
+const longitude =
+  profileData.base_longitude === null ||
+  profileData.base_longitude === undefined
+    ? null
+    : Number(profileData.base_longitude)
+
+setBaseLatitude(
+  Number.isFinite(latitude)
+    ? latitude
+    : null
+)
+
+setBaseLongitude(
+  Number.isFinite(longitude)
+    ? longitude
+    : null
+)
+
+const savedRadius =
+  Number(profileData.operating_radius_km)
+
+setOperatingRadiusKm(
+  Number.isFinite(savedRadius)
+    ? savedRadius
+    : 50
+)
+
+setEmailJobsWithinRadius(
+  profileData.email_jobs_within_radius ??
+    false
+)
   }, [])
 
+  const resolveBaseCoordinates = async (place) => {
+  const cleanPlace = String(place || "").trim()
+
+  if (!cleanPlace) {
+    return null
+  }
+
+  try {
+    const response = await fetch(
+      `/api/address-search?q=${encodeURIComponent(
+        cleanPlace
+      )}`
+    )
+
+    if (!response.ok) {
+      return null
+    }
+
+    const results = await response.json()
+
+    const firstResult =
+      Array.isArray(results) &&
+      results.length > 0
+        ? results[0]
+        : null
+
+    if (!firstResult) {
+      return null
+    }
+
+    const latitude =
+      Number(firstResult.lat)
+
+    const longitude =
+      Number(firstResult.lon)
+
+    if (
+      !Number.isFinite(latitude) ||
+      !Number.isFinite(longitude)
+    ) {
+      return null
+    }
+
+    return {
+      latitude,
+      longitude
+    }
+  } catch (error) {
+    console.error(
+      "[pilot-settings] Coordinate base operativa:",
+      error
+    )
+
+    return null
+  }
+}
+
+const loadUnavailableDates =
+  useCallback(
+    async (
+      pilotId,
+      year,
+      month
+    ) => {
+      if (!pilotId) {
+        return
+      }
+
+      const lastDay =
+        new Date(
+          Date.UTC(
+            year,
+            month,
+            0
+          )
+        ).getUTCDate()
+
+      const firstDate =
+        createDateKey(
+          year,
+          month,
+          1
+        )
+
+      const lastDate =
+        createDateKey(
+          year,
+          month,
+          lastDay
+        )
+
+      try {
+        setAvailabilityLoading(
+          true
+        )
+
+        const {
+          data,
+          error
+        } = await supabase
+          .from(
+            "pilot_unavailable_dates"
+          )
+          .select(
+            "unavailable_date"
+          )
+          .eq(
+            "pilot_id",
+            pilotId
+          )
+          .gte(
+            "unavailable_date",
+            firstDate
+          )
+          .lte(
+            "unavailable_date",
+            lastDate
+          )
+          .order(
+            "unavailable_date",
+            {
+              ascending: true
+            }
+          )
+
+        if (error) {
+          throw error
+        }
+
+        setUnavailableDates(
+          new Set(
+            (data || [])
+              .map(
+                (row) =>
+                  row.unavailable_date
+              )
+              .filter(Boolean)
+          )
+        )
+      } catch (error) {
+        console.error(
+          "[pilot-settings] Calendario disponibilità:",
+          error
+        )
+
+        toast.error(
+          "Impossibile caricare il calendario."
+        )
+      } finally {
+        setAvailabilityLoading(
+          false
+        )
+      }
+    },
+    []
+  )
 
   const loadUser = useCallback(async () => {
     const {
@@ -275,6 +646,186 @@ if (!profileData) {
   useEffect(() => {
     loadUser()
   }, [loadUser])
+
+  useEffect(() => {
+  if (!user?.id) {
+    return
+  }
+
+  loadUnavailableDates(
+    user.id,
+    availabilityMonth.year,
+    availabilityMonth.month
+  )
+}, [
+  user?.id,
+  availabilityMonth.year,
+  availabilityMonth.month,
+  loadUnavailableDates
+])
+
+const changeAvailabilityMonth = (
+  direction
+) => {
+  setAvailabilityMonth(
+    (current) => {
+      const candidate =
+        new Date(
+          Date.UTC(
+            current.year,
+            current.month - 1 +
+              direction,
+            1
+          )
+        )
+
+      const next = {
+        year:
+          candidate.getUTCFullYear(),
+
+        month:
+          candidate.getUTCMonth() +
+          1
+      }
+
+      /*
+       * Non mostriamo mesi precedenti
+       * a quello corrente.
+       */
+      const today =
+        getRomeTodayParts()
+
+      if (
+        next.year < today.year ||
+        (
+          next.year ===
+            today.year &&
+          next.month <
+            today.month
+        )
+      ) {
+        return current
+      }
+
+      return next
+    }
+  )
+}
+
+
+const toggleUnavailableDate =
+  async (dateKey) => {
+    if (
+      !dateKey ||
+      availabilitySavingDate
+    ) {
+      return
+    }
+
+    if (
+      dateKey <
+      getRomeTodayKey()
+    ) {
+      return
+    }
+
+    const currentlyUnavailable =
+      unavailableDates.has(
+        dateKey
+      )
+
+    const nextUnavailable =
+      !currentlyUnavailable
+
+    try {
+      setAvailabilitySavingDate(
+        dateKey
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "set_pilot_unavailable_date",
+        {
+          p_date:
+            dateKey,
+
+          p_unavailable:
+            nextUnavailable
+        }
+      )
+
+      if (error) {
+        throw error
+      }
+
+      if (
+        data?.success !== true
+      ) {
+        throw new Error(
+          "RISPOSTA_CALENDARIO_NON_VALIDA"
+        )
+      }
+
+      setUnavailableDates(
+        (current) => {
+          const next =
+            new Set(current)
+
+          if (nextUnavailable) {
+            next.add(dateKey)
+          } else {
+            next.delete(dateKey)
+          }
+
+          return next
+        }
+      )
+
+      toast.success(
+        nextUnavailable
+          ? "Giorno segnato come non disponibile."
+          : "Giorno nuovamente disponibile."
+      )
+    } catch (error) {
+      console.error(
+        "[pilot-settings] Modifica disponibilità:",
+        error
+      )
+
+      const message =
+        String(
+          error?.message || ""
+        ).toUpperCase()
+
+      if (
+        message.includes(
+          "DATA_NEL_PASSATO"
+        )
+      ) {
+        toast.error(
+          "Non puoi modificare una data passata."
+        )
+      } else if (
+        message.includes(
+          "ACCOUNT_NON_ATTIVO"
+        )
+      ) {
+        toast.error(
+          "Il tuo account non può modificare il calendario."
+        )
+      } else {
+        toast.error(
+          "Impossibile aggiornare la disponibilità."
+        )
+      }
+    } finally {
+      setAvailabilitySavingDate(
+        ""
+      )
+    }
+  }
 
   const uploadAvatar = async (e) => {
     const file = e.target.files[0]
@@ -340,6 +891,63 @@ if (!profileData) {
         return
       }
 
+      let nextBaseLatitude =
+  baseLatitude
+
+let nextBaseLongitude =
+  baseLongitude
+
+const hasSavedCoordinates =
+  Number.isFinite(nextBaseLatitude) &&
+  Number.isFinite(nextBaseLongitude)
+
+if (
+  location?.trim() &&
+  !hasSavedCoordinates
+) {
+  const coordinates =
+    await resolveBaseCoordinates(
+      location
+    )
+
+  if (coordinates) {
+    nextBaseLatitude =
+      coordinates.latitude
+
+    nextBaseLongitude =
+      coordinates.longitude
+
+    setBaseLatitude(
+      coordinates.latitude
+    )
+
+    setBaseLongitude(
+      coordinates.longitude
+    )
+  } else if (
+    emailNewJobs &&
+    emailJobsWithinRadius
+  ) {
+    toast.error(
+      "Non sono riuscito a determinare le coordinate della base operativa. Riprova prima di attivare il filtro per distanza."
+    )
+
+    return
+  }
+}
+
+if (
+  emailNewJobs &&
+  emailJobsWithinRadius &&
+  !location?.trim()
+) {
+  toast.error(
+    "Seleziona una base operativa prima di attivare il filtro per distanza."
+  )
+
+  return
+}
+
       const updates = {
   name: name?.trim() || "",
   surname: surname?.trim() || "",
@@ -348,9 +956,29 @@ if (!profileData) {
   services: services.join(", "),
   certifications: certifications.join(", "),
   experience,
-  city: location || "",
-  location: location || "",
-  email_new_jobs: emailNewJobs
+
+  city:
+    location || "",
+
+  location:
+    location || "",
+
+  email_new_jobs:
+    emailNewJobs,
+
+  base_latitude:
+    nextBaseLatitude,
+
+  base_longitude:
+    nextBaseLongitude,
+
+  operating_radius_km:
+    Number(operatingRadiusKm),
+
+  email_jobs_within_radius:
+    emailNewJobs
+      ? emailJobsWithinRadius
+      : false
 }
 
 const { data, error } = await supabase
@@ -525,6 +1153,30 @@ const { data, error } = await supabase
   const fullName = getFullName(name, surname)
   const displayPosition = getDisplayPosition(city, location)
 
+  const availabilityCalendar =
+  getAvailabilityCalendar(
+    availabilityMonth.year,
+    availabilityMonth.month
+  )
+
+const availabilityMonthLabel =
+  getAvailabilityMonthLabel(
+    availabilityMonth.year,
+    availabilityMonth.month
+  )
+
+const todayKey =
+  getRomeTodayKey()
+
+const todayParts =
+  getRomeTodayParts()
+
+const showingCurrentMonth =
+  availabilityMonth.year ===
+    todayParts.year &&
+  availabilityMonth.month ===
+    todayParts.month
+
   return (
   <div className="min-h-screen flex flex-col text-white">
     <Navbar logged />
@@ -601,6 +1253,15 @@ const { data, error } = await supabase
                     label="Posizione"
                     value={displayPosition}
                   />
+
+                  <ProfileInfoRow
+  label="Raggio"
+  value={
+    operatingRadiusKm === 0
+      ? "Tutta Italia"
+      : `${operatingRadiusKm} km`
+  }
+/>
 
                   <ProfileInfoRow
                     label="Drone"
@@ -1059,9 +1720,20 @@ const { data, error } = await supabase
                 <select
   value={location}
   onChange={(e) => {
-    setLocation(e.target.value)
-    setCity(e.target.value)
-  }}
+  const nextLocation =
+    e.target.value
+
+  setLocation(nextLocation)
+  setCity(nextLocation)
+
+  /*
+   * La città è cambiata:
+   * le vecchie coordinate non sono più valide.
+   * Verranno ricalcolate al salvataggio.
+   */
+  setBaseLatitude(null)
+  setBaseLongitude(null)
+}}
   className="w-full rounded-xl border border-white/10 bg-[#0B1028] px-4 py-3.5 text-white outline-none transition focus:border-green-400/50 [color-scheme:dark]"
 >
   <option
@@ -1084,6 +1756,343 @@ const { data, error } = await supabase
   )}
 </select>
               </div>
+
+              {/* RAGGIO OPERATIVO */}
+<div className="rounded-2xl border border-cyan-400/15 bg-cyan-400/[0.04] p-5">
+  <div className="mb-5">
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
+      Raggio operativo
+    </p>
+
+    <h3 className="mt-2 text-lg font-bold text-white">
+      Area in cui preferisci lavorare
+    </h3>
+
+    <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+      Il raggio parte dalla città impostata nel tuo profilo.
+      Non limita la Bacheca lavori: potrai continuare a vedere
+      tutti gli annunci disponibili.
+    </p>
+  </div>
+
+  <div className="grid gap-4 md:grid-cols-2">
+
+    {/* BASE */}
+    <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+        Base operativa
+      </p>
+
+      <p className="mt-2 text-base font-bold text-white">
+        {location || "Non impostata"}
+      </p>
+
+      <p className="mt-2 text-xs leading-5 text-gray-500">
+        {Number.isFinite(baseLatitude) &&
+        Number.isFinite(baseLongitude)
+          ? "Coordinate della base salvate."
+          : location
+            ? "Le coordinate verranno calcolate al prossimo salvataggio."
+            : "Seleziona prima la tua città."}
+      </p>
+    </div>
+
+
+    {/* RAGGIO */}
+    <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+      <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-500">
+        Distanza massima
+      </label>
+
+      <select
+        value={operatingRadiusKm}
+        onChange={(e) =>
+          setOperatingRadiusKm(
+            Number(e.target.value)
+          )
+        }
+        className="w-full rounded-xl border border-white/10 bg-[#0B1028] px-4 py-3 text-white outline-none transition focus:border-cyan-400/50 [color-scheme:dark]"
+      >
+        {operatingRadiusOptions.map(
+          (option) => (
+            <option
+              key={option.value}
+              value={option.value}
+              className="bg-[#0B1028] text-white"
+            >
+              {option.label}
+            </option>
+          )
+        )}
+      </select>
+
+      <p className="mt-2 text-xs leading-5 text-gray-500">
+        {operatingRadiusKm === 0
+          ? "Nessun limite di distanza."
+          : `Preferenza attuale: entro ${operatingRadiusKm} km dalla tua base.`}
+      </p>
+    </div>
+  </div>
+
+
+  {/* FILTRO EMAIL */}
+  <label
+    className={`mt-4 flex items-start justify-between gap-5 rounded-2xl border p-4 transition ${
+      emailNewJobs
+        ? "cursor-pointer border-white/[0.08] bg-black/20"
+        : "cursor-not-allowed border-white/[0.05] bg-black/10 opacity-50"
+    }`}
+  >
+    <div>
+      <p className="font-semibold text-gray-200">
+        Limita le email al mio raggio
+      </p>
+
+      <p className="mt-1 text-sm leading-6 text-gray-500">
+        Ricevi notifiche dei nuovi lavori soltanto quando
+        il lavoro si trova entro il raggio operativo scelto.
+      </p>
+
+      {!emailNewJobs && (
+        <p className="mt-2 text-xs font-semibold text-amber-300">
+          Attiva prima le email “Nuovi lavori pubblicati”.
+        </p>
+      )}
+    </div>
+
+    <input
+      type="checkbox"
+      checked={
+        emailJobsWithinRadius
+      }
+      disabled={!emailNewJobs}
+      onChange={(e) =>
+        setEmailJobsWithinRadius(
+          e.target.checked
+        )
+      }
+      className="mt-1 h-5 w-5 shrink-0 accent-cyan-400"
+    />
+  </label>
+</div>
+
+{/* DISPONIBILITÀ */}
+<div className="rounded-2xl border border-purple-400/15 bg-purple-400/[0.04] p-5 sm:p-6">
+
+  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-purple-300">
+        Disponibilità
+      </p>
+
+      <h3 className="mt-2 text-lg font-bold text-white">
+        Calendario operativo
+      </h3>
+
+      <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-500">
+        Sei considerato disponibile di default.
+        Tocca soltanto i giorni in cui non puoi
+        accettare lavori.
+      </p>
+    </div>
+
+
+    <div className="flex items-center gap-2">
+
+      <button
+        type="button"
+        disabled={
+          showingCurrentMonth ||
+          availabilityLoading
+        }
+        onClick={() =>
+          changeAvailabilityMonth(
+            -1
+          )
+        }
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-lg font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30"
+        aria-label="Mese precedente"
+      >
+        ←
+      </button>
+
+      <button
+        type="button"
+        disabled={
+          availabilityLoading
+        }
+        onClick={() =>
+          changeAvailabilityMonth(
+            1
+          )
+        }
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-lg font-bold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30"
+        aria-label="Mese successivo"
+      >
+        →
+      </button>
+
+    </div>
+  </div>
+
+
+  <div className="mt-6 rounded-2xl border border-white/[0.08] bg-black/20 p-3 sm:p-5">
+
+    <div className="mb-5 flex items-center justify-between gap-3">
+
+      <h4 className="text-lg font-bold capitalize text-white">
+        {availabilityMonthLabel}
+      </h4>
+
+      {availabilityLoading && (
+        <span className="text-xs font-semibold text-purple-300">
+          Caricamento...
+        </span>
+      )}
+
+    </div>
+
+
+    {/* GIORNI SETTIMANA */}
+    <div className="grid grid-cols-7 gap-1 sm:gap-2">
+
+      {availabilityWeekDays.map(
+        (day) => (
+          <div
+            key={day}
+            className="pb-2 text-center text-[10px] font-bold uppercase tracking-wider text-gray-600 sm:text-xs"
+          >
+            {day}
+          </div>
+        )
+      )}
+
+
+      {/* GIORNI MESE */}
+      {availabilityCalendar.map(
+        (day, index) => {
+          if (!day) {
+            return (
+              <div
+                key={`empty-${index}`}
+                aria-hidden="true"
+                className="aspect-square"
+              />
+            )
+          }
+
+          const dateKey =
+            createDateKey(
+              availabilityMonth.year,
+              availabilityMonth.month,
+              day
+            )
+
+          const isPast =
+            dateKey <
+            todayKey
+
+          const isToday =
+            dateKey ===
+            todayKey
+
+          const isUnavailable =
+            unavailableDates.has(
+              dateKey
+            )
+
+          const isSaving =
+            availabilitySavingDate ===
+            dateKey
+
+          return (
+            <button
+              key={dateKey}
+              type="button"
+              disabled={
+                isPast ||
+                availabilityLoading ||
+                Boolean(
+                  availabilitySavingDate
+                )
+              }
+              onClick={() =>
+                toggleUnavailableDate(
+                  dateKey
+                )
+              }
+              title={
+                isUnavailable
+                  ? "Non disponibile"
+                  : "Disponibile"
+              }
+              className={`relative aspect-square rounded-xl border text-sm font-bold transition sm:rounded-2xl ${
+                isUnavailable
+                  ? "border-red-400/40 bg-red-500/15 text-red-200"
+                  : isPast
+                    ? "cursor-not-allowed border-white/[0.03] bg-white/[0.02] text-gray-700"
+                    : "border-white/[0.08] bg-white/[0.04] text-gray-200 hover:border-green-400/30 hover:bg-green-400/10"
+              } ${
+                isToday
+                  ? "ring-1 ring-cyan-400/60"
+                  : ""
+              }`}
+            >
+
+              <span>
+                {day}
+              </span>
+
+              {isUnavailable && (
+                <span className="absolute bottom-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-red-400 sm:bottom-2" />
+              )}
+
+              {isSaving && (
+                <span className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60 text-[9px] text-white sm:rounded-2xl">
+                  ...
+                </span>
+              )}
+
+            </button>
+          )
+        }
+      )}
+
+    </div>
+
+
+    {/* LEGENDA */}
+    <div className="mt-5 flex flex-wrap gap-3 border-t border-white/[0.07] pt-4">
+
+      <div className="flex items-center gap-2 text-xs text-gray-400">
+        <span className="h-3 w-3 rounded-full bg-green-400/70" />
+        Disponibile
+      </div>
+
+      <div className="flex items-center gap-2 text-xs text-gray-400">
+        <span className="h-3 w-3 rounded-full bg-red-400/80" />
+        Non disponibile
+      </div>
+
+      <div className="flex items-center gap-2 text-xs text-gray-400">
+        <span className="h-3 w-3 rounded-full border border-cyan-400" />
+        Oggi
+      </div>
+
+    </div>
+  </div>
+
+
+  <div className="mt-4 rounded-xl border border-white/[0.07] bg-white/[0.03] px-4 py-3">
+    <p className="text-xs leading-5 text-gray-500">
+      Il calendario è indicativo: una giornata segnata
+      come non disponibile non impedisce comunque di
+      candidarti a un lavoro.
+    </p>
+  </div>
+
+</div>
 
               {/* SALVATAGGIO */}
               <div className="flex justify-end border-t border-white/10 pt-6">
@@ -1299,11 +2308,18 @@ const { data, error } = await supabase
             <input
               type="checkbox"
               checked={emailNewJobs}
-              onChange={(e) =>
-                setEmailNewJobs(
-                  e.target.checked
-                )
-              }
+              onChange={(e) => {
+  const enabled =
+    e.target.checked
+
+  setEmailNewJobs(enabled)
+
+  if (!enabled) {
+    setEmailJobsWithinRadius(
+      false
+    )
+  }
+}}
               className="h-5 w-5 shrink-0 accent-green-500"
             />
           </label>

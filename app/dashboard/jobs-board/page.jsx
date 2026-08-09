@@ -15,7 +15,8 @@ import {
   Users,
   Briefcase,
   CheckCircle2,
-  Plane
+  Plane,
+  Ruler
 } from "lucide-react"
 
 function isAssignedExpired(job) {
@@ -190,6 +191,216 @@ function getApplicationErrorMessage(error) {
   )
 }
 
+function calculateDistanceKm(
+  latitude1,
+  longitude1,
+  latitude2,
+  longitude2
+) {
+  const parseCoordinate = (
+    value,
+    min,
+    max
+  ) => {
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+      return null
+    }
+
+    const number =
+      Number(value)
+
+    if (
+      !Number.isFinite(number) ||
+      number < min ||
+      number > max
+    ) {
+      return null
+    }
+
+    return number
+  }
+
+  const lat1 =
+    parseCoordinate(
+      latitude1,
+      -90,
+      90
+    )
+
+  const lon1 =
+    parseCoordinate(
+      longitude1,
+      -180,
+      180
+    )
+
+  const lat2 =
+    parseCoordinate(
+      latitude2,
+      -90,
+      90
+    )
+
+  const lon2 =
+    parseCoordinate(
+      longitude2,
+      -180,
+      180
+    )
+
+  if (
+    lat1 === null ||
+    lon1 === null ||
+    lat2 === null ||
+    lon2 === null
+  ) {
+    return null
+  }
+
+  const toRadians = (degrees) =>
+    degrees *
+    (Math.PI / 180)
+
+  const earthRadiusKm =
+    6371.0088
+
+  const deltaLatitude =
+    toRadians(
+      lat2 - lat1
+    )
+
+  const deltaLongitude =
+    toRadians(
+      lon2 - lon1
+    )
+
+  const firstLatitude =
+    toRadians(lat1)
+
+  const secondLatitude =
+    toRadians(lat2)
+
+  const haversine =
+    Math.sin(
+      deltaLatitude / 2
+    ) ** 2 +
+    Math.cos(firstLatitude) *
+      Math.cos(secondLatitude) *
+      Math.sin(
+        deltaLongitude / 2
+      ) ** 2
+
+  const safeHaversine =
+    Math.min(
+      1,
+      Math.max(
+        0,
+        haversine
+      )
+    )
+
+  const centralAngle =
+    2 *
+    Math.atan2(
+      Math.sqrt(
+        safeHaversine
+      ),
+      Math.sqrt(
+        1 - safeHaversine
+      )
+    )
+
+  return (
+    earthRadiusKm *
+    centralAngle
+  )
+}
+
+function normalizeJobDateKey(value) {
+  if (!value) {
+    return ""
+  }
+
+  const text =
+    String(value).trim()
+
+  /*
+   * Supabase DATE normalmente arriva già:
+   * YYYY-MM-DD
+   */
+  const directMatch =
+    text.match(
+      /^(\d{4}-\d{2}-\d{2})/
+    )
+
+  if (directMatch) {
+    return directMatch[1]
+  }
+
+  /*
+   * Fallback nel caso in futuro il valore
+   * diventasse un timestamp.
+   */
+  const parsed =
+    new Date(value)
+
+  if (
+    Number.isNaN(
+      parsed.getTime()
+    )
+  ) {
+    return ""
+  }
+
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-US",
+      {
+        timeZone:
+          "Europe/Rome",
+
+        year:
+          "numeric",
+
+        month:
+          "2-digit",
+
+        day:
+          "2-digit"
+      }
+    ).formatToParts(
+      parsed
+    )
+
+  const values = {}
+
+  for (const part of parts) {
+    if (
+      part.type === "year" ||
+      part.type === "month" ||
+      part.type === "day"
+    ) {
+      values[part.type] =
+        part.value
+    }
+  }
+
+  if (
+    !values.year ||
+    !values.month ||
+    !values.day
+  ) {
+    return ""
+  }
+
+  return (
+    `${values.year}-${values.month}-${values.day}`
+  )
+}
 
 export default function JobsBoardPage() {
   const [jobs, setJobs] = useState([])
@@ -273,11 +484,137 @@ const [
   }
 
   const boardJobs =
-    Array.isArray(data?.jobs)
-      ? data.jobs
-      : []
+  Array.isArray(data?.jobs)
+    ? data.jobs
+    : []
 
-  setJobs(boardJobs)
+const pilotBaseLatitude =
+  data?.pilotBase?.latitude
+
+const pilotBaseLongitude =
+  data?.pilotBase?.longitude
+
+
+/*
+ * Recuperiamo l'intervallo delle date
+ * presenti nella Bacheca.
+ */
+const jobDateKeys =
+  [
+    ...new Set(
+      boardJobs
+        .map(
+          (job) =>
+            normalizeJobDateKey(
+              job.job_date
+            )
+        )
+        .filter(Boolean)
+    )
+  ].sort()
+
+
+let unavailableDateSet =
+  new Set()
+
+
+/*
+ * La RLS della tabella garantisce che
+ * il pilota possa leggere esclusivamente
+ * le proprie indisponibilità.
+ *
+ * Un eventuale errore del calendario
+ * NON deve impedire di usare la Bacheca.
+ */
+if (jobDateKeys.length > 0) {
+  const firstDate =
+    jobDateKeys[0]
+
+  const lastDate =
+    jobDateKeys[
+      jobDateKeys.length - 1
+    ]
+
+  const {
+    data: unavailableRows,
+    error: unavailableError
+  } = await supabase
+    .from(
+      "pilot_unavailable_dates"
+    )
+    .select(
+      "unavailable_date"
+    )
+    .gte(
+      "unavailable_date",
+      firstDate
+    )
+    .lte(
+      "unavailable_date",
+      lastDate
+    )
+
+
+  if (unavailableError) {
+    console.error(
+      "[jobs-board] Disponibilità pilota non disponibile:",
+      unavailableError
+    )
+  } else {
+    unavailableDateSet =
+      new Set(
+        (unavailableRows || [])
+          .map(
+            (row) =>
+              row.unavailable_date
+          )
+          .filter(Boolean)
+      )
+  }
+}
+
+
+const jobsWithDistance =
+  boardJobs.map((job) => {
+    const distanceKm =
+      calculateDistanceKm(
+        pilotBaseLatitude,
+        pilotBaseLongitude,
+        job.latitude,
+        job.longitude
+      )
+
+    const jobDateKey =
+      normalizeJobDateKey(
+        job.job_date
+      )
+
+    return {
+      ...job,
+
+      distanceKm:
+        Number.isFinite(
+          distanceKm
+        )
+          ? distanceKm
+          : null,
+
+      jobDateKey,
+
+      isUnavailableOnJobDate:
+        Boolean(
+          jobDateKey &&
+          unavailableDateSet.has(
+            jobDateKey
+          )
+        )
+    }
+  })
+
+
+setJobs(
+  jobsWithDistance
+)
 
   setActiveJobs(
     Number(
@@ -714,17 +1051,75 @@ useEffect(() => {
                         {job.description}
                       </p>
 
-                      <div className="flex flex-wrap gap-6 text-gray-400 mb-6">
-                        <div className="flex items-center gap-2 text-base">
-                          <MapPin size={16} />
-                          {job.location}
-                        </div>
+                      <div className="mb-6 flex flex-wrap gap-4 text-gray-400">
 
-                        <div className="flex items-center gap-2 text-base">
-                          <Calendar size={16} />
-                          {job.job_date}
-                        </div>
-                      </div>
+  <div className="flex items-center gap-2 text-base">
+    <MapPin size={16} />
+
+    <span>
+      {job.location}
+    </span>
+  </div>
+
+
+  <div className="flex items-center gap-2 text-base">
+    <Calendar size={16} />
+
+    <span>
+      {job.job_date}
+    </span>
+  </div>
+
+
+  {Number.isFinite(
+    job.distanceKm
+  ) ? (
+    <div className="flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/[0.07] px-3 py-1.5 text-sm font-semibold text-cyan-200">
+      <Ruler size={15} />
+
+      <span>
+        {Math.round(
+          job.distanceKm
+        )} km dalla tua base
+      </span>
+    </div>
+  ) : (
+    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm text-gray-500">
+      <Ruler size={15} />
+
+      <span>
+        Distanza non disponibile
+      </span>
+    </div>
+  )}
+
+</div>
+
+{job.isUnavailableOnJobDate && (
+  <div className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/[0.08] px-4 py-3">
+
+    <div className="flex items-start gap-3">
+
+      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-300">
+        <Calendar size={17} />
+      </div>
+
+      <div>
+        <p className="text-sm font-bold text-red-200">
+          Hai indicato che non sei disponibile in questa data
+        </p>
+
+        <p className="mt-1 text-xs leading-5 text-red-100/60">
+          Il calendario è indicativo:
+          puoi comunque inviare la candidatura
+          se la tua disponibilità è cambiata.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+)}
 
                       {(job.image1 || job.image2 || job.image3) && (
                         <div className="flex gap-4 mt-4 flex-wrap">
