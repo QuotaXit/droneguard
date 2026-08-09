@@ -103,6 +103,48 @@ function hasAppointmentDetails(
   )
 }
 
+function hasOperationalDetails(
+  assignment
+) {
+  if (!assignment) {
+    return false
+  }
+
+  return Boolean(
+    String(
+      assignment?.exact_location ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.meeting_point ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.arrival_time ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.phone ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.email ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.notes ||
+        ""
+    ).trim() ||
+    String(
+      assignment?.status ||
+        ""
+    )
+      .trim()
+      .toLowerCase() ===
+      "details_sent"
+  )
+}
+
 function toDateTimeLocalValue(
   value
 ) {
@@ -153,6 +195,10 @@ function JobDataContent() {
 
   const [selectedAssignment, setSelectedAssignment] = useState(null)
   const [selectedJob, setSelectedJob] = useState(null)
+  const [
+    activeAssignments,
+    setActiveAssignments
+  ] = useState([])
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState(false)
 
@@ -216,12 +262,19 @@ const [
   setAppointmentChangeCancelling
 ] = useState(false)
 
-  const clearCurrentJob = () => {
+  const clearCurrentJob = (
+    clearAssignments = true
+  ) => {
   setSelectedAssignment(null)
   setSelectedJob(null)
   setAppointmentChangeRequest(
     null
   )
+
+  if (clearAssignments) {
+    setActiveAssignments([])
+  }
+
   setLoading(false)
 }
 
@@ -330,9 +383,10 @@ const loadAppointmentChangeRequest =
       clearCurrentJob()
       return
     }
-   setCurrentUserId(
-  user.id
-)
+
+    setCurrentUserId(
+      user.id
+    )
 
     let query = supabase
       .from("job_assignments")
@@ -342,61 +396,174 @@ const loadAppointmentChangeRequest =
       `)
       .eq("pilot_id", user.id)
       .in("status", ACTIVE_STATUSES)
-      .order("created_at", { ascending: false })
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      )
 
     if (jobId) {
-      query = query.eq("job_id", jobId)
+      query =
+        query.eq(
+          "job_id",
+          jobId
+        )
     }
 
-    const { data: assignments, error: assignmentsError } = await query
-
+    const {
+      data: assignments,
+      error: assignmentsError
+    } = await query
 
     if (assignmentsError) {
-      console.error("Errore caricamento job assignments:", assignmentsError)
+      console.error(
+        "Errore caricamento job assignments:",
+        assignmentsError
+      )
+
+      clearCurrentJob()
+      return
     }
 
-    const activeAssignments = (assignments || []).filter((assignment) => {
-      const assignmentStatus = String(assignment?.status || "").trim().toLowerCase()
-      const jobStatus = String(assignment?.jobs?.status || "").trim().toLowerCase()
+    const filteredAssignments =
+      (assignments || [])
+        .filter(
+          (assignment) => {
+            const assignmentStatus =
+              String(
+                assignment?.status ||
+                  ""
+              )
+                .trim()
+                .toLowerCase()
 
-      const assignmentActive = ACTIVE_STATUSES.includes(assignmentStatus)
-      const assignmentNotClosed = !isClosedStatus(assignmentStatus)
-      const jobNotClosed = !isClosedStatus(jobStatus)
+            const jobStatus =
+              String(
+                assignment?.jobs
+                  ?.status ||
+                  ""
+              )
+                .trim()
+                .toLowerCase()
 
-      return assignmentActive && assignmentNotClosed && jobNotClosed
-    })
+            const assignmentActive =
+              ACTIVE_STATUSES.includes(
+                assignmentStatus
+              )
 
-    const assignment = activeAssignments?.[0] || null
+            const assignmentNotClosed =
+              !isClosedStatus(
+                assignmentStatus
+              )
 
+            const jobNotClosed =
+              !isClosedStatus(
+                jobStatus
+              )
 
-   if (assignment) {
-  setSelectedAssignment(
-    assignment
-  )
+            return (
+              assignmentActive &&
+              assignmentNotClosed &&
+              jobNotClosed
+            )
+          }
+        )
+        .sort(
+          (
+            first,
+            second
+          ) => {
+            const firstDate =
+              String(
+                first?.jobs
+                  ?.job_date ||
+                  "9999-12-31"
+              )
 
-  setSelectedJob(
-    assignment.jobs || null
-  )
+            const secondDate =
+              String(
+                second?.jobs
+                  ?.job_date ||
+                  "9999-12-31"
+              )
 
-  await loadAppointmentChangeRequest(
-    assignment.id
-  )
+            const dateComparison =
+              firstDate.localeCompare(
+                secondDate
+              )
 
-  setLoading(false)
+            if (
+              dateComparison !== 0
+            ) {
+              return dateComparison
+            }
 
-  return
-}
+            return String(
+              first?.jobs?.title ||
+                ""
+            ).localeCompare(
+              String(
+                second?.jobs?.title ||
+                  ""
+              ),
+              "it",
+              {
+                sensitivity:
+                  "base",
+                numeric: true
+              }
+            )
+          }
+        )
 
-     /*
-     * Un lavoro può essere mostrato al pilota
-     * soltanto quando esiste una vera assegnazione
-     * collegata al suo account.
+    setActiveAssignments(
+      filteredAssignments
+    )
+
+    /*
+     * Se la pagina è stata aperta dal menu "Dati lavoro"
+     * senza jobId, mostriamo l'elenco compatto di tutti
+     * i lavori attivi invece di scegliere automaticamente
+     * l'ultimo.
      */
-    clearCurrentJob()
+    if (!jobId) {
+      clearCurrentJob(
+        false
+      )
+      return
+    }
+
+    const assignment =
+      filteredAssignments?.[0] ||
+      null
+
+    if (assignment) {
+      setSelectedAssignment(
+        assignment
+      )
+
+      setSelectedJob(
+        assignment.jobs ||
+          null
+      )
+
+      await loadAppointmentChangeRequest(
+        assignment.id
+      )
+
+      setLoading(false)
+
+      return
+    }
+
+    clearCurrentJob(
+      false
+    )
   }, [
-  jobId,
-  loadAppointmentChangeRequest
-])
+    jobId,
+    loadAppointmentChangeRequest
+  ])
 
   useEffect(() => {
     loadData()
@@ -1254,7 +1421,10 @@ const loadAppointmentChangeRequest =
   }
 
   const job = selectedAssignment?.jobs || selectedJob || null
-  const hasOperationalData = Boolean(selectedAssignment)
+  const hasOperationalData =
+    hasOperationalDetails(
+      selectedAssignment
+    )
 
    const pilotAlreadyConfirmed =
     Boolean(job?.pilot_completed_at)
@@ -1333,22 +1503,272 @@ const appointmentReady =
             </div>
           )}
 
-          {!loading && !selectedAssignment && !selectedJob && (
-            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 sm:p-10">
-              <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
-                Nessun dato lavoro
-              </h2>
+          {!loading &&
+            !jobId &&
+            activeAssignments.length > 0 && (
+              <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-4 sm:p-6">
 
-              <p className="text-gray-400">
-                Nessun cliente ti ha ancora inviato dettagli operativi.
-              </p>
-            </div>
-          )}
+                <div className="flex flex-col gap-3 border-b border-white/10 pb-4 sm:flex-row sm:items-center sm:justify-between">
+
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-300">
+                      Lavori attivi
+                    </p>
+
+                    <h2 className="mt-1 text-xl font-bold sm:text-2xl">
+                      Seleziona il lavoro
+                    </h2>
+
+                    <p className="mt-1 text-sm text-gray-400">
+                      Ordinati per data del lavoro, dal più vicino.
+                    </p>
+                  </div>
+
+                  <div className="w-fit rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-bold text-gray-300">
+                    {activeAssignments.length} {activeAssignments.length === 1 ? "lavoro" : "lavori"}
+                  </div>
+
+                </div>
+
+
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+
+                  {activeAssignments.map(
+                    (
+                      assignment
+                    ) => {
+                      const assignmentJob =
+                        assignment?.jobs ||
+                        null
+
+                      const operationalReady =
+                        hasOperationalDetails(
+                          assignment
+                        )
+
+                      const appointmentReady =
+                        hasAppointmentDetails(
+                          assignment
+                        )
+
+                      const clientConfirmed =
+                        Boolean(
+                          assignment
+                            ?.appointment_client_confirmed_at
+                        )
+
+                      const pilotConfirmed =
+                        Boolean(
+                          assignment
+                            ?.appointment_pilot_confirmed_at
+                        )
+
+                      return (
+                        <button
+                          key={
+                            assignment.id
+                          }
+                          type="button"
+                          onClick={() =>
+                            router.push(
+                              `/dashboard/job-data?jobId=${encodeURIComponent(
+                                assignment.job_id
+                              )}`
+                            )
+                          }
+                          className="group rounded-2xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-purple-400/30 hover:bg-white/[0.05]"
+                        >
+
+                          <div className="flex items-start justify-between gap-3">
+
+                            <div className="min-w-0">
+
+                              <h3 className="truncate text-base font-bold text-white sm:text-lg">
+                                {assignmentJob?.title ||
+                                  "Lavoro"}
+                              </h3>
+
+                              <p className="mt-1 truncate text-xs text-gray-500">
+                                {assignmentJob?.location ||
+                                  "Posizione non indicata"}
+                              </p>
+
+                            </div>
+
+
+                            <span
+                              className={`shrink-0 rounded-lg px-2.5 py-1 text-[11px] font-bold ${
+                                operationalReady
+                                  ? "bg-green-400/10 text-green-300"
+                                  : "bg-amber-400/10 text-amber-200"
+                              }`}
+                            >
+                              {operationalReady
+                                ? "Dati ricevuti"
+                                : "Dati in attesa"}
+                            </span>
+
+                          </div>
+
+
+                          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-400">
+
+                            <span>
+                              📅 {formatJobDate(
+                                assignmentJob
+                                  ?.job_date
+                              )}
+                            </span>
+
+                            <span>
+                              📍 {assignmentJob
+                                ?.location ||
+                                "Non indicata"}
+                            </span>
+
+                          </div>
+
+
+                          <div className="mt-3 grid grid-cols-2 gap-2">
+
+                            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+
+                              <p className="text-[10px] uppercase tracking-wider text-gray-500">
+                                Cliente
+                              </p>
+
+                              <p
+                                className={`mt-1 text-xs font-bold ${
+                                  clientConfirmed
+                                    ? "text-green-300"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {clientConfirmed
+                                  ? "✓ Confermato"
+                                  : "Da confermare"}
+                              </p>
+
+                            </div>
+
+
+                            <div className="rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2">
+
+                              <p className="text-[10px] uppercase tracking-wider text-gray-500">
+                                Pilota
+                              </p>
+
+                              <p
+                                className={`mt-1 text-xs font-bold ${
+                                  pilotConfirmed
+                                    ? "text-green-300"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {pilotConfirmed
+                                  ? "✓ Confermato"
+                                  : appointmentReady
+                                    ? "Da confermare"
+                                    : "In attesa dati"}
+                              </p>
+
+                            </div>
+
+                          </div>
+
+
+                          <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3">
+
+                            <span className="text-xs text-gray-500">
+                              {appointmentReady
+                                ? "Appuntamento disponibile"
+                                : "Dati appuntamento incompleti"}
+                            </span>
+
+                            <span className="text-sm font-bold text-purple-300 transition group-hover:text-purple-200">
+                              Apri →
+                            </span>
+
+                          </div>
+
+                        </button>
+                      )
+                    }
+                  )}
+
+                </div>
+
+              </div>
+            )}
+
+
+          {!loading &&
+            !jobId &&
+            activeAssignments.length === 0 &&
+            !selectedAssignment &&
+            !selectedJob && (
+              <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 sm:p-10">
+
+                <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
+                  Nessun lavoro attivo
+                </h2>
+
+                <p className="text-gray-400">
+                  Non hai lavori assegnati attivi da visualizzare.
+                </p>
+
+              </div>
+            )}
+
+
+          {!loading &&
+            jobId &&
+            !selectedAssignment &&
+            !selectedJob && (
+              <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 sm:p-10">
+
+                <h2 className="mb-3 text-2xl font-bold sm:text-3xl">
+                  Lavoro non disponibile
+                </h2>
+
+                <p className="text-gray-400">
+                  Il lavoro richiesto non è disponibile oppure non è assegnato al tuo account.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    router.replace(
+                      "/dashboard/job-data"
+                    )
+                  }
+                  className="mt-5 rounded-xl border border-white/10 bg-white/[0.05] px-5 py-3 font-semibold transition hover:bg-white/10"
+                >
+                  Torna ai lavori attivi
+                </button>
+
+              </div>
+            )}
 
           {!loading && (selectedAssignment || selectedJob) && (
             <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8">
               <div className="flex flex-col gap-5 mb-8 lg:flex-row lg:items-start lg:justify-between">
                 <div>
+
+                  {jobId && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        router.push(
+                          "/dashboard/job-data"
+                        )
+                      }
+                      className="mb-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white"
+                    >
+                      ← Tutti i lavori
+                    </button>
+                  )}
+
                   <h2 className="mb-2 text-2xl font-bold sm:text-3xl">
                     {job?.title || "Lavoro"}
                   </h2>

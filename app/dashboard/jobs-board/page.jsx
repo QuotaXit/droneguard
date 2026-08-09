@@ -421,7 +421,7 @@ export default function JobsBoardPage() {
 
   const [activeJobs, setActiveJobs] = useState(0)
   const [completedJobs, setCompletedJobs] = useState(0)
-  const [pilotsCount, setPilotsCount] = useState(0)
+  const [myApplications, setMyApplications] = useState(0)
 
   const [cityFilter, setCityFilter] = useState("")
   const [workTypeFilter, setWorkTypeFilter] = useState("")
@@ -513,6 +513,100 @@ const [
   Array.isArray(data?.jobs)
     ? data.jobs
     : []
+
+  /*
+   * Le statistiche laterali devono appartenere
+   * esclusivamente al pilota autenticato.
+   * Non usiamo i contatori globali dello snapshot.
+   */
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser()
+
+  if (authError) {
+    console.error(
+      "[jobs-board] Profilo autenticato non disponibile:",
+      authError
+    )
+  }
+
+  if (user?.id) {
+    const [
+      activeAssignmentsResult,
+      completedAssignmentsResult,
+      applicationsResult
+    ] = await Promise.all([
+      supabase
+        .from("job_assignments")
+        .select("id", {
+          count: "exact",
+          head: true
+        })
+        .eq("pilot_id", user.id)
+        .in("status", ACTIVE_STATUSES),
+
+      supabase
+        .from("job_assignments")
+        .select("id", {
+          count: "exact",
+          head: true
+        })
+        .eq("pilot_id", user.id)
+        .eq("status", "completed"),
+
+      supabase
+        .from("applications")
+        .select("id", {
+          count: "exact",
+          head: true
+        })
+        .eq("pilot_id", user.id)
+    ])
+
+    if (activeAssignmentsResult.error) {
+      console.error(
+        "[jobs-board] Conteggio lavori attivi non disponibile:",
+        activeAssignmentsResult.error
+      )
+    }
+
+    if (completedAssignmentsResult.error) {
+      console.error(
+        "[jobs-board] Conteggio lavori completati non disponibile:",
+        completedAssignmentsResult.error
+      )
+    }
+
+    if (applicationsResult.error) {
+      console.error(
+        "[jobs-board] Conteggio candidature non disponibile:",
+        applicationsResult.error
+      )
+    }
+
+    setActiveJobs(
+      Number(
+        activeAssignmentsResult.count || 0
+      )
+    )
+
+    setCompletedJobs(
+      Number(
+        completedAssignmentsResult.count || 0
+      )
+    )
+
+    setMyApplications(
+      Number(
+        applicationsResult.count || 0
+      )
+    )
+  } else {
+    setActiveJobs(0)
+    setCompletedJobs(0)
+    setMyApplications(0)
+  }
 
     const jobIds =
   boardJobs
@@ -680,27 +774,48 @@ isSaved:
   })
 
 
+const orderedJobs =
+  [...jobsWithDistance].sort(
+    (firstJob, secondJob) => {
+      const firstDate =
+        normalizeJobDateKey(
+          firstJob.job_date
+        ) || "9999-12-31"
+
+      const secondDate =
+        normalizeJobDateKey(
+          secondJob.job_date
+        ) || "9999-12-31"
+
+      const dateComparison =
+        firstDate.localeCompare(
+          secondDate
+        )
+
+      if (dateComparison !== 0) {
+        return dateComparison
+      }
+
+      const firstCreatedAt =
+        new Date(
+          firstJob.created_at || 0
+        ).getTime()
+
+      const secondCreatedAt =
+        new Date(
+          secondJob.created_at || 0
+        ).getTime()
+
+      return (
+        secondCreatedAt -
+        firstCreatedAt
+      )
+    }
+  )
+
 setJobs(
-  jobsWithDistance
+  orderedJobs
 )
-
-  setActiveJobs(
-    Number(
-      data?.stats?.activeJobs || 0
-    )
-  )
-
-  setCompletedJobs(
-    Number(
-      data?.stats?.completedJobs || 0
-    )
-  )
-
-  setPilotsCount(
-    Number(
-      data?.stats?.totalApplications || 0
-    )
-  )
 
   setApplicationsEnabled(
     Boolean(
@@ -1111,368 +1226,461 @@ const toggleSavedJob =
       <Navbar logged />
 
       <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
-        <div className="mx-auto flex w-full max-w-[1700px] flex-col gap-6 px-4 py-6 sm:px-6 lg:flex-row lg:gap-8 lg:px-8">
-          <div className="w-full lg:w-[320px] lg:shrink-0">
-            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-7 lg:sticky lg:top-8">
-              <h2 className="mb-6 text-2xl font-bold sm:mb-8 sm:text-3xl">Dashboard</h2>
+        <div className="mx-auto grid w-full max-w-[1560px] grid-cols-1 gap-5 px-4 py-5 sm:px-6 lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-6 lg:px-8 lg:py-7">
 
-              <div className="space-y-5">
-                <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Plane size={20} />
-                    <p className="text-gray-300">Lavori attuali</p>
-                  </div>
+          <aside className="h-fit rounded-3xl border border-white/10 bg-[#140a3a] p-4 lg:sticky lg:top-7">
 
-                  <h3 className="text-3xl font-bold text-green-400 sm:text-4xl">
-                    {activeJobs}
-                  </h3>
-                </div>
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-300">
+                Il tuo profilo
+              </p>
 
-                <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-                  <div className="flex items-center gap-3 mb-3">
-                    <CheckCircle2 size={20} />
-                    <p className="text-gray-300">Lavori completati</p>
-                  </div>
+              <h2 className="mt-1 text-xl font-bold">
+                Riepilogo pilota
+              </h2>
 
-                  <h3 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
-                    {completedJobs}
-                  </h3>
-                </div>
-
-                <div className="bg-white/5 rounded-2xl p-5 border border-white/10">
-                  <div className="flex items-center gap-3 mb-3">
-                    <Users size={20} />
-                    <p className="text-gray-300">Candidature totali</p>
-                  </div>
-
-                  <h3 className="text-3xl font-bold text-yellow-400 sm:text-4xl">
-                    {pilotsCount}
-                  </h3>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <div className="mb-8">
-              <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-6xl">Bacheca lavori</h1>
-
-              <p className="text-base text-gray-400 sm:text-xl">
-                Esplora i lavori pubblicati dai clienti DroneGuard.
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                Questi numeri riguardano soltanto il tuo account.
               </p>
             </div>
 
+            <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
+
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-green-400/10 text-green-300">
+                    <Plane size={18} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-xs text-gray-500">
+                      Lavori attivi
+                    </p>
+
+                    <p className="text-xs font-semibold text-gray-300">
+                      Assegnati a te
+                    </p>
+                  </div>
+                </div>
+
+                <span className="ml-3 text-2xl font-black text-green-400">
+                  {activeJobs}
+                </span>
+              </div>
+
+
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-400/10 text-cyan-300">
+                    <CheckCircle2 size={18} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-xs text-gray-500">
+                      Completati
+                    </p>
+
+                    <p className="text-xs font-semibold text-gray-300">
+                      Dal tuo profilo
+                    </p>
+                  </div>
+                </div>
+
+                <span className="ml-3 text-2xl font-black text-cyan-400">
+                  {completedJobs}
+                </span>
+              </div>
+
+
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400/10 text-amber-300">
+                    <Users size={18} />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className="truncate text-xs text-gray-500">
+                      Candidature
+                    </p>
+
+                    <p className="text-xs font-semibold text-gray-300">
+                      Inviate da te
+                    </p>
+                  </div>
+                </div>
+
+                <span className="ml-3 text-2xl font-black text-amber-300">
+                  {myApplications}
+                </span>
+              </div>
+
+            </div>
+          </aside>
+
+
+          <main className="min-w-0">
+
+            <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-300">
+                  Opportunità
+                </p>
+
+                <h1 className="mt-1 text-3xl font-black sm:text-4xl lg:text-5xl">
+                  Bacheca lavori
+                </h1>
+
+                <p className="mt-2 text-sm text-gray-400 sm:text-base">
+                  I lavori più vicini alla scadenza sono mostrati per primi.
+                </p>
+              </div>
+
+              <div className="w-fit rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-semibold text-gray-300">
+                {jobs.length} {jobs.length === 1 ? "lavoro disponibile" : "lavori disponibili"}
+              </div>
+            </div>
+
+
             {applicationsUnavailable ? (
-  <div className="mb-8 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-5">
-    <h2 className="font-bold text-yellow-200">
-      {maintenanceActive
-        ? "DroneGuard è in manutenzione"
-        : "Candidature temporaneamente sospese"}
-    </h2>
+              <div className="mb-4 rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-4">
+                <h2 className="font-bold text-yellow-200">
+                  {maintenanceActive
+                    ? "DroneGuard è in manutenzione"
+                    : "Candidature temporaneamente sospese"}
+                </h2>
 
-    <p className="mt-2 text-sm leading-6 text-yellow-100/80">
-      {maintenanceActive
-        ? "In questo momento non è possibile inviare nuove candidature. I lavori pubblicati restano visibili."
-        : "Il Team ha sospeso temporaneamente l’invio di nuove candidature. Riprova più tardi."}
-    </p>
-  </div>
-) : null}
+                <p className="mt-1 text-sm leading-6 text-yellow-100/80">
+                  {maintenanceActive
+                    ? "In questo momento non è possibile inviare nuove candidature. I lavori pubblicati restano visibili."
+                    : "Il Team ha sospeso temporaneamente l’invio di nuove candidature. Riprova più tardi."}
+                </p>
+              </div>
+            ) : null}
 
-            <div className="mb-8 rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+
+            <div className="mb-5 rounded-2xl border border-white/10 bg-[#140a3a] p-3.5 sm:p-4">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto_auto]">
+
                 <input
                   type="text"
-                  placeholder="Filtra per città"
+                  placeholder="Città"
                   value={cityFilter}
-                  onChange={(e) => setCityFilter(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-white placeholder:text-gray-400 outline-none"
+                  onChange={(e) =>
+                    setCityFilter(
+                      e.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500"
                 />
 
                 <input
                   type="text"
-                  placeholder="Filtra per tipo lavoro"
+                  placeholder="Tipo di lavoro"
                   value={workTypeFilter}
-                  onChange={(e) => setWorkTypeFilter(e.target.value)}
-                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-white placeholder:text-gray-400 outline-none"
+                  onChange={(e) =>
+                    setWorkTypeFilter(
+                      e.target.value
+                    )
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#1d1250] px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500"
                 />
 
                 <button
-  type="button"
-  onClick={() =>
-    setSavedOnly(
-      (current) =>
-        !current
-    )
-  }
-  className={`flex w-full items-center justify-center gap-2 rounded-xl border p-4 font-semibold transition ${
-    savedOnly
-      ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
-      : "border-white/10 bg-white/5 text-white hover:bg-white/10"
-  }`}
->
-  <Bookmark
-    size={18}
-    fill={
-      savedOnly
-        ? "currentColor"
-        : "none"
-    }
-  />
+                  type="button"
+                  onClick={() =>
+                    setSavedOnly(
+                      (current) =>
+                        !current
+                    )
+                  }
+                  className={`flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition ${
+                    savedOnly
+                      ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+                      : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+                  }`}
+                >
+                  <Bookmark
+                    size={17}
+                    fill={
+                      savedOnly
+                        ? "currentColor"
+                        : "none"
+                    }
+                  />
 
-  {savedOnly
-    ? "Mostra tutti"
-    : "Solo salvati"}
-</button>
+                  {savedOnly
+                    ? "Tutti"
+                    : "Salvati"}
+                </button>
 
                 <button
+                  type="button"
                   onClick={() => {
                     setCityFilter("")
                     setWorkTypeFilter("")
                     setSavedOnly(false)
                   }}
-                  className="w-full rounded-xl border border-white/10 bg-white/5 p-4 font-semibold text-white hover:bg-white/10 transition"
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
                 >
-                  Reset filtri
+                  Reset
                 </button>
+
               </div>
             </div>
 
-            <div className="space-y-6 lg:max-h-[1320px] lg:space-y-8 lg:overflow-y-auto lg:pr-3">
-              {filteredJobs.length === 0 && (
-                <div className="border border-white/10 bg-[#140a3a] rounded-3xl p-14 text-center">
-                  <h2 className="text-3xl font-bold mb-4">
-                    Nessun lavoro disponibile
-                  </h2>
 
-                  <p className="text-gray-400">
-                    I clienti non hanno ancora pubblicato lavori.
-                  </p>
-                </div>
-              )}
+            {filteredJobs.length === 0 ? (
+              <div className="rounded-3xl border border-white/10 bg-[#140a3a] px-6 py-14 text-center">
+                <h2 className="text-2xl font-bold">
+                  {jobs.length === 0
+                    ? "Nessun lavoro disponibile"
+                    : "Nessun risultato con questi filtri"}
+                </h2>
 
-              {filteredJobs.map((job) => (
-                <div
-                  key={job.id}
-                  className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8"
-                >
-                  <div className="flex flex-col justify-between gap-6 lg:flex-row lg:gap-8">
-                    <div className="max-w-2xl flex-1">
-                      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                        <Briefcase size={24} />
-                        <h2 className="text-2xl font-bold sm:text-3xl">{job.title}</h2>
-                      </div>
+                <p className="mt-2 text-sm text-gray-400">
+                  {jobs.length === 0
+                    ? "Al momento non ci sono nuovi lavori aperti."
+                    : "Modifica o azzera i filtri per vedere gli altri lavori."}
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-4 xl:grid-cols-2">
 
-                      <p className="mb-6 text-base leading-relaxed text-gray-300 sm:text-lg">
-                        {job.description}
-                      </p>
+                {filteredJobs.map((job) => (
+                  <article
+                    key={job.id}
+                    className="flex min-w-0 flex-col rounded-3xl border border-white/10 bg-[#140a3a] p-4 sm:p-5"
+                  >
 
-                      <div className="mb-6 flex flex-wrap gap-4 text-gray-400">
+                    <div className="flex items-start justify-between gap-3">
 
-  <div className="flex items-center gap-2 text-base">
-    <MapPin size={16} />
-
-    <span>
-      {job.location}
-    </span>
-  </div>
-
-
-  <div className="flex items-center gap-2 text-base">
-    <Calendar size={16} />
-
-    <span>
-      {job.job_date}
-    </span>
-  </div>
-
-
-  {Number.isFinite(
-    job.distanceKm
-  ) ? (
-    <div className="flex items-center gap-2 rounded-full border border-cyan-400/20 bg-cyan-400/[0.07] px-3 py-1.5 text-sm font-semibold text-cyan-200">
-      <Ruler size={15} />
-
-      <span>
-        {Math.round(
-          job.distanceKm
-        )} km dalla tua base
-      </span>
-    </div>
-  ) : (
-    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm text-gray-500">
-      <Ruler size={15} />
-
-      <span>
-        Distanza non disponibile
-      </span>
-    </div>
-  )}
-
-</div>
-
-{job.isUnavailableOnJobDate && (
-  <div className="mb-6 rounded-2xl border border-red-400/20 bg-red-500/[0.08] px-4 py-3">
-
-    <div className="flex items-start gap-3">
-
-      <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-300">
-        <Calendar size={17} />
-      </div>
-
-      <div>
-        <p className="text-sm font-bold text-red-200">
-          Hai indicato che non sei disponibile in questa data
-        </p>
-
-        <p className="mt-1 text-xs leading-5 text-red-100/60">
-          Il calendario è indicativo:
-          puoi comunque inviare la candidatura
-          se la tua disponibilità è cambiata.
-        </p>
-      </div>
-
-    </div>
-
-  </div>
-)}
-
-                      {(job.image1 || job.image2 || job.image3) && (
-                        <div className="flex gap-4 mt-4 flex-wrap">
-                          {job.image1 && (
-                            <img
-                              src={job.image1}
-                              alt="Lavoro"
-                              className="w-36 h-28 rounded-2xl object-cover border border-white/10"
-                            />
-                          )}
-
-                          {job.image2 && (
-                            <img
-                              src={job.image2}
-                              alt="Lavoro"
-                              className="w-36 h-28 rounded-2xl object-cover border border-white/10"
-                            />
-                          )}
-
-                          {job.image3 && (
-                            <img
-                              src={job.image3}
-                              alt="Lavoro"
-                              className="w-36 h-28 rounded-2xl object-cover border border-white/10"
-                            />
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="w-full lg:w-[300px]">
-                      <button
-  type="button"
-  disabled={
-    savingJobId ===
-    job.id
-  }
-  onClick={() =>
-    toggleSavedJob(job)
-  }
-  className={`mb-4 flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
-    job.isSaved
-      ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
-      : "border-white/10 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]"
-  }`}
->
-  <Bookmark
-    size={18}
-    fill={
-      job.isSaved
-        ? "currentColor"
-        : "none"
-    }
-  />
-
-  {savingJobId === job.id
-    ? "Salvataggio..."
-    : job.isSaved
-      ? "Lavoro salvato"
-      : "Salva lavoro"}
-</button>
-                      <input
-  type="number"
-  min="0.01"
-  max="10000000"
-  step="0.01"
-  inputMode="decimal"
-  placeholder="La tua offerta €"
-  value={offers[job.id] || ""}
-  disabled={
-  applicationsUnavailable ||
-  Boolean(
-    submittingJobs[job.id]
-  ) ||
-  job.applications >= 10
-}
-  onChange={(e) =>
-    setOffers((current) => ({
-      ...current,
-      [job.id]:
-        e.target.value
-    }))
-  }
-  className="mb-4 w-full rounded-xl border border-white/10 bg-[#1d1250] p-4 text-lg disabled:cursor-not-allowed disabled:opacity-60"
-/>
-
-                      <button
-  type="button"
-  disabled={
-  applicationsUnavailable ||
-  Boolean(
-    submittingJobs[job.id]
-  ) ||
-  job.applications >= 10
-}
-  onClick={() =>
-    applyToJob(job.id)
-  }
-  className="w-full rounded-xl bg-green-500 py-4 text-lg font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
->
-  {submittingJobs[job.id]
-  ? "Invio candidatura..."
-  : maintenanceActive
-    ? "Piattaforma in manutenzione"
-    : !applicationsEnabled
-      ? "Candidature sospese"
-      : job.applications >= 10
-        ? "Candidature complete"
-        : "Candidati • 5 crediti"}
-</button>
-
-                      <div className="mt-5 bg-white/5 rounded-xl p-5 border border-white/10">
-                        <div className="flex items-center gap-2 mb-3">
-                          <Users size={18} />
-                          <p className="font-semibold text-lg">Candidature</p>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-purple-300">
+                          <Briefcase size={15} />
+                          Lavoro disponibile
                         </div>
 
-                        <p className="text-4xl font-bold">
-                          {job.applications}/10
+                        <h2 className="mt-2 line-clamp-2 text-xl font-bold text-white sm:text-2xl">
+                          {job.title}
+                        </h2>
+                      </div>
+
+
+                      <button
+                        type="button"
+                        aria-label={
+                          job.isSaved
+                            ? "Rimuovi dai salvati"
+                            : "Salva lavoro"
+                        }
+                        title={
+                          job.isSaved
+                            ? "Rimuovi dai salvati"
+                            : "Salva lavoro"
+                        }
+                        disabled={
+                          savingJobId ===
+                          job.id
+                        }
+                        onClick={() =>
+                          toggleSavedJob(job)
+                        }
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                          job.isSaved
+                            ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+                            : "border-white/10 bg-white/[0.04] text-gray-400 hover:bg-white/[0.08] hover:text-white"
+                        }`}
+                      >
+                        <Bookmark
+                          size={18}
+                          fill={
+                            job.isSaved
+                              ? "currentColor"
+                              : "none"
+                          }
+                        />
+                      </button>
+
+                    </div>
+
+
+                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-gray-400">
+                      {job.description}
+                    </p>
+
+
+                    <div className="mt-4 flex flex-wrap gap-2">
+
+                      <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs text-gray-300">
+                        <MapPin size={14} className="text-rose-300" />
+                        <span className="max-w-[220px] truncate">
+                          {job.location}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs text-gray-300">
+                        <Calendar size={14} className="text-purple-300" />
+                        <span>
+                          {job.job_date}
+                        </span>
+                      </div>
+
+                      <div
+                        className={`flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs ${
+                          Number.isFinite(
+                            job.distanceKm
+                          )
+                            ? "border-cyan-400/20 bg-cyan-400/[0.06] text-cyan-200"
+                            : "border-white/10 bg-black/20 text-gray-500"
+                        }`}
+                      >
+                        <Ruler size={14} />
+
+                        <span>
+                          {Number.isFinite(
+                            job.distanceKm
+                          )
+                            ? `${Math.round(
+                                job.distanceKm
+                              )} km`
+                            : "Distanza n/d"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs text-gray-300">
+                        <Users size={14} className="text-amber-300" />
+                        <span>
+                          {job.applications}/10 candidati
+                        </span>
+                      </div>
+
+                    </div>
+
+
+                    {job.isUnavailableOnJobDate && (
+                      <div className="mt-3 rounded-xl border border-red-400/20 bg-red-500/[0.07] px-3 py-2.5">
+                        <p className="text-xs font-semibold text-red-200">
+                          Non disponibile nel tuo calendario per questa data
                         </p>
 
-                        <p className="text-sm text-gray-400 mt-3 leading-relaxed">
-                          Al momento si sono candidati {job.applications} piloti.
+                        <p className="mt-1 text-xs leading-5 text-red-100/50">
+                          Puoi comunque candidarti se la tua disponibilità è cambiata.
                         </p>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    )}
 
-            {jobs.length > 6 && (
-              <p className="mt-4 text-sm text-gray-500">
-                La bacheca mostra circa 6 annunci visibili: scorri la lista per
-                vedere gli altri.
-              </p>
+
+                    {(job.image1 ||
+                      job.image2 ||
+                      job.image3) && (
+                      <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+
+                        {[
+                          job.image1,
+                          job.image2,
+                          job.image3
+                        ]
+                          .filter(Boolean)
+                          .map(
+                            (
+                              image,
+                              index
+                            ) => (
+                              <img
+                                key={`${job.id}-${index}`}
+                                src={image}
+                                alt={`Immagine lavoro ${index + 1}`}
+                                className="h-16 w-24 shrink-0 rounded-xl border border-white/10 object-cover"
+                              />
+                            )
+                          )}
+
+                      </div>
+                    )}
+
+
+                    <div className="mt-auto pt-4">
+
+                      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+
+                        <input
+                          type="number"
+                          min="0.01"
+                          max="10000000"
+                          step="0.01"
+                          inputMode="decimal"
+                          placeholder="La tua offerta €"
+                          value={
+                            offers[job.id] ||
+                            ""
+                          }
+                          disabled={
+                            applicationsUnavailable ||
+                            Boolean(
+                              submittingJobs[
+                                job.id
+                              ]
+                            ) ||
+                            job.applications >=
+                              10
+                          }
+                          onChange={(e) =>
+                            setOffers(
+                              (current) => ({
+                                ...current,
+                                [job.id]:
+                                  e.target.value
+                              })
+                            )
+                          }
+                          className="w-full rounded-xl border border-white/10 bg-[#1d1250] px-4 py-3 text-sm text-white outline-none disabled:cursor-not-allowed disabled:opacity-60"
+                        />
+
+                        <button
+                          type="button"
+                          disabled={
+                            applicationsUnavailable ||
+                            Boolean(
+                              submittingJobs[
+                                job.id
+                              ]
+                            ) ||
+                            job.applications >=
+                              10
+                          }
+                          onClick={() =>
+                            applyToJob(
+                              job.id
+                            )
+                          }
+                          className="rounded-xl bg-green-500 px-5 py-3 text-sm font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {submittingJobs[
+                            job.id
+                          ]
+                            ? "Invio..."
+                            : maintenanceActive
+                              ? "Manutenzione"
+                              : !applicationsEnabled
+                                ? "Sospese"
+                                : job.applications >=
+                                    10
+                                  ? "Complete"
+                                  : "Candidati • 5 crediti"}
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </article>
+                ))}
+
+              </div>
             )}
-          </div>
+
+          </main>
+
         </div>
       </div>
     </div>
