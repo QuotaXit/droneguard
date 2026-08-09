@@ -15,6 +15,7 @@ import {
   Star,
   MessageSquare,
   Heart,
+  UserPlus,
   X
 } from "lucide-react"
 
@@ -150,6 +151,40 @@ function getStatusMeta(status) {
   }
 }
 
+function getJobInvitationStatusMeta(
+  status
+) {
+  if (status === "accepted") {
+    return {
+      label: "Accettato",
+      className:
+        "border-green-400/20 bg-green-400/10 text-green-300"
+    }
+  }
+
+  if (status === "declined") {
+    return {
+      label: "Rifiutato",
+      className:
+        "border-red-400/20 bg-red-400/10 text-red-300"
+    }
+  }
+
+  if (status === "cancelled") {
+    return {
+      label: "Annullato",
+      className:
+        "border-white/10 bg-white/5 text-gray-400"
+    }
+  }
+
+  return {
+    label: "In attesa",
+    className:
+      "border-amber-400/20 bg-amber-400/10 text-amber-300"
+  }
+}
+
 export default function CandidatesPage() {
   const params = useParams()
 
@@ -175,6 +210,46 @@ const [
   favoritesOnly,
   setFavoritesOnly
 ] = useState(false)
+
+const [
+  invitePilot,
+  setInvitePilot
+] = useState(null)
+
+const [
+  inviteJobs,
+  setInviteJobs
+] = useState([])
+
+const [
+  inviteJobId,
+  setInviteJobId
+] = useState("")
+
+const [
+  inviteMessage,
+  setInviteMessage
+] = useState("")
+
+const [
+  inviteJobsLoading,
+  setInviteJobsLoading
+] = useState(false)
+
+const [
+  invitationSending,
+  setInvitationSending
+] = useState(false)
+
+const [
+  sentInvitations,
+  setSentInvitations
+] = useState([])
+
+const [
+  cancelingInvitationId,
+  setCancelingInvitationId
+] = useState(null)
 
   const [meetingPoint, setMeetingPoint] = useState("")
   const [exactLocation, setExactLocation] = useState("")
@@ -965,6 +1040,522 @@ const toggleCompareCandidate = (
   })
 }
 
+const openInvitePilotModal =
+  async (application) => {
+    const pilotId =
+      application?.pilot_id ||
+      application?.user_id
+
+    if (!pilotId) {
+      toast.error(
+        "Pilota non valido."
+      )
+
+      return
+    }
+
+    setInvitePilot(
+      application
+    )
+
+    setInviteJobs([])
+setSentInvitations([])
+setInviteJobId("")
+setInviteMessage("")
+setInviteJobsLoading(true)
+
+    try {
+      const {
+        data: {
+          user
+        }
+      } =
+        await supabase.auth.getUser()
+
+      if (!user) {
+        throw new Error(
+          "Sessione non disponibile."
+        )
+      }
+
+      const [
+  jobsResult,
+  invitationsResult
+] = await Promise.all([
+  supabase
+    .from("jobs")
+    .select(`
+      id,
+      title,
+      location,
+      job_date,
+      status
+    `)
+    .eq(
+      "user_id",
+      user.id
+    )
+    .eq(
+      "status",
+      "open"
+    )
+    .neq(
+      "id",
+      params.id
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    ),
+
+  supabase
+    .from(
+      "job_invitations"
+    )
+    .select(`
+      id,
+      job_id,
+      pilot_id,
+      message,
+      status,
+      created_at,
+      responded_at,
+      cancelled_at,
+      jobs (
+        id,
+        title,
+        location,
+        job_date,
+        status
+      )
+    `)
+    .eq(
+      "client_id",
+      user.id
+    )
+    .eq(
+      "pilot_id",
+      pilotId
+    )
+    .order(
+      "created_at",
+      {
+        ascending: false
+      }
+    )
+    .limit(20)
+])
+
+
+if (jobsResult.error) {
+  throw jobsResult.error
+}
+
+
+if (
+  invitationsResult.error
+) {
+  throw invitationsResult.error
+}
+
+
+setInviteJobs(
+  jobsResult.data || []
+)
+
+setSentInvitations(
+  invitationsResult.data || []
+)
+    } catch (error) {
+      console.error(
+        "[job-invitation] Caricamento lavori fallito:",
+        error
+      )
+
+      toast.error(
+        "Impossibile caricare i lavori disponibili."
+      )
+
+      setInvitePilot(null)
+    } finally {
+      setInviteJobsLoading(
+        false
+      )
+    }
+  }
+
+  const sendPilotInvitation =
+  async () => {
+    if (invitationSending) {
+      return
+    }
+
+    const pilotId =
+      invitePilot?.pilot_id ||
+      invitePilot?.user_id
+
+    if (!pilotId) {
+      toast.error(
+        "Pilota non valido."
+      )
+
+      return
+    }
+
+    if (!inviteJobId) {
+      toast.error(
+        "Seleziona il lavoro."
+      )
+
+      return
+    }
+
+    const cleanMessage =
+      inviteMessage.trim()
+
+    if (
+      cleanMessage.length >
+      1000
+    ) {
+      toast.error(
+        "Il messaggio può contenere massimo 1000 caratteri."
+      )
+
+      return
+    }
+
+    try {
+      setInvitationSending(
+        true
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "create_job_invitation",
+        {
+          p_job_id:
+            inviteJobId,
+
+          p_pilot_id:
+            pilotId,
+
+          p_message:
+            cleanMessage ||
+            null
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PILOTA_HA_GIA_CANDIDATURA"
+          )
+        ) {
+          throw new Error(
+            "Questo pilota si è già candidato al lavoro selezionato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_INVITABILE"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro selezionato non è più disponibile per gli inviti."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "PILOTA_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Questo pilota non è più attivo."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "PILOTA_NON_COLLEGATO_AL_CLIENTE"
+          )
+        ) {
+          throw new Error(
+            "Questo pilota non può essere invitato dal tuo account."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a utilizzare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "MESSAGGIO_TROPPO_LUNGO"
+          )
+        ) {
+          throw new Error(
+            "Il messaggio è troppo lungo."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+        throw error
+      }
+
+      if (
+        data?.success !== true
+      ) {
+        throw new Error(
+          "Risposta invito non valida."
+        )
+      }
+
+      toast.success(
+        data?.already_processed
+          ? "L'invito era già stato inviato a questo pilota."
+          : "Invito inviato al pilota ✅"
+      )
+
+      const selectedInviteJob =
+  inviteJobs.find(
+    (item) =>
+      item.id ===
+      inviteJobId
+  ) || null
+
+
+setSentInvitations(
+  (current) => [
+    {
+      id:
+        data.invitation_id,
+
+      job_id:
+        data.job_id,
+
+      pilot_id:
+        pilotId,
+
+      message:
+        cleanMessage ||
+        null,
+
+      status:
+        data.status ||
+        "pending",
+
+      created_at:
+        new Date().toISOString(),
+
+      jobs:
+        selectedInviteJob
+    },
+
+    ...current.filter(
+      (item) =>
+        item.id !==
+        data.invitation_id
+    )
+  ]
+)
+
+
+setInviteJobId("")
+setInviteMessage("")
+    } catch (error) {
+      console.error(
+        "[job-invitation] Invio fallito:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile inviare l'invito."
+      )
+    } finally {
+      setInvitationSending(
+        false
+      )
+    }
+  }
+
+  const cancelPilotInvitation =
+  async (invitation) => {
+    if (
+      !invitation?.id ||
+      cancelingInvitationId
+    ) {
+      return
+    }
+
+
+    const confirmed =
+      window.confirm(
+        "Vuoi annullare questo invito?"
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+
+    try {
+      setCancelingInvitationId(
+        invitation.id
+      )
+
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "cancel_job_invitation",
+        {
+          p_invitation_id:
+            invitation.id
+        }
+      )
+
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+
+        if (
+          errorText.includes(
+            "INVITO_NON_ANNULLABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo invito non può più essere annullato."
+          )
+        }
+
+
+        if (
+          errorText.includes(
+            "INVITO_NON_AUTORIZZATO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato ad annullare questo invito."
+          )
+        }
+
+
+        if (
+          errorText.includes(
+            "INVITO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "L'invito non è più disponibile."
+          )
+        }
+
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+
+        throw error
+      }
+
+
+      if (
+        data?.success !== true
+      ) {
+        throw new Error(
+          "Risposta annullamento non valida."
+        )
+      }
+
+
+      setSentInvitations(
+        (current) =>
+          current.map(
+            (item) =>
+              item.id ===
+              invitation.id
+                ? {
+                    ...item,
+                    status:
+                      "cancelled",
+                    cancelled_at:
+                      new Date().toISOString()
+                  }
+                : item
+          )
+      )
+
+
+      toast.success(
+        "Invito annullato."
+      )
+
+    } catch (error) {
+      console.error(
+        "[job-invitation] Annullamento fallito:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile annullare l'invito."
+      )
+    } finally {
+      setCancelingInvitationId(
+        null
+      )
+    }
+  }
+
 const toggleFavoritePilot =
   async (application) => {
     const pilotId =
@@ -1343,6 +1934,22 @@ const compareCandidates =
       : "Aggiungi ai preferiti"}
 </button>
 
+<button
+  type="button"
+  onClick={() =>
+    openInvitePilotModal(
+      application
+    )
+  }
+  className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-purple-400/20 bg-purple-400/[0.08] p-4 text-sm font-bold text-purple-200 transition hover:bg-purple-400/[0.14]"
+>
+  <UserPlus
+    size={18}
+  />
+
+  Invita a un lavoro
+</button>
+
 <label
   className={`mt-3 flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition ${
     compareIds.includes(application.id)
@@ -1663,6 +2270,313 @@ const compareCandidates =
           </div>
         </div>
       )}
+
+      {invitePilot && (
+  <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
+
+    <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-white shadow-2xl sm:p-8">
+
+      <div className="flex items-start justify-between gap-4">
+
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-purple-300">
+            Invito pilota
+          </p>
+
+          <h2 className="mt-2 text-2xl font-black sm:text-3xl">
+            Invita a un lavoro
+          </h2>
+
+          <p className="mt-2 text-sm text-gray-400">
+            {getPilotDisplayData(
+              invitePilot.pilot
+            ).fullName}
+          </p>
+        </div>
+
+
+        <button
+          type="button"
+          disabled={
+            invitationSending
+          }
+          onClick={() => {
+            setInvitePilot(null)
+            setInviteJobs([])
+            setSentInvitations([])
+            setInviteJobId("")
+            setInviteMessage("")
+          }}
+          className="rounded-xl border border-white/10 bg-white/5 p-3 transition hover:bg-white/10 disabled:opacity-50"
+        >
+          <X size={20} />
+        </button>
+
+      </div>
+
+
+      <div className="mt-7">
+
+        {sentInvitations.length > 0 && (
+  <div className="mb-6">
+
+    <div className="mb-3 flex items-center justify-between gap-3">
+
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+        Inviti già inviati
+      </p>
+
+      <span className="text-xs text-gray-500">
+        {sentInvitations.length}
+      </span>
+
+    </div>
+
+
+    <div className="space-y-3">
+
+      {sentInvitations.map(
+        (invitation) => {
+          const statusMeta =
+            getJobInvitationStatusMeta(
+              invitation.status
+            )
+
+          return (
+            <div
+              key={
+                invitation.id
+              }
+              className="rounded-2xl border border-white/10 bg-black/20 p-4"
+            >
+
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                <div className="min-w-0">
+
+                  <p className="font-bold text-white">
+                    {invitation.jobs?.title ||
+                      "Lavoro DroneGuard"}
+                  </p>
+
+
+                  <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+
+                    <span>
+                      {invitation.jobs?.location ||
+                        "Località non indicata"}
+                    </span>
+
+                    <span>
+                      •
+                    </span>
+
+                    <span>
+                      {invitation.created_at
+                        ? new Date(
+                            invitation.created_at
+                          ).toLocaleDateString(
+                            "it-IT"
+                          )
+                        : ""}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                <span
+                  className={`shrink-0 rounded-full border px-3 py-1 text-xs font-bold ${statusMeta.className}`}
+                >
+                  {statusMeta.label}
+                </span>
+
+              </div>
+
+
+              {invitation.message && (
+                <p className="mt-3 whitespace-pre-line text-sm leading-6 text-gray-400">
+                  {invitation.message}
+                </p>
+              )}
+
+
+              {invitation.status ===
+                "pending" && (
+
+                <button
+                  type="button"
+                  disabled={
+                    cancelingInvitationId ===
+                    invitation.id
+                  }
+                  onClick={() =>
+                    cancelPilotInvitation(
+                      invitation
+                    )
+                  }
+                  className="mt-4 w-full rounded-xl border border-red-400/20 bg-red-400/[0.06] px-4 py-3 text-sm font-bold text-red-300 transition hover:bg-red-400/10 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {cancelingInvitationId ===
+                  invitation.id
+                    ? "Annullamento..."
+                    : "Annulla invito"}
+                </button>
+
+              )}
+
+            </div>
+          )
+        }
+      )}
+
+    </div>
+
+  </div>
+)}
+
+        {inviteJobsLoading ? (
+          <div className="rounded-2xl border border-white/10 bg-black/20 p-6 text-center text-gray-400">
+            Caricamento lavori...
+          </div>
+        ) : inviteJobs.length === 0 ? (
+          <div className="rounded-2xl border border-amber-400/20 bg-amber-400/[0.08] p-6">
+
+            <p className="font-bold text-amber-200">
+              Nessun altro lavoro aperto
+            </p>
+
+            <p className="mt-2 text-sm leading-6 text-amber-100/60">
+              Per invitare questo pilota devi avere almeno un altro lavoro aperto.
+            </p>
+
+          </div>
+        ) : (
+          <>
+            <label className="block">
+
+              <span className="mb-2 block text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+                Seleziona lavoro
+              </span>
+
+              <select
+                value={
+                  inviteJobId
+                }
+                onChange={(e) =>
+                  setInviteJobId(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-2xl border border-white/10 bg-[#1d1250] p-4 text-white outline-none [color-scheme:dark]"
+              >
+                <option value="">
+                  Seleziona un lavoro
+                </option>
+
+                {inviteJobs.map(
+                  (inviteJob) => (
+                    <option
+                      key={
+                        inviteJob.id
+                      }
+                      value={
+                        inviteJob.id
+                      }
+                    >
+                      {inviteJob.title}
+                      {" — "}
+                      {inviteJob.location ||
+                        "Località non indicata"}
+                    </option>
+                  )
+                )}
+              </select>
+
+            </label>
+
+
+            <label className="mt-5 block">
+
+              <div className="mb-2 flex items-center justify-between gap-3">
+
+                <span className="text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
+                  Messaggio opzionale
+                </span>
+
+                <span className="text-xs text-gray-500">
+                  {inviteMessage.length}/1000
+                </span>
+
+              </div>
+
+              <textarea
+                value={
+                  inviteMessage
+                }
+                maxLength={1000}
+                onChange={(e) =>
+                  setInviteMessage(
+                    e.target.value
+                  )
+                }
+                placeholder="Scrivi un breve messaggio al pilota..."
+                className="h-32 w-full resize-none rounded-2xl border border-white/10 bg-black/20 p-4 text-white outline-none placeholder:text-gray-600"
+              />
+
+            </label>
+
+
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+
+              <button
+                type="button"
+                disabled={
+                  invitationSending
+                }
+                onClick={() => {
+                  setInvitePilot(null)
+                  setInviteJobs([])
+                  setSentInvitations([])
+                  setInviteJobId("")
+                  setInviteMessage("")
+                }}
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-5 py-4 font-semibold transition hover:bg-white/10 disabled:opacity-50"
+              >
+                Annulla
+              </button>
+
+
+              <button
+                type="button"
+                disabled={
+                  invitationSending ||
+                  !inviteJobId
+                }
+                onClick={
+                  sendPilotInvitation
+                }
+                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-green-500 px-5 py-4 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <UserPlus
+                  size={19}
+                />
+
+                {invitationSending
+                  ? "Invio..."
+                  : "Invia invito"}
+              </button>
+
+            </div>
+          </>
+        )}
+
+      </div>
+
+    </div>
+  </div>
+)}
 
       {showReviewsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
