@@ -754,10 +754,17 @@ const pilotProfile =
   return
 }
 
-setSelectedPilot(pilotProfile)
-setShowPilotModal(true)
+setSelectedPilot(
+      pilotProfile
+    )
 
-  const openJobDetailsModal = async (job) => {
+    setShowPilotModal(
+      true
+    )
+  }
+
+  const openJobDetailsModal =
+    async (job) => {
     setSelectedJob(job)
     setSentJobDetails(null)
 

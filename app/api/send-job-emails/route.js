@@ -1203,10 +1203,10 @@ dispatchContext = {
   radiusFiltered:
     pilot.email_jobs_within_radius ===
       true
-}
+},
 
-                    maxAttempts:
-                      3
+maxAttempts:
+  3
                   })
 
                 return {
