@@ -11,7 +11,7 @@ export const metadata = {
 const CONTROLLER = {
   name: "Silvio Gavioli",
   address:
-    "Via Ferdinando Neri, n. [CIVICO], [CAP] [COMUNE] ([PROVINCIA]), Italia",
+    "Via Ferdinando Neri,Roma, Italia",
   email: "assistenza@droneguard.it",
 }
 
@@ -89,17 +89,6 @@ export default function PrivacyPolicyPage() {
             contrattuali di utilizzo della piattaforma.
           </p>
         </div>
-
-        {ADDRESS_IS_INCOMPLETE && (
-          <div className="mb-8 rounded-3xl border border-red-400/40 bg-red-400/10 p-5 text-red-100 sm:p-6">
-            <p className="font-bold">Dato da completare prima della pubblicazione</p>
-            <p className="mt-2 leading-7">
-              Sostituisci il testo tra parentesi quadre con civico, CAP, Comune e
-              Provincia. Il solo nome della via non identifica un domicilio
-              completo.
-            </p>
-          </div>
-        )}
 
         <div className="space-y-10">
           <Section number="1" title="Titolare del trattamento e contatti">

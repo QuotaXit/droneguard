@@ -3,6 +3,7 @@ import { Toaster } from "sonner"
 import CookieBanner from "@/components/CookieBanner"
 import { Geist, Geist_Mono, Krona_One } from "next/font/google";
 import "./globals.css";
+import MetaPixel from "@/components/MetaPixel"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
