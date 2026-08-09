@@ -76,10 +76,22 @@ function sanitizeResults(data) {
           .trim()
           .slice(0, 500)
 
+      const latitude =
+        Number(item?.lat)
+
+      const longitude =
+        Number(item?.lon)
+
       if (
         placeId === undefined ||
         placeId === null ||
-        !displayName
+        !displayName ||
+        !Number.isFinite(latitude) ||
+        !Number.isFinite(longitude) ||
+        latitude < -90 ||
+        latitude > 90 ||
+        longitude < -180 ||
+        longitude > 180
       ) {
         return null
       }
@@ -89,7 +101,13 @@ function sanitizeResults(data) {
           placeId,
 
         display_name:
-          displayName
+          displayName,
+
+        lat:
+          latitude,
+
+        lon:
+          longitude
       }
     })
     .filter(Boolean)
