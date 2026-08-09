@@ -6,6 +6,25 @@ import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import { Users } from "lucide-react"
 
+function hasAppointmentDetails(
+  assignment
+) {
+  return Boolean(
+    String(
+      assignment?.exact_location ||
+        ""
+    ).trim() &&
+    String(
+      assignment?.meeting_point ||
+        ""
+    ).trim() &&
+    String(
+      assignment?.arrival_time ||
+        ""
+    ).trim()
+  )
+}
+
 export default function InProgressJobs() {
   const [jobs, setJobs] = useState([])
   const [stats, setStats] = useState({
@@ -26,6 +45,11 @@ export default function InProgressJobs() {
 
      const [cancellingJobId, setCancellingJobId] =
     useState(null)
+
+    const [
+  confirmingAppointmentJobId,
+  setConfirmingAppointmentJobId
+] = useState(null)
 
   const loadJobs = async () => {
     const {
@@ -55,36 +79,117 @@ export default function InProgressJobs() {
   return
 }
 
-    const jobsWithApplications = await Promise.all(
-      (data || []).map(async (job) => {
-        const {
-  count,
-  error: countError
-} = await supabase
-  .from("applications")
-  .select("*", {
-    count: "exact",
-    head: true
-  })
-  .eq("job_id", job.id)
+    const jobIds =
+  (data || [])
+    .map((job) => job.id)
+    .filter(Boolean)
 
-if (countError) {
-  console.error(
-    `[in-progress] Conteggio candidature fallito per il lavoro ${job.id}:`,
-    countError
-  )
+let assignmentsMap =
+  new Map()
+
+if (jobIds.length > 0) {
+  const {
+    data: assignmentRows,
+    error: assignmentsError
+  } = await supabase
+    .from("job_assignments")
+    .select(`
+      id,
+      job_id,
+      pilot_id,
+      client_id,
+      exact_location,
+      meeting_point,
+      arrival_time,
+      status,
+      appointment_client_confirmed_at,
+      appointment_pilot_confirmed_at,
+      appointment_confirmed_at
+    `)
+    .in(
+      "job_id",
+      jobIds
+    )
+
+  if (assignmentsError) {
+    console.error(
+      "[in-progress] Stato appuntamenti non disponibile:",
+      assignmentsError
+    )
+  } else {
+    assignmentsMap =
+      new Map(
+        (assignmentRows || [])
+          .filter(
+            (assignment) =>
+              assignment.job_id &&
+              assignment.pilot_id
+          )
+          .map(
+            (assignment) => [
+              `${assignment.job_id}:${assignment.pilot_id}`,
+              assignment
+            ]
+          )
+      )
+  }
 }
 
-                return {
-          ...job,
-          applications: count || 0,
-          pilot_id:
-            job.assigned_pilot ||
-            job.pilot_id ||
-            null
+
+const jobsWithApplications =
+  await Promise.all(
+    (data || []).map(
+      async (job) => {
+        const {
+          count,
+          error: countError
+        } = await supabase
+          .from("applications")
+          .select("*", {
+            count:
+              "exact",
+
+            head:
+              true
+          })
+          .eq(
+            "job_id",
+            job.id
+          )
+
+        if (countError) {
+          console.error(
+            `[in-progress] Conteggio candidature fallito per il lavoro ${job.id}:`,
+            countError
+          )
         }
-      })
+
+        const pilotId =
+          job.assigned_pilot ||
+          job.pilot_id ||
+          null
+
+        const assignment =
+          pilotId
+            ? assignmentsMap.get(
+                `${job.id}:${pilotId}`
+              ) || null
+            : null
+
+        return {
+          ...job,
+
+          applications:
+            count || 0,
+
+          pilot_id:
+            pilotId,
+
+          assignment
+        }
+      }
     )
+  )
 
     setJobs(jobsWithApplications)
 
@@ -415,6 +520,207 @@ if (countError) {
     }
   }
 
+  const confirmAppointment =
+  async (
+    job,
+    assignment
+  ) => {
+    if (
+      confirmingAppointmentJobId ||
+      !job?.id
+    ) {
+      return
+    }
+
+    if (
+      !hasAppointmentDetails(
+        assignment
+      )
+    ) {
+      toast.error(
+        "Prima devono essere presenti posizione, punto di ritrovo e orario."
+      )
+
+      return
+    }
+
+    try {
+      setConfirmingAppointmentJobId(
+        job.id
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "confirm_job_appointment",
+        {
+          p_job_id:
+            job.id
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "L'assegnazione del lavoro non è stata trovata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "POSIZIONE_APPUNTAMENTO_MANCANTE"
+          ) ||
+          errorText.includes(
+            "PUNTO_RITROVO_MANCANTE"
+          ) ||
+          errorText.includes(
+            "ORARIO_APPUNTAMENTO_MANCANTE"
+          )
+        ) {
+          throw new Error(
+            "I dati dell'appuntamento non sono ancora completi."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_PARTE_DI_QUESTO_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a confermare questo appuntamento."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "APPUNTAMENTO_NON_CONFERMABILE"
+          ) ||
+          errorText.includes(
+            "LAVORO_NON_CONFERMABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo appuntamento non può più essere confermato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+        throw error
+      }
+
+
+      if (
+        data?.appointment_confirmed
+      ) {
+        toast.success(
+          "Appuntamento confermato da entrambe le parti ✅"
+        )
+      } else if (
+        data?.already_confirmed
+      ) {
+        toast.success(
+          "La tua conferma era già registrata. Manca ancora quella del pilota."
+        )
+      } else {
+        toast.success(
+          "Appuntamento confermato. Ora manca la conferma del pilota."
+        )
+      }
+
+
+      /*
+       * Aggiorna i dati del modal.
+       */
+      const pilotId =
+        job.pilot_id ||
+        job.assigned_pilot
+
+      if (pilotId) {
+        const {
+          data:
+            refreshedAssignment,
+          error:
+            refreshError
+        } = await supabase
+          .from(
+            "job_assignments"
+          )
+          .select("*")
+          .eq(
+            "job_id",
+            job.id
+          )
+          .eq(
+            "pilot_id",
+            pilotId
+          )
+          .maybeSingle()
+
+        if (
+          !refreshError &&
+          refreshedAssignment
+        ) {
+          setSentJobDetails(
+            refreshedAssignment
+          )
+
+          setSelectedJob(
+            (current) =>
+              current?.id ===
+              job.id
+                ? {
+                    ...current,
+                    assignment:
+                      refreshedAssignment
+                  }
+                : current
+          )
+        }
+      }
+
+      await loadJobs()
+    } catch (error) {
+      console.error(
+        "[appointment-client] Conferma fallita:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile confermare l'appuntamento."
+      )
+    } finally {
+      setConfirmingAppointmentJobId(
+        null
+      )
+    }
+  }
+
   const openPilotDetails = async (pilotId) => {
     if (!pilotId) return
 
@@ -565,6 +871,43 @@ setShowPilotModal(true)
     <p className="text-lg font-bold text-white">
       {job.job_date}
     </p>
+
+{job.assignment && (
+  <div
+    className={`rounded-xl border px-4 py-3 text-sm font-semibold ${
+      job.assignment
+        .appointment_confirmed_at
+        ? "border-green-400/20 bg-green-400/10 text-green-300"
+        : job.assignment
+              .appointment_client_confirmed_at
+          ? "border-amber-400/20 bg-amber-400/10 text-amber-200"
+          : job.assignment
+                .appointment_pilot_confirmed_at
+            ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-200"
+            : hasAppointmentDetails(
+                  job.assignment
+                )
+              ? "border-purple-400/20 bg-purple-400/10 text-purple-200"
+              : "border-white/10 bg-white/[0.04] text-gray-400"
+    }`}
+  >
+    {job.assignment
+      .appointment_confirmed_at
+      ? "✅ Appuntamento confermato"
+      : job.assignment
+            .appointment_client_confirmed_at
+        ? "⏳ Appuntamento • In attesa del pilota"
+        : job.assignment
+              .appointment_pilot_confirmed_at
+          ? "📅 Il pilota ha già confermato"
+          : hasAppointmentDetails(
+                job.assignment
+              )
+            ? "📅 Appuntamento da confermare"
+            : "📅 Dettagli appuntamento incompleti"}
+  </div>
+)}
+
   </div>
 </div>
 
@@ -725,6 +1068,17 @@ setShowPilotModal(true)
                     </tr>
 
                     <tr className="border-b border-white/10">
+  <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+    Orario appuntamento
+  </th>
+
+  <td className="p-4">
+    {sentJobDetails.arrival_time ||
+      "Non indicato"}
+  </td>
+</tr>
+
+                    <tr className="border-b border-white/10">
                       <th className="w-1/3 bg-black/20 p-4 text-gray-400">
                         Telefono
                       </th>
@@ -765,6 +1119,117 @@ setShowPilotModal(true)
                 </table>
               </div>
             )}
+
+            {sentJobDetails && (
+  <div className="mt-6 rounded-2xl border border-purple-400/20 bg-purple-400/[0.06] p-5">
+
+    <div>
+      <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-300">
+        Appuntamento
+      </p>
+
+      <h3 className="mt-2 text-xl font-bold text-white">
+        Conferma con il pilota
+      </h3>
+    </div>
+
+
+    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-500">
+          Cliente
+        </p>
+
+        <p
+          className={`mt-2 font-bold ${
+            sentJobDetails
+              .appointment_client_confirmed_at
+              ? "text-green-300"
+              : "text-amber-200"
+          }`}
+        >
+          {sentJobDetails
+            .appointment_client_confirmed_at
+            ? "✅ Confermato"
+            : "⏳ Da confermare"}
+        </p>
+      </div>
+
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-500">
+          Pilota
+        </p>
+
+        <p
+          className={`mt-2 font-bold ${
+            sentJobDetails
+              .appointment_pilot_confirmed_at
+              ? "text-green-300"
+              : "text-amber-200"
+          }`}
+        >
+          {sentJobDetails
+            .appointment_pilot_confirmed_at
+            ? "✅ Confermato"
+            : "⏳ Da confermare"}
+        </p>
+      </div>
+
+    </div>
+
+
+    {sentJobDetails
+      .appointment_confirmed_at ? (
+      <div className="mt-4 rounded-xl border border-green-400/20 bg-green-400/10 px-4 py-3 text-center font-bold text-green-300">
+        ✅ Appuntamento confermato da entrambe le parti
+      </div>
+    ) : sentJobDetails
+        .appointment_client_confirmed_at ? (
+      <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-center font-semibold text-amber-200">
+        La tua conferma è registrata • In attesa del pilota
+      </div>
+    ) : (
+      <button
+        type="button"
+        disabled={
+          confirmingAppointmentJobId ===
+            selectedJob.id ||
+          !hasAppointmentDetails(
+            sentJobDetails
+          )
+        }
+        onClick={() =>
+          confirmAppointment(
+            selectedJob,
+            sentJobDetails
+          )
+        }
+        className="mt-4 w-full rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {confirmingAppointmentJobId ===
+        selectedJob.id
+          ? "Conferma in corso..."
+          : sentJobDetails
+              .appointment_pilot_confirmed_at
+            ? "Conferma appuntamento"
+            : "Conferma appuntamento"}
+      </button>
+    )}
+
+
+    {!hasAppointmentDetails(
+      sentJobDetails
+    ) && (
+      <p className="mt-3 text-xs leading-5 text-gray-500">
+        Prima della conferma devono essere presenti
+        posizione precisa, punto di ritrovo e orario.
+      </p>
+    )}
+
+  </div>
+)}
 
             <div className="mt-8 flex gap-4">
               <button

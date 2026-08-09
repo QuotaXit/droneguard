@@ -83,6 +83,25 @@ function getJobDate(assignment) {
   return assignment?.jobs?.job_date || assignment?.job_date || ""
 }
 
+function hasAppointmentDetails(
+  assignment
+) {
+  return Boolean(
+    String(
+      assignment?.exact_location ||
+        ""
+    ).trim() &&
+    String(
+      assignment?.meeting_point ||
+        ""
+    ).trim() &&
+    String(
+      assignment?.arrival_time ||
+        ""
+    ).trim()
+  )
+}
+
 function JobDataContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -92,6 +111,11 @@ function JobDataContent() {
   const [selectedJob, setSelectedJob] = useState(null)
   const [loading, setLoading] = useState(true)
   const [completing, setCompleting] = useState(false)
+
+  const [
+  appointmentConfirming,
+  setAppointmentConfirming
+] = useState(false)
 
   const clearCurrentJob = () => {
     setSelectedAssignment(null)
@@ -146,7 +170,6 @@ function JobDataContent() {
 
     const assignment = activeAssignments?.[0] || null
 
-    console.log("SELECTED ASSIGNMENT:", assignment)
 
     if (assignment) {
       setSelectedAssignment(assignment)
@@ -348,6 +371,172 @@ function JobDataContent() {
     }
   }
 
+  const confirmAppointment =
+  async () => {
+    if (
+      appointmentConfirming
+    ) {
+      return
+    }
+
+    const currentJob =
+      selectedAssignment?.jobs ||
+      selectedJob ||
+      null
+
+    const activeJobId =
+      selectedAssignment?.job_id ||
+      currentJob?.id
+
+    if (
+      !activeJobId ||
+      !selectedAssignment
+    ) {
+      toast.error(
+        "I dati dell'appuntamento non sono disponibili."
+      )
+
+      return
+    }
+
+    if (
+      !hasAppointmentDetails(
+        selectedAssignment
+      )
+    ) {
+      toast.error(
+        "Posizione, punto di ritrovo e orario devono essere presenti prima della conferma."
+      )
+
+      return
+    }
+
+    try {
+      setAppointmentConfirming(
+        true
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "confirm_job_appointment",
+        {
+          p_job_id:
+            activeJobId
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_NON_TROVATA"
+          )
+        ) {
+          throw new Error(
+            "L'assegnazione non è stata trovata."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "POSIZIONE_APPUNTAMENTO_MANCANTE"
+          ) ||
+          errorText.includes(
+            "PUNTO_RITROVO_MANCANTE"
+          ) ||
+          errorText.includes(
+            "ORARIO_APPUNTAMENTO_MANCANTE"
+          )
+        ) {
+          throw new Error(
+            "I dati dell'appuntamento non sono completi."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_PARTE_DI_QUESTO_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a confermare questo appuntamento."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "APPUNTAMENTO_NON_CONFERMABILE"
+          ) ||
+          errorText.includes(
+            "LAVORO_NON_CONFERMABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo appuntamento non può più essere confermato."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+        throw error
+      }
+
+
+      if (
+        data?.appointment_confirmed
+      ) {
+        toast.success(
+          "Appuntamento confermato da entrambe le parti ✅"
+        )
+      } else if (
+        data?.already_confirmed
+      ) {
+        toast.success(
+          "La tua conferma era già registrata. Manca ancora quella del cliente."
+        )
+      } else {
+        toast.success(
+          "Appuntamento confermato. Ora manca la conferma del cliente."
+        )
+      }
+
+      await loadData()
+    } catch (error) {
+      console.error(
+        "[appointment-pilot] Conferma fallita:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile confermare l'appuntamento."
+      )
+    } finally {
+      setAppointmentConfirming(
+        false
+      )
+    }
+  }
+
   const job = selectedAssignment?.jobs || selectedJob || null
   const hasOperationalData = Boolean(selectedAssignment)
 
@@ -358,6 +547,29 @@ function JobDataContent() {
     pilotAlreadyConfirmed &&
     !job?.client_completed_at &&
     job?.status !== "completed"
+
+    const appointmentClientConfirmed =
+  Boolean(
+    selectedAssignment
+      ?.appointment_client_confirmed_at
+  )
+
+const appointmentPilotConfirmed =
+  Boolean(
+    selectedAssignment
+      ?.appointment_pilot_confirmed_at
+  )
+
+const appointmentConfirmed =
+  Boolean(
+    selectedAssignment
+      ?.appointment_confirmed_at
+  )
+
+const appointmentReady =
+  hasAppointmentDetails(
+    selectedAssignment
+  )
 
   const location = selectedAssignment
     ? getAssignmentLocation(selectedAssignment)
@@ -467,6 +679,105 @@ function JobDataContent() {
 )}
                 </div>
               </div>
+
+              {hasOperationalData && (
+  <div className="mb-6 rounded-2xl border border-purple-400/20 bg-purple-400/[0.06] p-5 sm:p-6">
+
+    <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-300">
+      Appuntamento
+    </p>
+
+    <h3 className="mt-2 text-xl font-bold">
+      Conferma con il cliente
+    </h3>
+
+    <p className="mt-2 text-sm leading-6 text-gray-400">
+      Controlla luogo, punto di ritrovo e orario
+      prima di confermare.
+    </p>
+
+
+    <div className="mt-5 grid gap-3 sm:grid-cols-2">
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-500">
+          Cliente
+        </p>
+
+        <p
+          className={`mt-2 font-bold ${
+            appointmentClientConfirmed
+              ? "text-green-300"
+              : "text-amber-200"
+          }`}
+        >
+          {appointmentClientConfirmed
+            ? "✅ Confermato"
+            : "⏳ Da confermare"}
+        </p>
+      </div>
+
+
+      <div className="rounded-xl border border-white/10 bg-black/20 p-4">
+        <p className="text-xs uppercase tracking-wider text-gray-500">
+          Pilota
+        </p>
+
+        <p
+          className={`mt-2 font-bold ${
+            appointmentPilotConfirmed
+              ? "text-green-300"
+              : "text-amber-200"
+          }`}
+        >
+          {appointmentPilotConfirmed
+            ? "✅ Confermato"
+            : "⏳ Da confermare"}
+        </p>
+      </div>
+
+    </div>
+
+
+    {appointmentConfirmed ? (
+      <div className="mt-4 rounded-xl border border-green-400/20 bg-green-400/10 px-4 py-3 text-center font-bold text-green-300">
+        ✅ Appuntamento confermato da entrambe le parti
+      </div>
+    ) : appointmentPilotConfirmed ? (
+      <div className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-center font-semibold text-amber-200">
+        La tua conferma è registrata • In attesa del cliente
+      </div>
+    ) : (
+      <button
+        type="button"
+        onClick={
+          confirmAppointment
+        }
+        disabled={
+          appointmentConfirming ||
+          !appointmentReady
+        }
+        className="mt-4 w-full rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {appointmentConfirming
+          ? "Conferma in corso..."
+          : appointmentClientConfirmed
+            ? "Conferma appuntamento"
+            : "Conferma appuntamento"}
+      </button>
+    )}
+
+
+    {!appointmentReady && (
+      <p className="mt-3 text-xs leading-5 text-gray-500">
+        La conferma sarà disponibile quando il
+        cliente avrà inserito posizione precisa,
+        punto di ritrovo e orario.
+      </p>
+    )}
+
+  </div>
+)}
 
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <div className="bg-black/20 rounded-2xl p-5">
