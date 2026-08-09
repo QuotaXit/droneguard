@@ -72,9 +72,8 @@ export default function HowItWorksClients() {
   }
 
   if (isPilot(profile.role)) {
-    router.push("/dashboard/jobs-board")
-    return
-  }
+  return
+}
 
   if (isClient(profile.role)) {
     router.push("/dashboard-client/create-job")
@@ -127,9 +126,8 @@ const handleClientAccount = async () => {
   }
 
   if (isPilot(profile.role)) {
-    router.push("/dashboard/profile")
-    return
-  }
+  return
+}
 
   if (isClient(profile.role)) {
     router.push("/dashboard-client/settings")
