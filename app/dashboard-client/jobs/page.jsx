@@ -13,7 +13,8 @@ import {
   Eye,
   Pencil,
   X,
-  Lock
+  Lock,
+  Copy
 } from "lucide-react"
 
 function isAssignedExpired(job) {
@@ -510,22 +511,35 @@ export default function ClientJobs() {
                       </div>
 
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <button
-                          onClick={() => openEditModal(job)}
-                          className="bg-green-500 text-black py-3 rounded-xl font-semibold hover:bg-green-400 transition flex items-center justify-center gap-2"
-                        >
-                          <Pencil size={16} />
-                          Dettagli
-                        </button>
+  <button
+    onClick={() =>
+      openEditModal(job)
+    }
+    className="flex items-center justify-center gap-2 rounded-xl bg-green-500 py-3 font-semibold text-black transition hover:bg-green-400"
+  >
+    <Pencil size={16} />
+    Dettagli
+  </button>
 
-                        <Link href={`/dashboard-client/jobs/${job.id}/candidates`}>
-                          <button className="w-full bg-green-500 text-black py-3 rounded-xl font-semibold hover:bg-green-400 transition flex items-center justify-center gap-2">
-                            <Eye size={16} />
-                            Vedi candidati
-                          </button>
-                        </Link>
+  <Link
+    href={`/dashboard-client/jobs/${job.id}/candidates`}
+  >
+    <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 py-3 font-semibold text-black transition hover:bg-green-400">
+      <Eye size={16} />
+      Vedi candidati
+    </button>
+  </Link>
 
-                      </div>
+  <Link
+  href={`/dashboard-client/create-job?duplicate=${encodeURIComponent(
+    job.id
+  )}`}
+  className="flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/[0.07] py-3 font-semibold text-cyan-200 transition hover:bg-cyan-400/[0.12] sm:col-span-2"
+>
+  <Copy size={16} />
+  Duplica lavoro
+</Link>
+</div>
                     </div>
                   </div>
                 )

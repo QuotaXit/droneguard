@@ -1,9 +1,42 @@
 "use client"
 
-import { useState } from "react"
+import {
+  useEffect,
+  useState
+} from "react"
 import { supabase } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import Navbar from "@/components/Navbar"
+
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function parseCoordinate(
+  value,
+  min,
+  max
+) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null
+  }
+
+  const number =
+    Number(value)
+
+  if (
+    !Number.isFinite(number) ||
+    number < min ||
+    number > max
+  ) {
+    return null
+  }
+
+  return number
+}
 
 export default function CreateJob() {
   const [title, setTitle] = useState("")
@@ -18,6 +51,200 @@ export default function CreateJob() {
   const [showLocationSuggestions, setShowLocationSuggestions] = useState(false)
 
   const [creating, setCreating] = useState(false)
+
+  const [
+  duplicateLoading,
+  setDuplicateLoading
+] = useState(false)
+
+const [
+  duplicateSourceTitle,
+  setDuplicateSourceTitle
+] = useState("")
+
+useEffect(() => {
+  let cancelled =
+    false
+
+  const loadDuplicateJob =
+    async () => {
+      const searchParams =
+        new URLSearchParams(
+          window.location.search
+        )
+
+      const duplicateId =
+        String(
+          searchParams.get(
+            "duplicate"
+          ) || ""
+        ).trim()
+
+      /*
+       * Apertura normale della pagina:
+       * nessun lavoro da duplicare.
+       */
+      if (!duplicateId) {
+        return
+      }
+
+      if (
+        !UUID_PATTERN.test(
+          duplicateId
+        )
+      ) {
+        toast.error(
+          "Il lavoro da duplicare non è valido."
+        )
+
+        return
+      }
+
+      try {
+        setDuplicateLoading(
+          true
+        )
+
+        const {
+          data: { user }
+        } =
+          await supabase.auth
+            .getUser()
+
+        if (!user) {
+          toast.error(
+            "Devi effettuare l'accesso."
+          )
+
+          return
+        }
+
+
+        /*
+         * Doppia protezione:
+         *
+         * 1. filtriamo per user_id;
+         * 2. la RLS dei jobs continua
+         *    comunque a proteggere i dati.
+         */
+        const {
+          data: sourceJob,
+          error
+        } = await supabase
+          .from("jobs")
+          .select(`
+            id,
+            title,
+            description,
+            location,
+            latitude,
+            longitude
+          `)
+          .eq(
+            "id",
+            duplicateId
+          )
+          .eq(
+            "user_id",
+            user.id
+          )
+          .maybeSingle()
+
+        if (error) {
+          throw error
+        }
+
+        if (!sourceJob) {
+          toast.error(
+            "Il lavoro da duplicare non è stato trovato."
+          )
+
+          return
+        }
+
+        if (cancelled) {
+          return
+        }
+
+
+        const sourceLatitude =
+          parseCoordinate(
+            sourceJob.latitude,
+            -90,
+            90
+          )
+
+        const sourceLongitude =
+          parseCoordinate(
+            sourceJob.longitude,
+            -180,
+            180
+          )
+
+
+        /*
+         * Copiamo soltanto i dati riutilizzabili.
+         *
+         * La DATA resta intenzionalmente vuota.
+         */
+        setTitle(
+          sourceJob.title || ""
+        )
+
+        setDescription(
+          sourceJob.description || ""
+        )
+
+        setLocation(
+          sourceJob.location || ""
+        )
+
+        setLatitude(
+          sourceLatitude
+        )
+
+        setLongitude(
+          sourceLongitude
+        )
+
+        setDate("")
+
+        setLocationSuggestions(
+          []
+        )
+
+        setShowLocationSuggestions(
+          false
+        )
+
+        setDuplicateSourceTitle(
+          sourceJob.title ||
+            "Lavoro precedente"
+        )
+      } catch (error) {
+        console.error(
+          "[create-job] Caricamento duplicazione:",
+          error
+        )
+
+        toast.error(
+          "Impossibile caricare il lavoro da duplicare."
+        )
+      } finally {
+        if (!cancelled) {
+          setDuplicateLoading(
+            false
+          )
+        }
+      }
+    }
+
+  loadDuplicateJob()
+
+  return () => {
+    cancelled = true
+  }
+}, [])
 
   const searchLocations = async () => {
   const query = location.trim()
@@ -66,7 +293,12 @@ export default function CreateJob() {
   const handleCreateJob = async (e) => {
     e.preventDefault()
 
-    if (creating) return
+    if (
+  creating ||
+  duplicateLoading
+) {
+  return
+}
 
     try {
       setCreating(true)
@@ -261,6 +493,34 @@ if (!createdJobId) {
           </div>
 
           <form onSubmit={handleCreateJob} className="space-y-6">
+            {duplicateLoading && (
+  <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-5 py-4">
+    <p className="text-sm font-semibold text-cyan-200">
+      Caricamento del lavoro da duplicare...
+    </p>
+  </div>
+)}
+
+{!duplicateLoading &&
+ duplicateSourceTitle && (
+  <div className="rounded-2xl border border-cyan-400/20 bg-cyan-400/[0.07] px-5 py-4">
+
+    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
+      Lavoro duplicato
+    </p>
+
+    <p className="mt-2 font-semibold text-white">
+      {duplicateSourceTitle}
+    </p>
+
+    <p className="mt-2 text-sm leading-6 text-gray-400">
+      Titolo, descrizione e luogo sono stati copiati.
+      Scegli la nuova data e controlla i dati prima
+      della pubblicazione.
+    </p>
+
+  </div>
+)}
             {/* TITOLO */}
             <div>
               <label className="mb-2 block text-sm font-medium text-gray-300">
@@ -452,10 +712,17 @@ if (!createdJobId) {
 
               <button
                 type="submit"
-                disabled={creating}
+                disabled={
+  creating ||
+  duplicateLoading
+}
                 className="mt-5 w-full rounded-2xl bg-green-500 py-4 text-base font-semibold text-black shadow-lg shadow-green-500/20 transition hover:scale-[1.01] hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {creating ? "Pubblicazione..." : "Pubblica (5 crediti)"}
+                {duplicateLoading
+  ? "Caricamento copia..."
+  : creating
+    ? "Pubblicazione..."
+    : "Pubblica (5 crediti)"}
               </button>
             </div>
           </form>
