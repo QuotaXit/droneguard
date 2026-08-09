@@ -414,123 +414,471 @@ const profileInitials = [
   )
 
   return (
-    <div className="min-h-screen flex flex-col text-white">
-      <Navbar logged />
+  <div className="min-h-screen flex flex-col text-white">
+    <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-6 lg:grid-cols-12 lg:gap-8">
-          <div className="h-fit border border-white/20 rounded-2xl bg-white/5 p-5 backdrop-blur-md sm:p-8 lg:col-span-3 lg:min-h-[520px]">
-            <h2 className="text-2xl font-[var(--font-krona)] mb-10">
-              Menu
-            </h2>
+    <main className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
 
-                        <ul className="space-y-2 text-base text-gray-300">
+        {/* HEADER */}
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-300">
+            Area pilota
+          </p>
 
-              <li>
-                <Link
-                  href="/dashboard/jobs"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <Briefcase size={20} />
-                  <span>Storico lavori</span>
-                </Link>
-              </li>
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
+            Dashboard Pilota
+          </h1>
 
-              <li>
-                <Link
-                  href="/dashboard/jobs-board"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-green-500/10 hover:text-green-300"
-                >
-                  <FileText size={20} />
-                  <span>Bacheca lavori</span>
-                </Link>
-              </li>
+          <p className="mt-3 text-sm text-gray-400 sm:text-base">
+            Controlla candidature, lavori, crediti e stato del tuo profilo.
+          </p>
+        </div>
 
-              <li>
-                <Link
-                  href="/dashboard/job-data"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <ClipboardList size={20} />
-                  <span>Dati lavoro</span>
-                </Link>
-              </li>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
 
-              <li>
-                <Link
-                  href="/dashboard/reviews"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <Star size={20} />
-                  <span>Recensioni</span>
-                </Link>
-              </li>
+          {/* SIDEBAR */}
+          <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
 
-              <li>
-                <Link
-                  href="/dashboard/credits"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  <CreditCard size={20} />
-                  <span>Crediti</span>
-                </Link>
-              </li>
+            {/* PROFILO */}
+            <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+              <div className="text-center">
 
-              <li>
+                {/* AVATAR */}
+                {userData?.avatar_url ? (
+                  <img
+                    src={userData.avatar_url}
+                    alt={`Foto profilo di ${fullName}`}
+                    width={96}
+                    height={96}
+                    className="mx-auto h-24 w-24 rounded-full border-2 border-white/20 object-cover shadow-lg"
+                  />
+                ) : (
+                  <div
+                    aria-label={`Iniziali di ${fullName}`}
+                    className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-green-400/30 bg-gradient-to-br from-green-400/20 to-cyan-400/20 text-2xl font-bold text-green-300"
+                  >
+                    {profileInitials}
+                  </div>
+                )}
+
+                <h2 className="mt-4 text-2xl font-bold">
+                  {fullName}
+                </h2>
+
+                {/* EMAIL */}
+                <div className="mt-3 flex justify-center">
+                  {emailVerified ? (
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1.5 text-xs font-semibold text-green-400">
+                      <BadgeCheck size={13} />
+                      Mail verificata
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1.5 text-xs font-semibold text-yellow-200">
+                      Mail non verificata
+                    </span>
+                  )}
+                </div>
+
+                {/* CERTIFICAZIONI VERIFICATE */}
+                <div className="mt-4 grid grid-cols-2 gap-2">
+
+                  {userData?.cert_enac_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <ShieldCheck size={12} />
+                      ENAC
+                    </span>
+                  )}
+
+                  {userData?.cert_a1a3_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      A1/A3
+                    </span>
+                  )}
+
+                  {userData?.cert_a2_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      A2
+                    </span>
+                  )}
+
+                  {userData?.cert_sts_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      STS
+                    </span>
+                  )}
+
+                  {userData?.cert_sts01_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      STS-01
+                    </span>
+                  )}
+
+                  {userData?.cert_sts02_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      STS-02
+                    </span>
+                  )}
+
+                  {userData?.cert_specific_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      SPECIFIC
+                    </span>
+                  )}
+
+                  {userData?.cert_open_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      OPEN
+                    </span>
+                  )}
+
+                  {userData?.cert_cro_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      CRO
+                    </span>
+                  )}
+
+                  {userData?.cert_luc_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      LUC
+                    </span>
+                  )}
+
+                  {userData?.cert_bvlos_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      BVLOS
+                    </span>
+                  )}
+
+                  {userData?.cert_notturno_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      NOTTURNO
+                    </span>
+                  )}
+
+                  {userData?.cert_termografia_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      TERMOGRAFIA
+                    </span>
+                  )}
+
+                  {userData?.cert_fpv_racing_verified && (
+                    <span className="flex min-h-[34px] items-center justify-center gap-1 rounded-xl border border-green-400/15 bg-green-400/10 px-2 py-2 text-center text-[10px] font-semibold leading-tight text-green-300">
+                      <BadgeCheck size={12} />
+                      FPV RACING
+                    </span>
+                  )}
+                </div>
+
+                {/* RICHIESTA CERTIFICAZIONE */}
+                {!showCertRequest &&
+                  !userData?.cert_request_sent &&
+                  !hasVerifiedCertification && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowCertRequest(true)
+                      }
+                      className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-xs font-semibold text-white transition hover:bg-white/[0.08]"
+                    >
+                      <UploadCloud size={14} />
+                      Carica certificazione ENAC
+                    </button>
+                  )}
+
+                {userData?.cert_request_sent && (
+                  <div className="mt-4 rounded-2xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3 text-left">
+                    <p className="text-xs font-semibold text-yellow-300">
+                      Verifica in corso
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-gray-300">
+                      Hai già inviato la certificazione ENAC.
+                      Attendi fino a 24 ore per la verifica.
+                    </p>
+                  </div>
+                )}
+
+                {hasVerifiedCertification && (
+                  <div className="mt-4 rounded-2xl border border-green-400/20 bg-green-500/10 px-4 py-3 text-left">
+                    <p className="text-xs font-semibold text-green-300">
+                      Certificazione verificata
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-gray-300">
+                      Per aggiungere ulteriori certificazioni
+                      contatta l&apos;assistenza.
+                    </p>
+                  </div>
+                )}
+
+                {showCertRequest &&
+                  !userData?.cert_request_sent &&
+                  !hasVerifiedCertification && (
+                    <div className="mt-4 rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4 text-left">
+
+                      <div className="mb-3 flex items-center justify-between">
+                        <h4 className="text-sm font-semibold">
+                          Richiesta verifica ENAC
+                        </h4>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowCertRequest(false)
+                          }
+                          className="text-gray-400 transition hover:text-white"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+
+                      <form
+                        onSubmit={handleCertificationRequest}
+                        className="space-y-3"
+                      >
+                        <p className="text-xs leading-5 text-gray-300">
+                          Carica una foto chiara del patentino ENAC
+                          oppure il documento PDF digitale.
+                        </p>
+
+                        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center transition hover:bg-white/10">
+                          <UploadCloud
+                            size={24}
+                            className="mb-2 text-green-400"
+                          />
+
+                          <span className="text-xs text-gray-300">
+                            {certFile
+                              ? certFile.name
+                              : "Carica foto o PDF"}
+                          </span>
+
+                          <input
+                            type="file"
+                            accept="image/*,.pdf"
+                            onChange={(e) =>
+                              setCertFile(
+                                e.target.files?.[0] ||
+                                  null
+                              )
+                            }
+                            className="hidden"
+                          />
+                        </label>
+
+                        <button
+                          type="submit"
+                          disabled={certSending}
+                          className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-400 disabled:opacity-60"
+                        >
+                          {certSending
+                            ? "Invio in corso..."
+                            : "Invia richiesta"}
+                        </button>
+
+                        {certMessage && (
+                          <p className="text-xs leading-5 text-green-300">
+                            {certMessage}
+                          </p>
+                        )}
+                      </form>
+                    </div>
+                  )}
+
+                {/* DATI PROFILO */}
+                <div className="mt-5 space-y-2 border-t border-white/10 pt-5">
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Esperienza
+                    </p>
+                    <p className="mt-1 text-sm text-gray-300">
+                      {userData?.experience ||
+                        "Esperienza non specificata"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Posizione
+                    </p>
+                    <p className="mt-1 text-sm text-gray-300">
+                      {displayPosition}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Drone
+                    </p>
+                    <p className="mt-1 break-words text-sm text-gray-300">
+                      {userData?.drone ||
+                        "Drone non impostato"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Servizi
+                    </p>
+                    <p className="mt-1 break-words text-sm text-gray-300">
+                      {userData?.services ||
+                        "Nessun servizio inserito"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Certificazioni
+                    </p>
+                    <p className="mt-1 break-words text-sm text-gray-300">
+                      {userData?.certifications ||
+                        "Nessuna certificazione"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                      Bio
+                    </p>
+                    <p className="mt-1 break-words text-sm leading-5 text-gray-300">
+                      {userData?.bio ||
+                        "Nessuna bio inserita"}
+                    </p>
+                  </div>
+                </div>
+
                 <Link
                   href="/dashboard/settings"
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-white/10 hover:text-white"
+                  className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold transition hover:bg-white/[0.08]"
                 >
-                  <Settings size={20} />
-                  <span>Impostazioni</span>
+                  <Settings size={17} />
+                  Modifica profilo
                 </Link>
-              </li>
+              </div>
+            </section>
 
-              <li aria-hidden="true" className="py-3">
-                <div className="border-t border-white/10" />
-              </li>
+            {/* MENU */}
+            <section className="rounded-3xl border border-white/10 bg-[#111735] p-5 shadow-xl shadow-black/10">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-600">
+                Navigazione
+              </p>
 
-              <li>
-                <Link
-                  href="/faq"
-                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  FAQ
-                </Link>
-              </li>
+              <h2 className="mt-1 text-lg font-bold">
+                Menu
+              </h2>
 
-              <li>
-                <Link
-                  href="/come-funziona"
-                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  Come funziona
-                </Link>
-              </li>
+              <nav className="mt-4">
+                <ul className="space-y-1 text-sm text-gray-300">
 
-              <li>
-                <Link
-                  href="/contattaci"
-                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  Contattaci
-                </Link>
-              </li>
+                  <li>
+                    <Link
+                      href="/dashboard/jobs"
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <Briefcase size={18} />
+                      Storico lavori
+                    </Link>
+                  </li>
 
-              <li>
-                <Link
-                  href="/privacy-policy"
-                  className="block w-full rounded-lg px-3 py-2 text-sm transition-colors hover:bg-white/10 hover:text-white"
-                >
-                  Privacy e Termini
-                </Link>
-              </li>
+                  <li>
+                    <Link
+                      href="/dashboard/jobs-board"
+                      className="flex items-center gap-3 rounded-xl bg-purple-400/[0.06] px-3 py-3 text-purple-300 transition hover:bg-purple-400/10"
+                    >
+                      <FileText size={18} />
+                      Bacheca lavori
+                    </Link>
+                  </li>
 
-              <li aria-hidden="true" className="py-3">
-                <div className="border-t border-white/10" />
-              </li>
+                  <li>
+                    <Link
+                      href="/dashboard/job-data"
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <ClipboardList size={18} />
+                      Dati lavoro
+                    </Link>
+                  </li>
 
-              <li>
+                  <li>
+                    <Link
+                      href="/dashboard/reviews"
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <Star size={18} />
+                      Recensioni
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/dashboard/credits"
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <CreditCard size={18} />
+                      Crediti
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
+                      href="/dashboard/settings"
+                      className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-white/[0.06] hover:text-white"
+                    >
+                      <Settings size={18} />
+                      Impostazioni
+                    </Link>
+                  </li>
+                </ul>
+
+                <div className="my-5 border-t border-white/[0.07]" />
+
+                <div className="space-y-1">
+                  <Link
+                    href="/faq"
+                    className="block rounded-xl px-3 py-2.5 text-sm text-gray-500 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    FAQ
+                  </Link>
+
+                  <Link
+                    href="/come-funziona"
+                    className="block rounded-xl px-3 py-2.5 text-sm text-gray-500 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Come funziona
+                  </Link>
+
+                  <Link
+                    href="/contattaci"
+                    className="block rounded-xl px-3 py-2.5 text-sm text-gray-500 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Contattaci
+                  </Link>
+
+                  <Link
+                    href="/privacy-policy"
+                    className="block rounded-xl px-3 py-2.5 text-sm text-gray-500 transition hover:bg-white/[0.05] hover:text-white"
+                  >
+                    Privacy e Termini
+                  </Link>
+                </div>
+
+                <div className="my-5 border-t border-white/[0.07]" />
+
                 <button
                   type="button"
                   onClick={async () => {
@@ -548,448 +896,268 @@ const profileInitials = [
 
                     window.location.href = "/"
                   }}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition-colors hover:bg-red-500/10 hover:text-red-300"
+                  className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm text-gray-400 transition hover:bg-red-500/10 hover:text-red-300"
                 >
-                  <LogOut size={20} />
-                  <span>Logout</span>
+                  <LogOut size={18} />
+                  Logout
                 </button>
-              </li>
+              </nav>
+            </section>
+          </aside>
 
-            </ul>
-            </div>
+          {/* AREA PRINCIPALE */}
+          <div className="space-y-6">
 
-          <div className="lg:col-span-3 lg:order-3">
-            <div className="border border-white/20 rounded-2xl p-6 bg-white/5 backdrop-blur-md">
-              <h2 className="text-xl font-[var(--font-krona)] mb-4">
-                Profilo
-              </h2>
+            <ActiveAnnouncements />
 
-              <div className="text-center">
-                {userData?.avatar_url ? (
-  <img
-    src={userData.avatar_url}
-    alt={`Foto profilo di ${fullName}`}
-    width={80}
-    height={80}
-    className="mx-auto mb-4 h-20 w-20 rounded-full border border-white/20 object-cover"
-  />
-) : (
-  <div
-    aria-label={`Iniziali di ${fullName}`}
-    className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full border border-green-400/30 bg-gradient-to-br from-green-400/20 to-cyan-400/20 text-xl font-bold text-green-300"
-  >
-    {profileInitials}
-  </div>
-)}
+            {/* PANORAMICA */}
+            <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6 lg:p-8">
 
-                <h3 className="text-xl font-semibold">
-                  {fullName}
-                </h3>
+              <div className="flex flex-col gap-5 border-b border-white/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-300">
+                    Panoramica
+                  </p>
 
-                <div className="mt-3 space-y-2">
-  <div className="flex items-center justify-center gap-2">
-  <Mail size={14} />
+                  <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
+                    Bentornato{userData?.name ? `, ${userData.name}` : ""}
+                  </h2>
 
-  {emailVerified ? (
-    <span className="inline-flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs font-semibold text-black">
-      <BadgeCheck size={13} />
-      Mail verificata
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1 rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-semibold text-yellow-200">
-      ⚠️ Mail non verificata
-    </span>
-  )}
-</div>
+                  <p className="mt-2 text-sm text-gray-400">
+                    Controlla rapidamente attività, candidature e crediti.
+                  </p>
+                </div>
 
-  <div className="flex flex-col items-center gap-2">
+                <Link
+                  href="/dashboard/jobs-board"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-purple-500 px-5 py-3 font-bold text-white transition hover:bg-purple-400"
+                >
+                  <FileText size={18} />
+                  Vai alla Bacheca
+                </Link>
+              </div>
 
+              {/* STATISTICHE */}
+              <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-  {/* CERTIFICAZIONI SPECIFICHE */}
+                <div className="rounded-2xl border border-white/[0.07] bg-white/[0.035] p-5">
+                  <p className="text-sm text-gray-500">
+                    Lavori completati
+                  </p>
 
-  <div className="grid grid-cols-2 gap-2 w-full max-w-[260px] mx-auto">
-
-  {userData?.cert_enac_verified && (
-    <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-      <ShieldCheck size={13} />
-      ENAC verificata
-    </span>
-  )}
-
-  {userData?.cert_a1a3_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        A1/A3 verificata
-      </span>
-    )}
-
-    {userData?.cert_a2_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        A2 verificata
-      </span>
-    )}
-
-    {userData?.cert_sts_verified && (
-  <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-    <BadgeCheck size={13} />
-    STS verificata
-  </span>
-)}
-
-    {userData?.cert_sts01_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        STS-01 verificata
-      </span>
-    )}
-
-    {userData?.cert_sts02_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        STS-02 verificata
-      </span>
-    )}
-
-    {userData?.cert_specific_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        SPECIFIC verificata
-      </span>
-    )}
-
-    {userData?.cert_open_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        OPEN verificata
-      </span>
-    )}
-
-    {userData?.cert_cro_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        CRO verificata
-      </span>
-    )}
-
-    {userData?.cert_luc_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        LUC verificata
-      </span>
-    )}
-
-    {userData?.cert_bvlos_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        BVLOS verificata
-      </span>
-    )}
-
-    {userData?.cert_notturno_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        NOTTURNO verificata
-      </span>
-    )}
-
-    {userData?.cert_termografia_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        TERMOGRAFIA verificata
-      </span>
-    )}
-
-    {userData?.cert_fpv_racing_verified && (
-      <span className="min-h-[34px] text-center text-[11px] bg-green-500 px-2 py-2 rounded-xl flex items-center justify-center gap-1 leading-tight">
-        <BadgeCheck size={13} />
-        FPV RACING verificata
-      </span>
-    )}
-
-  </div>
-
-</div>
-{!showCertRequest && !userData?.cert_request_sent && !hasVerifiedCertification && (
-  <button
-    type="button"
-    onClick={() => setShowCertRequest(true)}
-    className="mt-2 inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-white transition hover:bg-white/15"
-  >
-    <UploadCloud size={14} />
-    Carica certificazione ENAC
-  </button>
-)}
-
-{userData?.cert_request_sent && (
-  <div className="mt-2 rounded-xl border border-yellow-500/20 bg-yellow-500/10 px-4 py-3">
-    <p className="text-xs font-semibold text-yellow-300">
-      ⏳ Verifica in corso
-    </p>
-
-    <p className="mt-1 text-xs text-gray-300">
-      Hai già inviato la certificazione ENAC.
-      Attendi fino a 24 ore per la verifica.
-      Non è possibile inviare altri documenti finché la richiesta è in lavorazione.
-    </p>
-  </div>
-)}
-
-{hasVerifiedCertification && (
-  <div className="mt-2 rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3">
-    <p className="text-xs font-semibold text-green-300">
-      ✅ Certificazione verificata
-    </p>
-
-    <p className="mt-1 text-xs text-gray-300">
-      Per aggiungere ulteriori certificazioni contatta l'assistenza.
-    </p>
-  </div>
-)}
-
-{showCertRequest &&
- !userData?.cert_request_sent &&
- !hasVerifiedCertification && (
-  <div className="rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
-    <div className="mb-3 flex items-center justify-between">
-      <h4 className="text-sm font-semibold text-white">
-        Richiesta verifica ENAC
-      </h4>
-
-      <button
-        type="button"
-        onClick={() => setShowCertRequest(false)}
-        className="text-gray-400 hover:text-white"
-      >
-        <X size={16} />
-      </button>
-    </div>
-
-    <form onSubmit={handleCertificationRequest} className="space-y-3">
-      <p className="text-xs leading-5 text-gray-300">
-        Carica una foto chiara del patentino ENAC oppure il documento PDF digitale.
-      </p>
-
-      <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center hover:bg-white/10">
-        <UploadCloud size={24} className="mb-2 text-green-400" />
-
-        <span className="text-xs text-gray-300">
-          {certFile ? certFile.name : "Carica foto o PDF"}
-        </span>
-
-        <input
-          type="file"
-          accept="image/*,.pdf"
-          onChange={(e) => setCertFile(e.target.files?.[0] || null)}
-          className="hidden"
-        />
-      </label>
-
-      <button
-        type="submit"
-        disabled={certSending}
-        className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-400 disabled:opacity-60"
-      >
-        {certSending ? "Invio in corso..." : "Invia richiesta"}
-      </button>
-
-      {certMessage && (
-        <p className="text-xs leading-5 text-green-300">
-          {certMessage}
-        </p>
-      )}
-    </form>
-  </div>
-)}
-
-</div>
-                <div className="mt-5 space-y-4 text-left">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Esperienza
+                  <div className="mt-4 flex items-end justify-between">
+                    <p className="text-4xl font-black">
+                      {completedJobs}
                     </p>
-                    <p className="mt-1 text-sm text-gray-200">
-                      {userData?.experience || "Esperienza non specificata"}
-                    </p>
+
+                    <CheckCircle2
+                      size={22}
+                      className="text-green-400/50"
+                    />
                   </div>
+                </div>
 
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Posizione
-                    </p>
-                    <p className="mt-1 text-sm text-gray-200">
-                      {displayPosition}
-                    </p>
-                  </div>
+                <div className="rounded-2xl border border-purple-400/10 bg-purple-400/[0.045] p-5">
+                  <p className="text-sm text-gray-500">
+                    Candidature in attesa
+                  </p>
 
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Drone
+                  <div className="mt-4 flex items-end justify-between">
+                    <p className="text-4xl font-black text-purple-300">
+                      {activeJobs}
                     </p>
-                    <p className="mt-1 text-sm text-gray-200">
-                      {userData?.drone || "Drone non impostato"}
-                    </p>
-                  </div>
 
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Servizio
-                    </p>
-                    <p className="mt-1 text-sm text-gray-200">
-                      {userData?.services || "Nessun servizio inserito"}
-                    </p>
+                    <Plane
+                      size={22}
+                      className="text-purple-300/50"
+                    />
                   </div>
+                </div>
 
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Certificazione
-                    </p>
-                    <p className="mt-1 text-sm text-gray-200">
-                      {userData?.certifications || "Nessuna certificazione"}
-                    </p>
-                  </div>
+                <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.035] p-5">
+                  <p className="text-sm text-gray-500">
+                    Lavori attivi
+                  </p>
 
-                  <div className="border-t border-white/10 pt-4">
-                    <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500">
-                      Bio
+                  <div className="mt-4 flex items-end justify-between">
+                    <p className="text-4xl font-black text-cyan-300">
+                      {applications}
                     </p>
-                    <p className="mt-2 text-sm leading-6 text-gray-200">
-                      {userData?.bio || "Nessuna bio inserita"}
-                    </p>
+
+                    <Briefcase
+                      size={22}
+                      className="text-cyan-300/50"
+                    />
                   </div>
-<Link
-  href="/dashboard/settings"
-  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
->
-  <Settings size={18} />
-  Modifica profilo
-</Link>
+                </div>
+
+                <div className="rounded-2xl border border-green-400/10 bg-green-400/[0.04] p-5">
+                  <p className="text-sm text-gray-500">
+                    Crediti
+                  </p>
+
+                  <div className="mt-4 flex items-end justify-between">
+                    <p className="text-4xl font-black text-green-400">
+                      {credits}
+                    </p>
+
+                    <CreditCard
+                      size={22}
+                      className="text-green-400/50"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </section>
 
-          <div className="space-y-6 lg:col-span-6 lg:order-2">
-  <ActiveAnnouncements />
+            {/* PROSSIMI LAVORI */}
+            <section className="rounded-3xl border border-white/10 bg-[#111735] p-5 shadow-xl shadow-black/10 sm:p-6">
 
-  <div className="rounded-2xl border border-white/20 bg-[#140a3a] p-5 sm:p-8">
-              <h2 className="mb-6 text-xl font-semibold sm:text-2xl">
-                Dashboard Pilota
-              </h2>
-
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle2 size={22} />
-
-                    <p className="text-gray-300">
-                      Lavori completati
-                    </p>
-                  </div>
-
-                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
-                    {completedJobs}
-                  </h2>
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-400/10 text-purple-300">
+                  <Clock3 size={18} />
                 </div>
 
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                  <div className="flex items-center gap-3">
-                    <Plane size={22} />
-
-                    <p className="text-gray-300">
-                      Candidature in attesa
-                    </p>
-                  </div>
-
-                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
-                    {activeJobs}
+                <div>
+                  <h2 className="text-xl font-bold">
+                    Prossimi lavori
                   </h2>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    Lavori assegnati e programmati.
+                  </p>
                 </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                  <div className="flex items-center gap-3">
-                    <FileText size={22} />
-
-                    <p className="text-gray-300">
-                      Lavori attivi
-                    </p>
-                  </div>
-
-                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
-                    {applications}
-                  </h2>
-                </div>
-
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-5">
-                  <div className="flex items-center gap-3">
-                    <CreditCard size={22} />
-
-                    <p className="text-gray-300">
-                      Crediti
-                    </p>
-                  </div>
-
-                  <h2 className="mt-5 text-3xl font-bold sm:text-4xl">
-                    {credits}
-                  </h2>
-                </div>
-              </div>
-            </div>
-
-            <div className="border border-white/20 rounded-2xl p-6 bg-[#140a3a]">
-              <div className="flex items-center gap-2 mb-4">
-                <Clock3 size={18} />
-
-                <h3 className="text-lg font-semibold">
-                  Prossimi lavori
-                </h3>
               </div>
 
               {upcomingJobs.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   {upcomingJobs.map((job) => (
-                    <div
+                    <article
                       key={job.id}
-                      className="rounded-2xl border border-white/10 bg-black/20 p-4"
+                      className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4"
                     >
-                      <h4 className="font-semibold text-white">
-                        {job.title || "Lavoro"}
-                      </h4>
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="font-bold text-white">
+                          {job.title || "Lavoro"}
+                        </h3>
 
-                      <p className="mt-2 text-sm text-gray-300">
-                        📍 {job.location || "Posizione non impostata"}
-                      </p>
+                        <span className="rounded-full bg-green-400/10 px-2 py-1 text-[10px] font-bold tracking-wider text-green-300">
+                          {getStatusLabel(job.status)}
+                        </span>
+                      </div>
 
-                      <p className="mt-1 text-sm text-gray-300">
-                        📅 {formatJobDate(job.job_date)}
-                      </p>
+                      <div className="mt-4 space-y-2 text-sm text-gray-400">
+                        <p>
+                          📍 {job.location || "Posizione non impostata"}
+                        </p>
 
-                      <p className="mt-1 text-sm text-cyan-300">
-                        ⏱ {getCountdownLabel(job.job_date)}
-                      </p>
+                        <p>
+                          📅 {formatJobDate(job.job_date)}
+                        </p>
 
-                      <p className="mt-1 text-xs font-semibold tracking-[0.2em] text-emerald-300">
-                        {getStatusLabel(job.status)}
-                      </p>
+                        <p className="text-cyan-300">
+                          {getCountdownLabel(job.job_date)}
+                        </p>
+                      </div>
 
                       <Link
-  href={`/dashboard/job-data?jobId=${job.id}`}
-  className="mt-4 flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold transition hover:bg-white/10"
->
-  Vedi dati lavoro
-</Link>
-                    </div>
+                        href={`/dashboard/job-data?jobId=${job.id}`}
+                        className="mt-4 flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-semibold transition hover:bg-white/[0.08]"
+                      >
+                        Vedi dati lavoro
+                      </Link>
+                    </article>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-400 text-sm">
-                  Nessun lavoro programmato
-                </p>
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/[0.02] px-5 py-8 text-center">
+                  <Clock3
+                    size={26}
+                    className="mx-auto text-gray-600"
+                  />
+
+                  <p className="mt-3 font-medium text-gray-300">
+                    Nessun lavoro programmato
+                  </p>
+
+                  <p className="mt-1 text-sm text-gray-600">
+                    I lavori assegnati compariranno qui.
+                  </p>
+                </div>
               )}
-            </div>
+            </section>
+
+            {/* AZIONI RAPIDE */}
+            <section className="rounded-3xl border border-white/10 bg-[#111735] p-5 shadow-xl shadow-black/10 sm:p-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-600">
+                Azioni rapide
+              </p>
+
+              <h2 className="mt-1 text-xl font-bold">
+                Cosa vuoi fare?
+              </h2>
+
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
+
+                <Link
+                  href="/dashboard/jobs-board"
+                  className="rounded-2xl border border-purple-400/15 bg-purple-400/[0.06] p-4 transition hover:-translate-y-0.5 hover:bg-purple-400/10"
+                >
+                  <FileText
+                    size={20}
+                    className="text-purple-300"
+                  />
+
+                  <p className="mt-3 font-bold">
+                    Bacheca lavori
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Consulta le nuove richieste pubblicate.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/dashboard/applications"
+                  className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:bg-white/[0.06]"
+                >
+                  <Plane
+                    size={20}
+                    className="text-blue-300"
+                  />
+
+                  <p className="mt-3 font-bold">
+                    Le mie candidature
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Controlla lo stato delle candidature inviate.
+                  </p>
+                </Link>
+
+                <Link
+                  href="/dashboard/credits"
+                  className="rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition hover:-translate-y-0.5 hover:bg-white/[0.06]"
+                >
+                  <CreditCard
+                    size={20}
+                    className="text-green-300"
+                  />
+
+                  <p className="mt-3 font-bold">
+                    Crediti
+                  </p>
+
+                  <p className="mt-1 text-xs leading-5 text-gray-500">
+                    Controlla il saldo disponibile.
+                  </p>
+                </Link>
+              </div>
+            </section>
           </div>
         </div>
       </div>
-    </div>
-  )
+    </main>
+  </div>
+)
 }

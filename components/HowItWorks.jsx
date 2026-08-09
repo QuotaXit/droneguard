@@ -80,126 +80,152 @@ export default function HowItWorks() {
 
             {/* STEP 1 */}
             {step.type === "profile" && (
-              <div className="mt-6 flex-1 rounded-2xl border border-white/10 bg-white p-4 text-black shadow-xl">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full bg-purple-100">
-                    <img
-                      src="/images/droneguard-cta.png"
-                      alt="DroneGuard"
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+  <div className="mt-6 flex-1 rounded-2xl border border-purple-400/15 bg-[#0B1028] p-5 shadow-xl">
+    <div className="flex items-center gap-4">
+      <div className="h-14 w-14 shrink-0 overflow-hidden rounded-full border border-white/10 bg-purple-400/10">
+        <img
+          src="/images/droneguard-cta.png"
+          alt="DroneGuard"
+          className="h-full w-full object-cover"
+        />
+      </div>
 
-                  <div className="min-w-0">
-                    <p className="font-bold">
-                      Profilo pilota
-                    </p>
+      <div className="min-w-0">
+        <p className="font-bold text-white">
+          Profilo pilota
+        </p>
 
-                    <p className="mt-1 text-xs leading-5 text-gray-600">
-                      Città, esperienza, drone, servizi
-                      e certificazioni.
-                    </p>
-                  </div>
-                </div>
+        <p className="mt-1 text-xs leading-5 text-gray-400">
+          Città, esperienza, drone, servizi
+          e certificazioni.
+        </p>
+      </div>
+    </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-2">
-                  <div className="rounded-xl bg-gray-100 px-3 py-2.5">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500">
-                      Profilo
-                    </p>
+    <div className="mt-5 grid grid-cols-2 gap-2">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Profilo
+        </p>
 
-                    <p className="mt-1 text-xs font-semibold text-gray-800">
-                      Professionale
-                    </p>
-                  </div>
+        <p className="mt-1 text-xs font-semibold text-gray-200">
+          Professionale
+        </p>
+      </div>
 
-                  <div className="rounded-xl bg-gray-100 px-3 py-2.5">
-                    <p className="text-[10px] uppercase tracking-wider text-gray-500">
-                      Competenze
-                    </p>
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Competenze
+        </p>
 
-                    <p className="mt-1 text-xs font-semibold text-gray-800">
-                      In evidenza
-                    </p>
-                  </div>
-                </div>
+        <p className="mt-1 text-xs font-semibold text-gray-200">
+          In evidenza
+        </p>
+      </div>
+    </div>
 
-                <Link
-                  href="/register?type=pilot"
-                  className="mt-4 flex w-full items-center justify-center rounded-xl bg-purple-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-purple-400"
-                >
-                  Crea profilo pilota
-                </Link>
-              </div>
-            )}
+    <Link
+      href="/register?type=pilot"
+      className="mt-5 flex w-full items-center justify-center rounded-xl bg-purple-500 px-4 py-3 text-sm font-bold text-white transition hover:bg-purple-400"
+    >
+      Crea profilo pilota
+    </Link>
+  </div>
+)}
 
             {/* STEP 2 */}
             {step.type === "job" && (
-              <div className="mt-6 flex-1 overflow-hidden rounded-2xl border border-white/10 bg-white text-black shadow-xl">
-                <img
-                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=400"
-                  alt="Riprese aeree immobile"
-                  className="h-32 w-full object-cover"
-                />
+  <div className="mt-6 flex-1 rounded-2xl border border-purple-400/15 bg-[#0B1028] p-5 shadow-xl">
+    <div className="flex items-center justify-between gap-3">
+      <span className="rounded-full border border-purple-400/20 bg-purple-400/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-purple-300">
+        Riprese aeree
+      </span>
 
-                <div className="p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-purple-600">
-                      Richiesta disponibile
-                    </p>
+      <span className="h-2 w-2 rounded-full bg-green-400" />
+    </div>
 
-                    <span className="h-2 w-2 rounded-full bg-green-500" />
-                  </div>
+    <p className="mt-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-600">
+      Richiesta disponibile
+    </p>
 
-                  <h4 className="mt-3 font-bold leading-snug">
-                    Riprese aeree immobile — Roma
-                  </h4>
+    <h4 className="mt-2 text-lg font-bold leading-snug text-white">
+      Riprese aeree immobile — Roma
+    </h4>
 
-                  <p className="mt-2 text-xs leading-5 text-gray-600">
-                    Cliente cerca pilota drone per riprese
-                    video e foto.
-                  </p>
+    <p className="mt-3 text-sm leading-6 text-gray-400">
+      Cliente cerca pilota drone per riprese
+      video e foto.
+    </p>
 
-                  <div className="mt-4 rounded-xl bg-gray-100 px-3 py-2.5 text-xs text-gray-700">
-                    📍 Roma, Lazio
-                  </div>
-                </div>
-              </div>
-            )}
+    <div className="mt-5 space-y-2">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Posizione
+        </p>
+
+        <p className="mt-1 text-xs font-semibold text-gray-300">
+          📍 Roma, Lazio
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Tipologia
+        </p>
+
+        <p className="mt-1 text-xs font-semibold text-gray-300">
+          Riprese video e foto aeree
+        </p>
+      </div>
+    </div>
+
+    <div className="mt-5 flex items-center justify-between border-t border-white/[0.07] pt-4">
+      <span className="text-xs text-gray-600">
+        Nuovo lavoro
+      </span>
+
+      <span className="text-xs font-semibold text-purple-300">
+        Visualizza richiesta →
+      </span>
+    </div>
+  </div>
+)}
 
             {/* STEP 3 */}
             {step.type === "earnings" && (
-              <div className="relative mt-6 flex-1 pb-3 pr-3">
-                <div className="absolute bottom-0 right-0 h-[calc(100%-12px)] w-[calc(100%-12px)] rounded-2xl bg-white/20" />
+  <div className="mt-6 flex-1 rounded-2xl border border-green-400/15 bg-[#0B1028] p-5 shadow-xl">
+    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-green-400/20 bg-green-400/10 text-2xl font-bold text-green-400">
+      ✓
+    </div>
 
-                <div className="absolute bottom-1.5 right-1.5 h-[calc(100%-12px)] w-[calc(100%-12px)] rounded-2xl bg-white/40" />
+    <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400">
+      Candidatura
+    </p>
 
-                <div className="relative z-10 rounded-2xl border border-white/10 bg-white p-5 text-black shadow-xl">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-2xl font-bold text-green-600">
-                    ✓
-                  </div>
+    <h4 className="mt-2 text-lg font-bold text-white">
+      Candidatura accettata
+    </h4>
 
-                  <h4 className="mt-4 text-lg font-bold">
-                    Candidatura accettata
-                  </h4>
+    <p className="mt-3 text-sm leading-6 text-gray-400">
+      I dati necessari per organizzare il servizio
+      sono disponibili nella sezione “Dati lavoro”.
+    </p>
 
-                  <p className="mt-2 text-xs leading-5 text-gray-600">
-                    I dati necessari per organizzare il servizio
-                    sono disponibili nella sezione “Dati lavoro”.
-                  </p>
+    <div className="mt-5 rounded-xl border border-green-400/15 bg-green-400/[0.06] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-green-400">
+        Stato
+      </p>
 
-                  <div className="mt-5 rounded-xl border border-green-200 bg-green-50 p-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-green-700">
-                      Stato
-                    </p>
+      <div className="mt-2 flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-green-400" />
 
-                    <p className="mt-1 text-sm font-bold text-green-800">
-                      Pilota selezionato
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+        <p className="text-sm font-bold text-green-300">
+          Pilota selezionato
+        </p>
+      </div>
+    </div>
+  </div>
+)}
           </article>
         ))}
       </div>

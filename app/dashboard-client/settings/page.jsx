@@ -44,8 +44,9 @@ export default function SettingsClientPage() {
   const [confirmEmail, setConfirmEmail] = useState("")
 
   // PASSWORD
-  const [newPassword, setNewPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+  const [currentPassword, setCurrentPassword] = useState("")
+const [newPassword, setNewPassword] = useState("")
+const [confirmPassword, setConfirmPassword] = useState("")
 
   // NOTIFICHE
   const [emailNotifications, setEmailNotifications] =
@@ -380,31 +381,62 @@ const finalUrl = `${publicUrl}?t=${Date.now()}`
 
   // 🔥 UPDATE PASSWORD
   const updatePassword = async () => {
+  if (
+    !currentPassword ||
+    !newPassword ||
+    !confirmPassword
+  ) {
+    toast.error("Compila tutti i campi")
+    return
+  }
 
-    if (!newPassword || !confirmPassword) {
-      toast.error("Compila tutti i campi")
-      return
-    }
+  if (newPassword !== confirmPassword) {
+    toast.error(
+      "Le nuove password non coincidono ❌"
+    )
+    return
+  }
 
-    if (newPassword !== confirmPassword) {
-      toast.error("Le password non coincidono ❌")
-      return
-    }
-
-    const { error } = await supabase.auth.updateUser({
-      password: newPassword,
+  /*
+   * Verifica prima la password attuale.
+   */
+  const { error: loginError } =
+    await supabase.auth.signInWithPassword({
+      email: currentEmail,
+      password: currentPassword
     })
 
-    if (error) {
-      toast.error("Errore aggiornamento password ❌")
-      return
-    }
-
-    toast.success("Password aggiornata ✅")
-
-    setNewPassword("")
-    setConfirmPassword("")
+  if (loginError) {
+    toast.error(
+      "Password attuale non corretta ❌"
+    )
+    return
   }
+
+  /*
+   * Solo dopo la verifica aggiorna
+   * realmente la password.
+   */
+  const { error } =
+    await supabase.auth.updateUser({
+      password: newPassword
+    })
+
+  if (error) {
+    toast.error(
+      "Errore aggiornamento password ❌"
+    )
+    return
+  }
+
+  setCurrentPassword("")
+  setNewPassword("")
+  setConfirmPassword("")
+
+  toast.success(
+    "Password aggiornata con successo ✅"
+  )
+}
 
   // 🔥 DELETE ACCOUNT
 const deleteAccount = async () => {
@@ -483,353 +515,458 @@ const deleteAccount = async () => {
 }
 
   return (
-    <div className="min-h-screen flex flex-col text-white">
+  <div className="min-h-screen flex flex-col text-white">
+    <Navbar />
 
-      <Navbar />
+    <main className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        {/* HEADER */}
+        <div className="mb-8">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green-400">
+            Area cliente
+          </p>
 
-        <div className="max-w-6xl mx-auto">
+          <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
+            Impostazioni Cliente
+          </h1>
 
-          {/* HEADER */}
-          <div className="mb-10">
+          <p className="mt-3 text-sm text-gray-400 sm:text-base">
+            Gestisci il tuo profilo e le impostazioni del tuo account.
+          </p>
+        </div>
 
-            <h1 className="mb-2 text-3xl font-bold sm:text-4xl">
-              Impostazioni Cliente
-            </h1>
+        {/* PROFILO + INFORMAZIONI */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[330px_minmax(0,1fr)]">
 
-            <p className="text-gray-400">
-              Gestisci il tuo account.
-            </p>
+          {/* SINISTRA */}
+          <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
 
-          </div>
+            {/* PROFILO */}
+            <section className="overflow-hidden rounded-3xl border border-white/10 bg-[#140a3a] p-6 shadow-xl shadow-black/10">
+              <div className="flex flex-col items-center text-center">
 
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+                <label className="group relative cursor-pointer">
+                  <img
+                    src={avatar}
+                    alt={`${name || "Cliente"} ${surname || ""}`.trim()}
+                    className="h-28 w-28 rounded-full border-2 border-white/20 object-cover shadow-lg"
+                  />
 
-            {/* LEFT */}
-            <div className="space-y-6 lg:col-span-4">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition group-hover:opacity-100">
+                    <Camera size={24} />
+                  </div>
 
-              {/* CARD PROFILO */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={uploadAvatar}
+                    className="hidden"
+                  />
+                </label>
 
-                <div className="flex flex-col items-center text-center">
+                <h2 className="mt-4 text-2xl font-bold">
+                  {`${name || "Cliente"} ${surname || ""}`.trim()}
+                </h2>
 
-                  {/* FOTO */}
-                  <label className="relative group cursor-pointer">
+                <span className="mt-2 inline-flex rounded-full border border-green-400/20 bg-green-400/10 px-3 py-1 text-xs font-semibold text-green-400">
+                  Cliente verificato
+                </span>
 
-                    <img
-                      src={avatar}
-                      className="w-32 h-32 rounded-full object-cover border border-white/20"
+                <div className="mt-6 w-full space-y-2 border-t border-white/10 pt-5">
+
+                  <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <MapPin
+                      size={17}
+                      className="shrink-0 text-green-400"
                     />
 
-                    <div className="absolute inset-0 bg-black/60 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                        Posizione
+                      </p>
 
-                      <Camera size={28} />
-
+                      <p className="mt-1 break-words text-sm text-gray-300">
+                        {city || "Città non impostata"}
+                      </p>
                     </div>
+                  </div>
 
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={uploadAvatar}
-                      className="hidden"
+                  <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <Building2
+                      size={17}
+                      className="shrink-0 text-green-400"
                     />
 
-                  </label>
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                        Società
+                      </p>
 
-                  <h2 className="mt-5 text-2xl font-bold sm:text-3xl">
-  {`${name || "Cliente"} ${surname || ""}`.trim()}
-</h2>
+                      <p className="mt-1 break-words text-sm text-gray-300">
+                        {companyName || "Società non impostata"}
+                      </p>
+                    </div>
+                  </div>
 
-                  <p className="text-green-400 text-sm mt-1">
-                    Cliente verificato
+                  <div className="flex items-center gap-3 rounded-xl bg-white/[0.03] px-4 py-3 text-left">
+                    <FileText
+                      size={17}
+                      className="shrink-0 text-green-400"
+                    />
+
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-600">
+                        Partita IVA
+                      </p>
+
+                      <p className="mt-1 break-words text-sm text-gray-300">
+                        {vatNumber || "P.IVA non inserita"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* CREDITI */}
+            <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-6 shadow-xl shadow-black/10">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CreditCard
+                      size={20}
+                      className="text-green-400"
+                    />
+
+                    <h2 className="font-bold">
+                      Crediti
+                    </h2>
+                  </div>
+
+                  <p className="mt-4 text-4xl font-black">
+                    {credits}
                   </p>
 
-                  <div className="mt-5 space-y-3 text-sm text-gray-300">
-
-  <div className="flex items-center justify-center gap-2">
-    <MapPin size={16} />
-    <span>
-      {city || "Città non impostata"}
-    </span>
-  </div>
-
-  <div className="flex items-center justify-center gap-2">
-    <Building2 size={16} />
-    <span>
-      {companyName || "Società non impostata"}
-    </span>
-  </div>
-
-  <div className="flex items-center justify-center gap-2">
-    <FileText size={16} />
-    <span>
-      {vatNumber || "P.IVA non inserita"}
-    </span>
-  </div>
-</div>
-
-
+                  <p className="mt-2 text-sm leading-6 text-gray-500">
+                    Crediti disponibili per pubblicare lavori.
+                  </p>
                 </div>
-
               </div>
 
-              {/* CREDITI */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
+              <Link
+                href="/dashboard-client/credits"
+                className="mt-5 flex w-full items-center justify-center rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+              >
+                Acquista crediti
+              </Link>
+            </section>
+          </aside>
 
-                <div className="flex items-center gap-3 mb-5">
+          {/* INFORMAZIONI PROFILO */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6 lg:p-8">
 
-                  <CreditCard size={22} />
+            <div className="mb-7 flex items-start gap-3 border-b border-white/10 pb-5">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-400/10 text-green-400">
+                <User size={20} />
+              </div>
 
-                  <h2 className="text-xl font-semibold">
-                    Crediti
-                  </h2>
+              <div>
+                <h2 className="text-xl font-bold sm:text-2xl">
+                  Informazioni profilo
+                </h2>
 
-                </div>
-
-                <h3 className="mb-2 text-4xl font-bold sm:text-5xl">
-                  {credits}
-                </h3>
-
-                <p className="text-sm text-gray-400 mb-5">
-                  Crediti disponibili per pubblicare lavori
+                <p className="mt-1 text-sm text-gray-500">
+                  Aggiorna i dati mostrati nel tuo profilo cliente.
                 </p>
-
-                <Link href="/dashboard-client/credits">
-  <button className="w-full py-3 rounded-lg bg-green-500 text-black font-medium hover:bg-green-400 transition">
-    Acquista crediti
-  </button>
-</Link>
-
               </div>
-
             </div>
 
-            {/* RIGHT */}
-            <div className="space-y-6 lg:col-span-8">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
-              {/* INFO */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Nome
+                </label>
 
-                <div className="flex items-center gap-3 mb-6">
-
-                  <User size={22} />
-
-                  <h2 className="text-xl font-semibold sm:text-2xl">
-                    Informazioni profilo
-                  </h2>
-
-                </div>
-
-                <div className="space-y-4">
-
-                  <input
-                    placeholder="Nome"
-                    value={name}
-                    onChange={(e) =>
-                      setName(e.target.value)
-                    }
-                    className="w-full bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                  />
-
-                  <input
-                    placeholder="Cognome"
-                    value={surname}
-                    onChange={(e) =>
-                      setSurname(e.target.value)
-                    }
-                    className="w-full bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                  />
-                  {/* CITTÀ */}
-                  <select
-                    value={city}
-                    onChange={(e) =>
-                      setCity(e.target.value)
-                    }
-                    className="w-full bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                  >
-
-                    <option value="">
-                      Seleziona città
-                    </option>
-
-                    {cities.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-
-                  </select>
-
-                  {/* SOCIETÀ */}
-                  <input
-                    placeholder="Nome società"
-                    value={companyName}
-                    maxLength={20}
-                    onChange={(e) =>
-                      setCompanyName(e.target.value)
-                    }
-                    className="w-full bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                  />
-
-                  {/* PIVA */}
-                  <input
-                    placeholder="Partita IVA"
-                    value={vatNumber}
-                    maxLength={11}
-                    onChange={(e) => {
-
-                      const value =
-                        e.target.value.replace(/\D/g, "")
-
-                      setVatNumber(value)
-
-                    }}
-                    className="w-full bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                  />
-
-                  <button
-                    onClick={saveProfile}
-                    disabled={loading}
-                    className="w-full bg-green-500 py-3 rounded-lg text-black font-medium disabled:opacity-50"
-                  >
-                    {loading
-                      ? "Salvataggio..."
-                      : "Salva modifiche"}
-                  </button>
-
-                </div>
-
+                <input
+                  placeholder="Nome"
+                  value={name}
+                  onChange={(e) =>
+                    setName(e.target.value)
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
+                />
               </div>
 
-              {/* EMAIL */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Cognome
+                </label>
 
-                <div className="flex items-center gap-3 mb-6">
+                <input
+                  placeholder="Cognome"
+                  value={surname}
+                  onChange={(e) =>
+                    setSurname(e.target.value)
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
+                />
+              </div>
 
-                  <Mail size={22} />
+              {/* CITTÀ */}
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Città
+                </label>
 
-                  <h2 className="text-xl font-semibold">
-                    Email
-                  </h2>
+                <select
+                  value={city}
+                  onChange={(e) =>
+                    setCity(e.target.value)
+                  }
+                  className="w-full rounded-xl border border-white/10 bg-[#0B1028] px-4 py-3.5 text-white outline-none transition [color-scheme:dark] focus:border-green-400/50"
+                >
+                  <option
+                    value=""
+                    className="bg-[#0B1028] text-white"
+                  >
+                    Seleziona città
+                  </option>
 
-                </div>
+                  {cities.map((c) => (
+                    <option
+                      key={c}
+                      value={c}
+                      className="bg-[#0B1028] text-white"
+                    >
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* SOCIETÀ */}
+              <div>
+  <label className="mb-2 block text-sm text-gray-400">
+    Ragione sociale
+  </label>
+
+  <input
+    placeholder="Ragione sociale"
+    value={companyName}
+    maxLength={20}
+    onChange={(e) =>
+      setCompanyName(
+        e.target.value
+      )
+    }
+    className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
+  />
+</div>
+
+              {/* PIVA */}
+              <div className="sm:col-span-2">
+                <label className="mb-2 block text-sm text-gray-400">
+                  Partita IVA
+                </label>
+
+                <input
+                  placeholder="Partita IVA"
+                  value={vatNumber}
+                  maxLength={11}
+                  onChange={(e) => {
+                    const value =
+                      e.target.value.replace(
+                        /\D/g,
+                        ""
+                      )
+
+                    setVatNumber(value)
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition focus:border-green-400/50"
+                />
+              </div>
+            </div>
+
+            <div className="mt-7 flex justify-end border-t border-white/10 pt-6">
+              <button
+                onClick={saveProfile}
+                disabled={loading}
+                className="w-full rounded-xl bg-green-500 px-7 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              >
+                {loading
+                  ? "Salvataggio..."
+                  : "Salva modifiche"}
+              </button>
+            </div>
+          </section>
+        </div>
+
+        {/* EMAIL + SICUREZZA */}
+        <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+          {/* EMAIL */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+            <div className="mb-5 flex items-start gap-3 border-b border-white/10 pb-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-400/10 text-green-400">
+                <Mail size={18} />
+              </div>
+
+              <div>
+                <h2 className="text-xl font-bold">
+                  Email
+                </h2>
+
+                <p className="mt-1 text-sm text-gray-500">
+                  Modifica l'indirizzo email dell'account.
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-gray-600">
+                  Email attuale
+                </label>
 
                 <input
                   value={currentEmail}
                   disabled
-                  className="w-full mb-4 bg-white/10 border border-white/10 rounded-lg p-3 text-gray-400"
+                  className="w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3.5 text-gray-400"
                 />
-
-                <input
-                  placeholder="Nuova email"
-                  value={newEmail}
-                  onChange={(e) =>
-                    setNewEmail(e.target.value)
-                  }
-                  className="w-full mb-4 bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                />
-
-                <input
-                  placeholder="Conferma nuova email"
-                  value={confirmEmail}
-                  onChange={(e) =>
-                    setConfirmEmail(e.target.value)
-                  }
-                  className="w-full mb-4 bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                />
-
-                <button
-                  onClick={updateEmail}
-                  className="w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-black sm:w-auto"
-                >
-                  Aggiorna email
-                </button>
-
               </div>
 
-              {/* PASSWORD */}
-              <div className="bg-[#140a3a] border border-white/10 rounded-2xl p-6">
+              <input
+                placeholder="Nuova email"
+                value={newEmail}
+                onChange={(e) =>
+                  setNewEmail(e.target.value)
+                }
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+              />
 
-                <div className="flex items-center gap-3 mb-6">
+              <input
+                placeholder="Conferma nuova email"
+                value={confirmEmail}
+                onChange={(e) =>
+                  setConfirmEmail(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+              />
 
-                  <Shield size={22} />
+              <button
+                onClick={updateEmail}
+                className="rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+              >
+                Aggiorna email
+              </button>
+            </div>
+          </section>
 
-                  <h2 className="text-xl font-semibold">
-                    Sicurezza
-                  </h2>
-
-                </div>
-
-                <input
-                  type="password"
-                  placeholder="Nuova password"
-                  value={newPassword}
-                  onChange={(e) =>
-                    setNewPassword(e.target.value)
-                  }
-                  className="w-full mb-4 bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                />
-
-                <input
-                  type="password"
-                  placeholder="Conferma nuova password"
-                  value={confirmPassword}
-                  onChange={(e) =>
-                    setConfirmPassword(e.target.value)
-                  }
-                  className="w-full mb-4 bg-[#1b1147] border border-white/10 rounded-lg p-3"
-                />
-
-                <button
-                  onClick={updatePassword}
-                  className="w-full rounded-lg bg-green-500 px-5 py-3 font-medium text-black sm:w-auto"
-                >
-                  Cambia password
-                </button>
-
+          {/* SICUREZZA */}
+          <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 shadow-xl shadow-black/10 sm:p-6">
+            <div className="mb-5 flex items-start gap-3 border-b border-white/10 pb-4">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-green-400/10 text-green-400">
+                <Shield size={18} />
               </div>
 
-              {/* DELETE */}
-              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6">
+              <div>
+                <h2 className="text-xl font-bold">
+                  Sicurezza
+                </h2>
 
-                <div className="flex items-center gap-3 mb-4">
-
-                  <Trash2
-                    size={22}
-                    className="text-red-400"
-                  />
-
-                  <h2 className="text-xl text-red-400 font-semibold">
-                    Elimina account
-                  </h2>
-
-                </div>
-
-                <p className="text-sm text-gray-300 mb-5">
-
-                  Questa operazione è irreversibile.
-                  Tutti i tuoi dati verranno eliminati, assicurati di non avere crediti.
-
+                <p className="mt-1 text-sm text-gray-500">
+                  Aggiorna la password di accesso.
                 </p>
-
-                <button
-                  onClick={deleteAccount}
-                  className="w-full rounded-lg bg-red-500 px-5 py-3 font-medium sm:w-auto"
-                >
-                  Elimina account
-                </button>
-
               </div>
-
             </div>
 
-          </div>
+            <div className="space-y-4">
+ <input
+  type="password"
+  placeholder="Password attuale"
+  value={currentPassword}
+  onChange={(e) =>
+    setCurrentPassword(
+      e.target.value
+    )
+  }
+  autoComplete="current-password"
+  name="current-password"
+  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+/>
 
+              <input
+                type="password"
+                placeholder="Nuova password"
+                value={newPassword}
+                onChange={(e) =>
+                  setNewPassword(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+              />
+
+              <input
+                type="password"
+                placeholder="Conferma nuova password"
+                value={confirmPassword}
+                onChange={(e) =>
+                  setConfirmPassword(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 outline-none transition placeholder:text-gray-600 focus:border-green-400/50"
+              />
+
+              <button
+                onClick={updatePassword}
+                className="rounded-xl bg-green-500 px-5 py-3 font-semibold text-black transition hover:bg-green-400"
+              >
+                Cambia password
+              </button>
+            </div>
+          </section>
         </div>
 
-      </div>
+        {/* ZONA PERICOLO */}
+        <section className="mt-6 rounded-3xl border border-red-500/20 bg-red-500/[0.07] p-5 shadow-xl shadow-black/10 sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
-    </div>
-  )
+            <div>
+              <div className="flex items-center gap-2 text-red-400">
+                <Trash2 size={18} />
+
+                <p className="text-xs font-semibold uppercase tracking-[0.16em]">
+                  Zona pericolo
+                </p>
+              </div>
+
+              <h2 className="mt-2 text-xl font-bold text-red-300">
+                Elimina account
+              </h2>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400">
+                Questa operazione è irreversibile. Tutti i tuoi dati
+                verranno eliminati, assicurati di non avere crediti.
+              </p>
+            </div>
+
+            <button
+              onClick={deleteAccount}
+              className="shrink-0 rounded-xl bg-red-500 px-5 py-3 font-semibold text-white transition hover:bg-red-400"
+            >
+              Elimina account
+            </button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+)
 }
+

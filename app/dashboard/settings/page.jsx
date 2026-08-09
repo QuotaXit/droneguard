@@ -1057,28 +1057,32 @@ const { data, error } = await supabase
                 </label>
 
                 <select
-                  value={location}
-                  onChange={(e) => {
-                    setLocation(e.target.value)
-                    setCity(e.target.value)
-                  }}
-                  className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3.5 text-white outline-none transition focus:border-green-400/50"
-                >
-                  <option value="">
-                    Seleziona città
-                  </option>
+  value={location}
+  onChange={(e) => {
+    setLocation(e.target.value)
+    setCity(e.target.value)
+  }}
+  className="w-full rounded-xl border border-white/10 bg-[#0B1028] px-4 py-3.5 text-white outline-none transition focus:border-green-400/50 [color-scheme:dark]"
+>
+  <option
+    value=""
+    className="bg-[#0B1028] text-white"
+  >
+    Seleziona città
+  </option>
 
-                  {italianCities.map(
-                    (cityName) => (
-                      <option
-                        key={cityName}
-                        value={cityName}
-                      >
-                        {cityName}
-                      </option>
-                    )
-                  )}
-                </select>
+  {italianCities.map(
+    (cityName) => (
+      <option
+        key={cityName}
+        value={cityName}
+        className="bg-[#0B1028] text-white"
+      >
+        {cityName}
+      </option>
+    )
+  )}
+</select>
               </div>
 
               {/* SALVATAGGIO */}

@@ -1,6 +1,15 @@
-import Link from "next/link"
+"use client"
+
+import { useRouter } from "next/navigation"
+import { supabase } from "@/lib/supabase/client"
+import {
+  getDashboardPath,
+  isClient,
+  isPilot
+} from "@/lib/auth-utils"
 
 export default function HowItWorksClients() {
+  const router = useRouter()
     const steps = [
     {
       number: "1",
@@ -21,6 +30,116 @@ export default function HowItWorksClients() {
       type: "choose",
     },
   ]
+
+  const handlePublishJob = async () => {
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser()
+
+  if (authError) {
+    console.error(
+      "Errore controllo sessione sezione clienti:",
+      authError
+    )
+
+    router.push("/login")
+    return
+  }
+
+  if (!user) {
+    router.push("/register?type=cliente")
+    return
+  }
+
+  const {
+    data: profile,
+    error: profileError
+  } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  if (profileError || !profile) {
+    console.error(
+      "Impossibile recuperare il ruolo:",
+      profileError
+    )
+
+    router.push("/login")
+    return
+  }
+
+  if (isPilot(profile.role)) {
+    router.push("/dashboard/jobs-board")
+    return
+  }
+
+  if (isClient(profile.role)) {
+    router.push("/dashboard-client/create-job")
+    return
+  }
+
+  router.push(
+    getDashboardPath(profile.role)
+  )
+}
+
+const handleClientAccount = async () => {
+  const {
+    data: { user },
+    error: authError
+  } = await supabase.auth.getUser()
+
+  if (authError) {
+    console.error(
+      "Errore controllo sessione account cliente:",
+      authError
+    )
+
+    router.push("/login")
+    return
+  }
+
+  if (!user) {
+    router.push("/register?type=cliente")
+    return
+  }
+
+  const {
+    data: profile,
+    error: profileError
+  } = await supabase
+    .from("users")
+    .select("role")
+    .eq("id", user.id)
+    .maybeSingle()
+
+  if (profileError || !profile) {
+    console.error(
+      "Impossibile recuperare il ruolo:",
+      profileError
+    )
+
+    router.push("/login")
+    return
+  }
+
+  if (isPilot(profile.role)) {
+    router.push("/dashboard/profile")
+    return
+  }
+
+  if (isClient(profile.role)) {
+    router.push("/dashboard-client/settings")
+    return
+  }
+
+  router.push(
+    getDashboardPath(profile.role)
+  )
+}
 
   return (
   <section className="relative overflow-hidden border-b border-white/5 bg-[#0C1230]">
@@ -79,130 +198,159 @@ export default function HowItWorksClients() {
 
             {/* ESEMPIO 1 */}
             {step.type === "publish" && (
-              <div className="mt-6 flex-1 rounded-2xl border border-white/10 bg-white p-4 text-black shadow-xl">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-green-600">
-                    Nuova richiesta
-                  </p>
+  <div className="mt-6 flex-1 rounded-2xl border border-green-400/15 bg-[#0B1028] p-5 shadow-xl">
 
-                  <span className="rounded-full bg-green-50 px-2 py-1 text-[10px] font-semibold text-green-700">
-                    Nuovo
-                  </span>
-                </div>
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-green-400">
+        Nuova richiesta
+      </p>
 
-                <h4 className="mt-3 text-base font-bold leading-snug">
-                  Riprese drone per evento — Roma
-                </h4>
+      <span className="rounded-full border border-green-400/15 bg-green-400/10 px-2.5 py-1 text-[10px] font-semibold text-green-300">
+        Nuovo
+      </span>
+    </div>
 
-                <p className="mt-2 text-xs leading-5 text-gray-600">
-                  Cerco pilota drone per video e foto durante
-                  un evento privato.
-                </p>
+    <h4 className="mt-4 text-lg font-bold leading-snug text-white">
+      Riprese drone per evento — Roma
+    </h4>
 
-                <div className="mt-4 grid gap-2">
-                  <div className="rounded-xl bg-gray-100 px-3 py-2 text-xs text-gray-700">
-                    📍 Roma, Lazio
-                  </div>
+    <p className="mt-3 text-sm leading-6 text-gray-400">
+      Cerco pilota drone per video e foto durante
+      un evento privato.
+    </p>
 
-                  <div className="rounded-xl bg-gray-100 px-3 py-2 text-xs text-gray-700">
-                    🎥 Riprese video e foto aeree
-                  </div>
-                </div>
+    <div className="mt-5 space-y-2">
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Posizione
+        </p>
 
-                <Link
-                  href="/register?type=cliente"
-                  className="mt-4 flex w-full items-center justify-center rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-black transition hover:bg-green-400"
-                >
-                  Richiedi un volo
-                </Link>
-              </div>
-            )}
+        <p className="mt-1 text-xs font-semibold text-gray-300">
+          📍 Roma, Lazio
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-white/[0.06] bg-white/[0.035] px-3 py-3">
+        <p className="text-[10px] uppercase tracking-wider text-gray-600">
+          Servizio
+        </p>
+
+        <p className="mt-1 text-xs font-semibold text-gray-300">
+          Riprese video e foto aeree
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      onClick={handlePublishJob}
+      className="mt-5 w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-black transition hover:bg-green-400"
+    >
+      Pubblica lavoro
+    </button>
+  </div>
+)}
 
             {/* ESEMPIO 2 */}
             {step.type === "applications" && (
-              <div className="mt-6 flex-1 rounded-2xl border border-white/10 bg-white p-4 text-black shadow-xl">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-green-600">
-                    Candidature ricevute
-                  </p>
+  <div className="mt-6 flex-1 rounded-2xl border border-green-400/15 bg-[#0B1028] p-5 shadow-xl">
 
-                  <span className="rounded-full bg-gray-100 px-2 py-1 text-[10px] font-semibold text-gray-600">
-                    2 piloti
-                  </span>
-                </div>
+    <div className="flex items-center justify-between gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-green-400">
+        Candidature ricevute
+      </p>
 
-                <div className="mt-4 space-y-3">
-                  <div className="rounded-xl border border-gray-200 p-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-100 text-sm">
-                        👤
-                      </div>
+      <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold text-gray-400">
+        2 piloti
+      </span>
+    </div>
 
-                      <div>
-                        <p className="text-sm font-bold">
-                          Pilota drone certificato
-                        </p>
+    <div className="mt-5 space-y-3">
 
-                        <p className="mt-1 text-xs leading-5 text-gray-600">
-                          Disponibile per riprese aeree,
-                          eventi e immobili.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-400/10 text-green-300">
+            👤
+          </div>
 
-                  <div className="rounded-xl border border-gray-200 p-3">
-                    <div className="flex items-start gap-3">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm">
-                        👤
-                      </div>
+          <div>
+            <p className="text-sm font-bold text-white">
+              Pilota drone certificato
+            </p>
 
-                      <div>
-                        <p className="text-sm font-bold">
-                          Operatore drone professionale
-                        </p>
+            <p className="mt-1 text-xs leading-5 text-gray-400">
+              Disponibile per riprese aeree,
+              eventi e immobili.
+            </p>
+          </div>
+        </div>
+      </div>
 
-                        <p className="mt-1 text-xs leading-5 text-gray-600">
-                          Attrezzatura professionale e
-                          portfolio disponibile.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.035] p-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-400/10 text-blue-300">
+            👤
+          </div>
+
+          <div>
+            <p className="text-sm font-bold text-white">
+              Operatore drone professionale
+            </p>
+
+            <p className="mt-1 text-xs leading-5 text-gray-400">
+              Attrezzatura professionale e
+              portfolio disponibile.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
             {/* ESEMPIO 3 */}
             {step.type === "choose" && (
-              <div className="relative mt-6 flex-1 pb-3 pr-3">
-                <div className="absolute bottom-0 right-0 h-[calc(100%-12px)] w-[calc(100%-12px)] rounded-2xl bg-white/20" />
+  <div className="mt-6 flex-1 rounded-2xl border border-green-400/15 bg-[#0B1028] p-5 shadow-xl">
 
-                <div className="absolute bottom-1.5 right-1.5 h-[calc(100%-12px)] w-[calc(100%-12px)] rounded-2xl bg-white/40" />
+    <div className="flex h-14 w-14 items-center justify-center rounded-full border border-green-400/20 bg-green-400/10 text-2xl font-bold text-green-400">
+      ✓
+    </div>
 
-                <div className="relative z-10 rounded-2xl border border-white/10 bg-white p-5 text-black shadow-xl">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-2xl font-bold text-green-600">
-                    ✓
-                  </div>
+    <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.16em] text-green-400">
+      Candidatura
+    </p>
 
-                  <h4 className="mt-4 text-lg font-bold">
-                    Pilota scelto
-                  </h4>
+    <h4 className="mt-2 text-lg font-bold text-white">
+      Pilota scelto
+    </h4>
 
-                  <p className="mt-2 text-xs leading-5 text-gray-600">
-                    Contatti e dettagli disponibili nella tua
-                    dashboard.
-                  </p>
+    <p className="mt-3 text-sm leading-6 text-gray-400">
+      Contatti e dettagli disponibili nella tua dashboard.
+    </p>
 
-                  <Link
-                    href="/register?type=cliente"
-                    className="mt-5 flex w-full items-center justify-center rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-black transition hover:bg-green-400"
-                  >
-                    Crea account cliente
-                  </Link>
-                </div>
-              </div>
-            )}
+    <div className="mt-5 rounded-xl border border-green-400/15 bg-green-400/[0.06] p-4">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-green-400">
+        Stato
+      </p>
+
+      <div className="mt-2 flex items-center gap-2">
+        <span className="h-2 w-2 rounded-full bg-green-400" />
+
+        <p className="text-sm font-bold text-green-300">
+          Pilota selezionato
+        </p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      onClick={handleClientAccount}
+      className="mt-5 w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-bold text-black transition hover:bg-green-400"
+    >
+      Crea account cliente
+    </button>
+  </div>
+)}
           </article>
         ))}
       </div>
