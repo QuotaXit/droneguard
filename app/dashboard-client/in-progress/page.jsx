@@ -186,6 +186,46 @@ const [
   setAppointmentChangeCancelling
 ] = useState(false)
 
+const [
+  editingJobDetails,
+  setEditingJobDetails
+] = useState(false)
+
+const [
+  detailExactLocation,
+  setDetailExactLocation
+] = useState("")
+
+const [
+  detailMeetingPoint,
+  setDetailMeetingPoint
+] = useState("")
+
+const [
+  detailArrivalTime,
+  setDetailArrivalTime
+] = useState("")
+
+const [
+  detailPhone,
+  setDetailPhone
+] = useState("")
+
+const [
+  detailEmail,
+  setDetailEmail
+] = useState("")
+
+const [
+  detailNotes,
+  setDetailNotes
+] = useState("")
+
+const [
+  savingJobDetails,
+  setSavingJobDetails
+] = useState(false)
+
   const loadJobs = async () => {
     const {
       data: { user }
@@ -1001,6 +1041,39 @@ setSelectedPilot(
     )
 
     const {
+      data: { user },
+      error: userError
+    } = await supabase.auth.getUser()
+
+    if (userError || !user) {
+      toast.error(
+        "Sessione non valida. Effettua nuovamente l'accesso."
+      )
+
+      return
+    }
+
+    const accountEmail =
+      String(
+        user.email || ""
+      )
+        .trim()
+        .toLowerCase()
+
+    const pilotId =
+      job.pilot_id ||
+      job.assigned_pilot ||
+      null
+
+    if (!pilotId) {
+      toast.error(
+        "Pilota assegnato non disponibile."
+      )
+
+      return
+    }
+
+    const {
       data,
       error
     } = await supabase
@@ -1012,7 +1085,7 @@ setSelectedPilot(
       )
       .eq(
         "pilot_id",
-        job.pilot_id
+        pilotId
       )
       .maybeSingle()
 
@@ -1029,8 +1102,59 @@ setSelectedPilot(
       return
     }
 
-    setSentJobDetails(
+    const assignment =
       data || null
+
+    setSentJobDetails(
+      assignment
+    )
+
+    setDetailExactLocation(
+      assignment?.exact_location ||
+        assignment?.precise_location ||
+        ""
+    )
+
+    setDetailMeetingPoint(
+      assignment?.meeting_point ||
+        ""
+    )
+
+    setDetailArrivalTime(
+      toDateTimeLocalValue(
+        assignment?.arrival_time ||
+          ""
+      )
+    )
+
+    setDetailPhone(
+      assignment?.phone ||
+        ""
+    )
+
+    setDetailEmail(
+      accountEmail
+    )
+
+    setDetailNotes(
+      assignment?.notes ||
+        ""
+    )
+
+    const detailsComplete =
+      Boolean(
+        assignment &&
+        hasAppointmentDetails(
+          assignment
+        ) &&
+        String(
+          assignment.phone || ""
+        ).trim() &&
+        accountEmail
+      )
+
+    setEditingJobDetails(
+      !detailsComplete
     )
 
     await loadAppointmentChangeRequest(
@@ -1038,6 +1162,280 @@ setSelectedPilot(
     )
 
     setShowDetailsModal(true)
+  }
+
+  const saveJobDetails =
+  async () => {
+    if (
+      savingJobDetails ||
+      !selectedJob?.id
+    ) {
+      return
+    }
+
+    const pilotId =
+      selectedJob.pilot_id ||
+      selectedJob.assigned_pilot ||
+      null
+
+    if (!pilotId) {
+      toast.error(
+        "Pilota assegnato non disponibile."
+      )
+
+      return
+    }
+
+    const cleanExactLocation =
+      detailExactLocation.trim()
+
+    const cleanMeetingPoint =
+      detailMeetingPoint.trim()
+
+    const cleanArrivalTime =
+      detailArrivalTime.trim()
+
+    const cleanPhone =
+      detailPhone.trim()
+
+    const cleanNotes =
+      detailNotes.trim()
+
+    if (!cleanExactLocation) {
+      toast.error(
+        "Inserisci la posizione precisa."
+      )
+      return
+    }
+
+    if (!cleanMeetingPoint) {
+      toast.error(
+        "Inserisci il punto di ritrovo."
+      )
+      return
+    }
+
+    if (!cleanArrivalTime) {
+      toast.error(
+        "Inserisci data e ora dell'appuntamento."
+      )
+      return
+    }
+
+    if (cleanPhone.length < 5) {
+      toast.error(
+        "Inserisci un numero di telefono valido."
+      )
+      return
+    }
+
+    if (cleanNotes.length > 3000) {
+      toast.error(
+        "Le note possono contenere massimo 3000 caratteri."
+      )
+      return
+    }
+
+    try {
+      setSavingJobDetails(true)
+
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser()
+
+      if (userError || !user) {
+        throw new Error(
+          "Sessione non valida. Effettua nuovamente l'accesso."
+        )
+      }
+
+      const accountEmail =
+        String(
+          user.email || ""
+        )
+          .trim()
+          .toLowerCase()
+
+      if (!accountEmail) {
+        throw new Error(
+          "Email dell'account non disponibile."
+        )
+      }
+
+      const { error } =
+        await supabase.rpc(
+          "save_job_assignment_details",
+          {
+            p_job_id:
+              selectedJob.id,
+
+            p_pilot_id:
+              pilotId,
+
+            p_exact_location:
+              cleanExactLocation,
+
+            p_meeting_point:
+              cleanMeetingPoint,
+
+            p_phone:
+              cleanPhone,
+
+            /*
+             * Il database viene hardenizzato per
+             * usare comunque l'email di auth.users.
+             */
+            p_email:
+              accountEmail,
+
+            p_arrival_time:
+              cleanArrivalTime,
+
+            p_priority:
+              sentJobDetails?.priority ||
+              "normal",
+
+            p_notes:
+              cleanNotes,
+
+            p_has_authorization:
+              Boolean(
+                sentJobDetails?.has_authorization
+              ),
+
+            p_has_parking:
+              Boolean(
+                sentJobDetails?.has_parking
+              ),
+
+            p_has_power:
+              Boolean(
+                sentJobDetails?.has_power
+              ),
+
+            p_urban_flight:
+              Boolean(
+                sentJobDetails?.urban_flight
+              ),
+
+            p_people_present:
+              Boolean(
+                sentJobDetails?.people_present
+              )
+          }
+        )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "EMAIL_ACCOUNT_NON_DISPONIBILE"
+          )
+        ) {
+          throw new Error(
+            "Email dell'account non disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "TELEFONO_NON_VALIDO"
+          )
+        ) {
+          throw new Error(
+            "Inserisci un numero di telefono valido."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ASSEGNAZIONE_NON_AUTORIZZATA"
+          ) ||
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a modificare i dati di questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "DETTAGLI_NON_MODIFICABILI"
+          )
+        ) {
+          throw new Error(
+            "I dati di questo lavoro non possono più essere modificati."
+          )
+        }
+
+        throw error
+      }
+
+      const {
+        data: refreshedAssignment,
+        error: refreshError
+      } = await supabase
+        .from("job_assignments")
+        .select("*")
+        .eq(
+          "job_id",
+          selectedJob.id
+        )
+        .eq(
+          "pilot_id",
+          pilotId
+        )
+        .maybeSingle()
+
+      if (refreshError) {
+        throw refreshError
+      }
+
+      setSentJobDetails(
+        refreshedAssignment || null
+      )
+
+      setDetailEmail(
+        accountEmail
+      )
+
+      setEditingJobDetails(false)
+
+      toast.success(
+        "Dati salvati e inviati al pilota ✅"
+      )
+
+      await loadAppointmentChangeRequest(
+        selectedJob.id
+      )
+
+      await loadJobs()
+
+    } catch (error) {
+      console.error(
+        "[in-progress] Salvataggio dati lavoro fallito:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile salvare i dati del lavoro."
+      )
+    } finally {
+      setSavingJobDetails(false)
+    }
   }
 
   const openAppointmentChangeModal =
@@ -1970,92 +2368,263 @@ setSelectedPilot(
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-5">
           <div className="max-h-[90vh] w-full max-w-[95vw] overflow-y-auto rounded-3xl border border-white/10 bg-[#140a3a] p-5 text-white sm:max-w-4xl sm:p-8">
             <h2 className="mb-2 text-2xl font-bold sm:text-4xl">
-              Dati inviati al pilota
+              {editingJobDetails
+                ? "Dati operativi del lavoro"
+                : "Dati inviati al pilota"}
             </h2>
 
             <p className="mb-8 text-sm text-gray-400">
-              Dati operativi per il lavoro: {selectedJob.title}
+              {editingJobDetails
+                ? "Inserisci le informazioni che serviranno al pilota per l'appuntamento."
+                : "Dati operativi per il lavoro:"}{" "}
+              {selectedJob.title}
             </p>
 
-            {!sentJobDetails ? (
-              <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-6 text-center text-yellow-300 font-bold">
-                Nessun dato è stato ancora inviato al pilota.
+            {editingJobDetails ? (
+              <div className="rounded-2xl border border-white/10 bg-black/10 p-5 sm:p-6">
+                <div className="grid gap-5 sm:grid-cols-2">
+
+                  <label className="block sm:col-span-2">
+                    <span className="mb-2 block text-sm font-semibold text-gray-300">
+                      Posizione precisa
+                    </span>
+                    <input
+                      value={detailExactLocation}
+                      onChange={(event) =>
+                        setDetailExactLocation(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Es. Via Roma 10, Roma"
+                      className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white outline-none focus:border-green-400/40"
+                    />
+                  </label>
+
+                  <label className="block sm:col-span-2">
+                    <span className="mb-2 block text-sm font-semibold text-gray-300">
+                      Punto di ritrovo
+                    </span>
+                    <input
+                      value={detailMeetingPoint}
+                      onChange={(event) =>
+                        setDetailMeetingPoint(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Es. Cancello principale"
+                      className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white outline-none focus:border-green-400/40"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-gray-300">
+                      Data e ora appuntamento
+                    </span>
+                    <input
+                      type="datetime-local"
+                      value={detailArrivalTime}
+                      onChange={(event) =>
+                        setDetailArrivalTime(
+                          event.target.value
+                        )
+                      }
+                      className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white outline-none [color-scheme:dark] focus:border-green-400/40"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-gray-300">
+                      Telefono
+                    </span>
+                    <input
+                      type="tel"
+                      value={detailPhone}
+                      onChange={(event) =>
+                        setDetailPhone(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Numero di telefono"
+                      className="w-full rounded-xl border border-white/10 bg-black/20 p-4 text-white outline-none focus:border-green-400/40"
+                    />
+                  </label>
+
+                  <label className="block sm:col-span-2">
+                    <span className="mb-2 block text-sm font-semibold text-gray-300">
+                      Email account
+                    </span>
+                    <input
+                      type="email"
+                      value={detailEmail}
+                      readOnly
+                      disabled
+                      className="w-full cursor-not-allowed rounded-xl border border-white/10 bg-white/[0.04] p-4 text-gray-400 opacity-80"
+                    />
+                    <p className="mt-2 text-xs text-gray-500">
+                      L&apos;email viene presa automaticamente dall&apos;account DroneGuard e non può essere modificata qui.
+                    </p>
+                  </label>
+
+                  <label className="block sm:col-span-2">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="text-sm font-semibold text-gray-300">
+                        Note operative
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {detailNotes.length}/3000
+                      </span>
+                    </div>
+                    <textarea
+                      value={detailNotes}
+                      maxLength={3000}
+                      onChange={(event) =>
+                        setDetailNotes(
+                          event.target.value
+                        )
+                      }
+                      placeholder="Indicazioni utili per il pilota..."
+                      className="h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-4 text-white outline-none placeholder:text-gray-600 focus:border-green-400/40"
+                    />
+                  </label>
+
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  {sentJobDetails && (
+                    <button
+                      type="button"
+                      disabled={savingJobDetails}
+                      onClick={() =>
+                        setEditingJobDetails(false)
+                      }
+                      className="rounded-xl border border-white/10 bg-white/5 px-5 py-3.5 font-semibold transition hover:bg-white/10 disabled:opacity-50"
+                    >
+                      Annulla modifiche
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    disabled={savingJobDetails}
+                    onClick={saveJobDetails}
+                    className={`${
+                      sentJobDetails
+                        ? ""
+                        : "sm:col-span-2"
+                    } rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50`}
+                  >
+                    {savingJobDetails
+                      ? "Salvataggio..."
+                      : "Salva e invia al pilota"}
+                  </button>
+                </div>
+              </div>
+            ) : !sentJobDetails ? (
+              <div className="rounded-2xl border border-yellow-400/30 bg-yellow-400/10 p-6 text-center">
+                <p className="font-bold text-yellow-300">
+                  Nessun dato è stato ancora inviato al pilota.
+                </p>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditingJobDetails(true)
+                  }
+                  className="mt-4 rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400"
+                >
+                  Inserisci dati
+                </button>
               </div>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10">
-                <table className="w-full min-w-[560px] text-left text-sm">
-                  <tbody>
-                    <tr className="border-b border-white/10">
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Posizione precisa
-                      </th>
-                      <td className="p-4">
-                        {sentJobDetails.exact_location ||
-                          sentJobDetails.precise_location ||
-                          "Non indicata"}
-                      </td>
-                    </tr>
+              <>
+                <div className="overflow-x-auto rounded-2xl border border-white/10">
+                  <table className="w-full min-w-[560px] text-left text-sm">
+                    <tbody>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Posizione precisa
+                        </th>
+                        <td className="p-4">
+                          {sentJobDetails.exact_location ||
+                            sentJobDetails.precise_location ||
+                            "Non indicata"}
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-white/10">
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Punto di ritrovo
-                      </th>
-                      <td className="p-4">
-                        {sentJobDetails.meeting_point || "Non indicato"}
-                      </td>
-                    </tr>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Punto di ritrovo
+                        </th>
+                        <td className="p-4">
+                          {sentJobDetails.meeting_point || "Non indicato"}
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-white/10">
-  <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-    Orario appuntamento
-  </th>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Orario appuntamento
+                        </th>
+                        <td className="p-4">
+                          {sentJobDetails.arrival_time
+                            ? formatAppointmentDateTime(
+                                sentJobDetails.arrival_time
+                              )
+                            : "Non indicato"}
+                        </td>
+                      </tr>
 
-  <td className="p-4">
-    {sentJobDetails.arrival_time ||
-      "Non indicato"}
-  </td>
-</tr>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Telefono
+                        </th>
+                        <td className="p-4">
+                          {sentJobDetails.phone || "Non indicato"}
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-white/10">
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Telefono
-                      </th>
-                      <td className="p-4">
-                        {sentJobDetails.phone || "Non indicato"}
-                      </td>
-                    </tr>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Email
+                        </th>
+                        <td className="p-4">
+                          {detailEmail ||
+                            sentJobDetails.email ||
+                            "Non indicata"}
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-white/10">
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Email
-                      </th>
-                      <td className="p-4">
-                        {sentJobDetails.email || "Non indicata"}
-                      </td>
-                    </tr>
+                      <tr className="border-b border-white/10">
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Note operative
+                        </th>
+                        <td className="p-4 whitespace-pre-wrap">
+                          {sentJobDetails.notes || "Nessuna nota"}
+                        </td>
+                      </tr>
 
-                    <tr className="border-b border-white/10">
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Note operative
-                      </th>
-                      <td className="p-4 whitespace-pre-wrap">
-                        {sentJobDetails.notes || "Nessuna nota"}
-                      </td>
-                    </tr>
+                      <tr>
+                        <th className="w-1/3 bg-black/20 p-4 text-gray-400">
+                          Stato
+                        </th>
+                        <td className="p-4">
+                          {sentJobDetails.status === "details_sent"
+                            ? "Dati inviati"
+                            : sentJobDetails.status || "Non indicato"}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
 
-                    <tr>
-                      <th className="w-1/3 bg-black/20 p-4 text-gray-400">
-                        Stato
-                      </th>
-                      <td className="p-4">
-                        {sentJobDetails.status === "details_sent"
-                          ? "Dati inviati"
-                          : sentJobDetails.status || "Non indicato"}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setEditingJobDetails(true)
+                  }
+                  className="mt-4 w-full rounded-xl border border-green-400/20 bg-green-400/[0.08] px-5 py-3.5 font-bold text-green-300 transition hover:bg-green-400/[0.12]"
+                >
+                  Modifica dati
+                </button>
+              </>
             )}
 
             {sentJobDetails && (
