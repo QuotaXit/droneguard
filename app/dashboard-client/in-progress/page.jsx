@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Navbar from "@/components/Navbar"
+import JobDocumentsPanel from "@/components/JobDocumentsPanel"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 import { Users } from "lucide-react"
@@ -2428,6 +2429,10 @@ setSelectedPilot(
 
   </div>
 )}
+
+<JobDocumentsPanel
+  jobId={selectedJob.id}
+/>
 
             <div className="mt-8 flex gap-4">
               <button

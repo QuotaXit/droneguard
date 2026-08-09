@@ -3,6 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Navbar from "@/components/Navbar"
+import JobDocumentsPanel from "@/components/JobDocumentsPanel"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
 
@@ -1760,6 +1761,10 @@ const appointmentReady =
 
   </div>
 )}
+
+<JobDocumentsPanel
+  jobId={job?.id}
+/>
 
               <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                 <div className="bg-black/20 rounded-2xl p-5">
