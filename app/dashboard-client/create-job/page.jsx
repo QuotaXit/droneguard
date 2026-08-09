@@ -386,58 +386,95 @@ if (!createdJobId) {
   return
 }
 
+     /*
+ * Il lavoro è già stato creato.
+ * L'invio email non deve bloccare il cliente
+ * sulla schermata di pubblicazione.
+ */
+fetch(
+  "/api/send-job-emails",
+  {
+    method: "POST",
+
+    headers: {
+      "Content-Type":
+        "application/json"
+    },
+
+    body:
+      JSON.stringify({
+        jobId:
+          createdJobId
+      }),
+
+    /*
+     * Permette alla richiesta di continuare
+     * anche durante il cambio pagina.
+     */
+    keepalive: true
+  }
+)
+  .then(
+    async (
+      emailResponse
+    ) => {
+      let emailData =
+        null
+
       try {
-  const emailResponse =
-    await fetch(
-      "/api/send-job-emails",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-        body: JSON.stringify({
-          jobId:
-            createdJobId
-        })
+        emailData =
+          await emailResponse.json()
+      } catch {
+        emailData =
+          null
       }
-    )
 
-  let emailData = null
+      if (
+        !emailResponse.ok
+      ) {
+        console.error(
+          "Errore invio email ai piloti:",
+          emailData?.error ||
+            "Risposta email non valida"
+        )
 
-  try {
-    emailData =
-      await emailResponse.json()
-  } catch {
-    emailData = null
-  }
+        return
+      }
 
-  if (!emailResponse.ok) {
-    console.error(
-      "Errore invio email ai piloti:",
-      emailData?.error ||
-        "Risposta email non valida"
-    )
-  } else if (
-    Number(
-      emailData?.failed || 0
-    ) > 0
-  ) {
-    console.warn(
-      "Alcune email ai piloti non sono state inviate:",
-      emailData
-    )
-  }
-} catch (emailError) {
-  console.error(
-    "Errore imprevisto invio email ai piloti:",
-    emailError
+      if (
+        Number(
+          emailData?.failed ||
+            0
+        ) > 0
+      ) {
+        console.warn(
+          "Alcune email ai piloti non sono state inviate:",
+          emailData
+        )
+      }
+    }
   )
-}
+  .catch(
+    (
+      emailError
+    ) => {
+      console.error(
+        "Errore imprevisto invio email ai piloti:",
+        emailError
+      )
+    }
+  )
 
     
-      toast.success("Lavoro pubblicato 🚀")
-      window.location.href = "/dashboard-client"
+     toast.success(
+  "Lavoro pubblicato 🚀"
+)
+
+window.location.replace(
+  "/dashboard-client"
+)
+
+return
     } finally {
       setCreating(false)
     }
