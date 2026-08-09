@@ -1487,8 +1487,8 @@ const appointmentReady =
 
       <div className="min-h-screen bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-10">
-            <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
+          <div className="mb-6">
+            <h1 className="mb-2 text-3xl font-black sm:text-4xl lg:text-5xl">
               Dati lavoro
             </h1>
 
@@ -1751,73 +1751,197 @@ const appointmentReady =
             )}
 
           {!loading && (selectedAssignment || selectedJob) && (
-            <div className="rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-8">
-              <div className="flex flex-col gap-5 mb-8 lg:flex-row lg:items-start lg:justify-between">
-                <div>
+            <div className="space-y-4">
 
-                  {jobId && (
-                    <button
-                      type="button"
-                      onClick={() =>
-                        router.push(
-                          "/dashboard/job-data"
-                        )
-                      }
-                      className="mb-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-gray-300 transition hover:bg-white/10 hover:text-white"
-                    >
-                      ← Tutti i lavori
-                    </button>
-                  )}
+              <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-4 sm:p-6">
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
 
-                  <h2 className="mb-2 text-2xl font-bold sm:text-3xl">
-                    {job?.title || "Lavoro"}
-                  </h2>
+                  <div className="min-w-0">
+                    {jobId && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            "/dashboard/job-data"
+                          )
+                        }
+                        className="mb-4 inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-bold text-gray-300 transition hover:bg-white/10 hover:text-white"
+                      >
+                        ← Tutti i lavori
+                      </button>
+                    )}
 
-                  <div className="flex flex-wrap gap-5 text-gray-400">
-                    <div>
-                      Posizione: {location}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-full border border-purple-400/20 bg-purple-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-purple-200">
+                        Lavoro assegnato
+                      </span>
+
+                      <span
+                        className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${
+                          hasOperationalData
+                            ? "border-green-400/20 bg-green-400/10 text-green-300"
+                            : "border-amber-400/20 bg-amber-400/10 text-amber-200"
+                        }`}
+                      >
+                        {hasOperationalData
+                          ? "Dati ricevuti"
+                          : "Dati in attesa"}
+                      </span>
                     </div>
 
-                    <div>
-                      Data: {formatJobDate(jobDate)}
+                    <h2 className="mt-3 text-2xl font-black text-white sm:text-3xl">
+                      {job?.title || "Lavoro"}
+                    </h2>
+
+                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-gray-400">
+                      <span>
+                        📍 {job?.location || location}
+                      </span>
+
+                      <span>
+                        📅 {formatJobDate(jobDate)}
+                      </span>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex flex-col gap-3 lg:items-end">
-                  <div className={`rounded-xl px-4 py-2 text-sm font-bold sm:px-5 sm:text-base ${
-                    hasOperationalData
-                      ? "bg-green-500 text-black"
-                      : "bg-white/10 text-white"
-                  }`}>
-                    {hasOperationalData
-                      ? "DATI RICEVUTI"
-                      : "LAVORO ASSEGNATO - DATI IN ATTESA"}
+
+                  <div className="w-full lg:w-auto lg:min-w-[250px]">
+                    {job?.status !== "completed" && (
+                      waitingForClient ? (
+                        <div className="rounded-xl border border-amber-300/30 bg-amber-400/10 px-4 py-3 text-center text-sm font-bold text-amber-200">
+                          Completamento confermato
+                          <span className="mt-1 block text-xs font-medium text-amber-100/60">
+                            In attesa del cliente
+                          </span>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={completeJob}
+                          disabled={completing}
+                          className="w-full rounded-xl bg-green-500 px-5 py-3 text-sm font-black text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {completing
+                            ? "Conferma in corso..."
+                            : "Conferma completamento lavoro"}
+                        </button>
+                      )
+                    )}
                   </div>
 
-                  {job?.status !== "completed" && (
-  waitingForClient ? (
-    <div className="w-full rounded-xl border border-amber-300/30 bg-amber-400/10 px-5 py-3 text-center text-sm font-bold text-amber-200 lg:w-auto">
-      Completamento confermato • In attesa del cliente
-    </div>
-  ) : (
-    <button
-      type="button"
-      onClick={completeJob}
-      disabled={completing}
-      className="w-full rounded-xl bg-green-500 px-5 py-3 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60 lg:w-auto"
-    >
-      {completing
-        ? "Conferma in corso..."
-        : "Conferma completamento lavoro"}
-    </button>
-  )
-)}
                 </div>
-              </div>
+              </section>
+
+
+              <section className="rounded-3xl border border-white/10 bg-[#140a3a] p-4 sm:p-6">
+                <div className="mb-4 flex flex-col gap-2 border-b border-white/10 pb-4 sm:flex-row sm:items-end sm:justify-between">
+
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-300">
+                      Informazioni operative
+                    </p>
+
+                    <h3 className="mt-1 text-xl font-black text-white">
+                      Dettagli del lavoro
+                    </h3>
+                  </div>
+
+                  <p className="text-xs text-gray-500">
+                    Dati condivisi dal cliente
+                  </p>
+                </div>
+
+
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Posizione precisa
+                    </p>
+
+                    <p className="mt-2 break-words text-sm font-bold text-white">
+                      {location}
+                    </p>
+                  </div>
+
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Punto di ritrovo
+                    </p>
+
+                    <p className="mt-2 break-words text-sm font-bold text-white">
+                      {meetingPoint}
+                    </p>
+                  </div>
+
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Data e orario
+                    </p>
+
+                    <p className="mt-2 text-sm font-bold text-white">
+                      {selectedAssignment?.arrival_time
+                        ? formatDateTime(
+                            selectedAssignment.arrival_time
+                          )
+                        : formatJobDate(jobDate)}
+                    </p>
+                  </div>
+
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Telefono
+                    </p>
+
+                    <p className="mt-2 break-words text-sm font-bold text-white">
+                      {phone}
+                    </p>
+                  </div>
+
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Email
+                    </p>
+
+                    <p className="mt-2 break-all text-sm font-bold text-white">
+                      {email}
+                    </p>
+                  </div>
+
+
+                  <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                      Stato lavoro
+                    </p>
+
+                    <p className="mt-2 text-sm font-black uppercase text-green-300">
+                      {job?.status ||
+                        selectedAssignment?.status ||
+                        "Non specificato"}
+                    </p>
+                  </div>
+
+                </div>
+
+
+                <div className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-4">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                    Note operative
+                  </p>
+
+                  <p className="mt-2 whitespace-pre-line text-sm leading-6 text-gray-200">
+                    {operationalNotes}
+                  </p>
+                </div>
+              </section>
+
 
               {hasOperationalData && (
-  <div className="mb-6 rounded-2xl border border-purple-400/20 bg-purple-400/[0.06] p-5 sm:p-6">
+  <div className="rounded-3xl border border-purple-400/20 bg-purple-400/[0.05] p-4 sm:p-5">
 
     <p className="text-xs font-bold uppercase tracking-[0.18em] text-purple-300">
       Appuntamento
@@ -2182,83 +2306,13 @@ const appointmentReady =
   </div>
 )}
 
-<JobDocumentsPanel
-  jobId={job?.id}
-/>
 
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Posizione precisa
-                  </p>
+              <section>
+                <JobDocumentsPanel
+                  jobId={job?.id}
+                />
+              </section>
 
-                  <h3 className="text-lg font-semibold">
-                    {location}
-                  </h3>
-                </div>
-
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Punto di ritrovo
-                  </p>
-
-                  <h3 className="text-lg font-semibold">
-                    {meetingPoint}
-                  </h3>
-                </div>
-
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Telefono
-                  </p>
-
-                  <h3 className="text-lg font-semibold">
-                    {phone}
-                  </h3>
-                </div>
-
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Email
-                  </p>
-
-                  <h3 className="text-lg font-semibold break-all">
-                    {email}
-                  </h3>
-                </div>
-
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Data e orario
-                  </p>
-
-                  <h3 className="text-lg font-semibold">
-                    {selectedAssignment?.arrival_time
-                      ? formatDateTime(selectedAssignment.arrival_time)
-                      : formatJobDate(jobDate)}
-                  </h3>
-                </div>
-
-                <div className="bg-black/20 rounded-2xl p-5">
-                  <p className="text-gray-400 mb-2">
-                    Stato lavoro
-                  </p>
-
-                  <h3 className="text-lg font-semibold uppercase">
-                    {job?.status || selectedAssignment?.status || "Non specificato"}
-                  </h3>
-                </div>
-              </div>
-
-              <div className="mt-5 bg-black/20 rounded-2xl p-5">
-                <p className="text-gray-400 mb-2">
-                  Note operative
-                </p>
-
-                <p className="text-lg leading-8 text-gray-100">
-                  {operationalNotes}
-                </p>
-              </div>
             </div>
           )}
         </div>
