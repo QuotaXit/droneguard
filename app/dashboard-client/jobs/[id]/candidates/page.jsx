@@ -14,6 +14,7 @@ import {
   Users,
   Star,
   MessageSquare,
+  Heart,
   X
 } from "lucide-react"
 
@@ -165,12 +166,24 @@ export default function CandidatesPage() {
 
   const [compareIds, setCompareIds] = useState([])
   const [showCompareModal, setShowCompareModal] = useState(false)
+  const [
+  favoriteSavingPilotId,
+  setFavoriteSavingPilotId
+] = useState(null)
+
+const [
+  favoritesOnly,
+  setFavoritesOnly
+] = useState(false)
 
   const [meetingPoint, setMeetingPoint] = useState("")
   const [exactLocation, setExactLocation] = useState("")
   const [phone, setPhone] = useState("")
   const [email, setEmail] = useState("")
-  const [arrivalTime] = useState("")
+  const [
+  arrivalTime,
+  setArrivalTime
+] = useState("")
   const [priority] = useState("normal")
   const [notes, setNotes] = useState("")
   const [addressResults, setAddressResults] = useState([])
@@ -251,6 +264,43 @@ export default function CandidatesPage() {
   ])
 )
 
+let favoritePilotIds =
+  new Set()
+
+if (pilotIds.length > 0) {
+  const {
+    data: favoriteRows,
+    error: favoritesError
+  } = await supabase
+    .from(
+      "client_favorite_pilots"
+    )
+    .select(
+      "pilot_id"
+    )
+    .in(
+      "pilot_id",
+      pilotIds
+    )
+
+  if (favoritesError) {
+    console.error(
+      "[candidates] Preferiti non disponibili:",
+      favoritesError
+    )
+  } else {
+    favoritePilotIds =
+      new Set(
+        (favoriteRows || [])
+          .map(
+            (row) =>
+              row.pilot_id
+          )
+          .filter(Boolean)
+      )
+  }
+}
+
 const reviewStatsMap = new Map()
 
 if (pilotIds.length > 0) {
@@ -330,11 +380,13 @@ if (pilotIds.length > 0) {
 
 return {
   ...application,
+
   pilot_id:
     application.pilot_id ||
     application.user_id,
 
-  pilot: pilotProfile,
+  pilot:
+    pilotProfile,
 
   assignment:
     assignment || null,
@@ -349,7 +401,12 @@ return {
     reviewStats.count > 0
       ? reviewStats.total /
         reviewStats.count
-      : null
+      : null,
+
+  isFavorite:
+    favoritePilotIds.has(
+      profileId
+    )
 }
       })
     )
@@ -378,15 +435,22 @@ return {
       setExactLocation(application.assignment.exact_location || "")
       setPhone(application.assignment.phone || "")
       setEmail(application.assignment.email || "")
+      setArrivalTime(
+  application.assignment.arrival_time
+    ? String(
+        application.assignment.arrival_time
+      ).slice(0, 16)
+    : ""
+)
       setNotes(application.assignment.notes || "")
-    } else {
-      // Resetta i campi se non ci sono dati precedenti
-      setMeetingPoint("")
-      setExactLocation("")
-      setPhone("")
-      setEmail("")
-      setNotes("")
-    }
+   } else {
+  setMeetingPoint("")
+  setExactLocation("")
+  setPhone("")
+  setEmail("")
+  setArrivalTime("")
+  setNotes("")
+}
 
     setShowDetailsModal(true)
   }
@@ -457,6 +521,14 @@ return {
 
       return
     }
+
+    if (!arrivalTime) {
+  toast.error(
+    "Inserisci data e orario dell'appuntamento."
+  )
+
+  return
+}
 
     if (!phone.trim()) {
       toast.error(
@@ -649,6 +721,7 @@ return {
       setExactLocation("")
       setPhone("")
       setEmail("")
+      setArrivalTime("")
       setNotes("")
       setAddressResults([])
 
@@ -892,12 +965,155 @@ const toggleCompareCandidate = (
   })
 }
 
+const toggleFavoritePilot =
+  async (application) => {
+    const pilotId =
+      application?.pilot_id ||
+      application?.user_id
+
+    if (
+      !pilotId ||
+      favoriteSavingPilotId
+    ) {
+      return
+    }
+
+    const nextFavorite =
+      !application.isFavorite
+
+    try {
+      setFavoriteSavingPilotId(
+        pilotId
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "set_client_favorite_pilot",
+        {
+          p_pilot_id:
+            pilotId,
+
+          p_favorite:
+            nextFavorite
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "PILOTA_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Questo pilota non è più attivo."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "PILOTA_NON_COLLEGATO_AL_CLIENTE"
+          )
+        ) {
+          throw new Error(
+            "Non puoi aggiungere questo pilota ai preferiti."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+        throw error
+      }
+
+      if (data?.success !== true) {
+        throw new Error(
+          "RISPOSTA_PREFERITO_NON_VALIDA"
+        )
+      }
+
+
+      setCandidates(
+        (current) =>
+          current.map(
+            (candidate) => {
+              const candidatePilotId =
+                candidate.pilot_id ||
+                candidate.user_id
+
+              if (
+                candidatePilotId !==
+                pilotId
+              ) {
+                return candidate
+              }
+
+              return {
+                ...candidate,
+
+                isFavorite:
+                  nextFavorite
+              }
+            }
+          )
+      )
+
+
+      toast.success(
+        nextFavorite
+          ? "Pilota aggiunto ai preferiti ❤️"
+          : "Pilota rimosso dai preferiti."
+      )
+    } catch (error) {
+      console.error(
+        "[favorite-pilot] Modifica fallita:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile aggiornare i preferiti."
+      )
+    } finally {
+      setFavoriteSavingPilotId(
+        null
+      )
+    }
+  }
+
 const compareCandidates =
   candidates.filter((candidate) =>
     compareIds.includes(
       candidate.id
     )
   )
+
+  const visibleCandidates =
+  favoritesOnly
+    ? candidates.filter(
+        (candidate) =>
+          candidate.isFavorite ===
+          true
+      )
+    : candidates
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -989,8 +1205,53 @@ const compareCandidates =
               </div>
             )}
 
+            {candidates.length > 0 && (
+  <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+
+    <button
+      type="button"
+      onClick={() =>
+        setFavoritesOnly(
+          (current) =>
+            !current
+        )
+      }
+      className={`flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition ${
+        favoritesOnly
+          ? "border-red-400/30 bg-red-400/10 text-red-200"
+          : "border-white/10 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]"
+      }`}
+    >
+      <Heart
+        size={17}
+        fill={
+          favoritesOnly
+            ? "currentColor"
+            : "none"
+        }
+      />
+
+      {favoritesOnly
+        ? "Mostra tutti"
+        : "Solo preferiti"}
+    </button>
+
+
+    <p className="text-sm text-gray-500">
+      {
+        candidates.filter(
+          (candidate) =>
+            candidate.isFavorite
+        ).length
+      }{" "}
+      preferiti
+    </p>
+
+  </div>
+)}
+
             <div className="space-y-6">
-              {candidates.map((application) => {
+              {visibleCandidates.map((application) => {
                 const pilot = application.pilot || {}
                 const pilotInfo = getPilotDisplayData(pilot)
                 const statusMeta = getStatusMeta(application.status)
@@ -1040,6 +1301,46 @@ const compareCandidates =
 >
   <Star size={18} className="text-yellow-400" />
   Vedi recensioni pilota
+</button>
+
+<button
+  type="button"
+  disabled={
+    favoriteSavingPilotId ===
+    (
+      application.pilot_id ||
+      application.user_id
+    )
+  }
+  onClick={() =>
+    toggleFavoritePilot(
+      application
+    )
+  }
+  className={`mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border p-4 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+    application.isFavorite
+      ? "border-red-400/30 bg-red-400/10 text-red-200"
+      : "border-white/[0.08] bg-black/20 text-white hover:bg-white/10"
+  }`}
+>
+  <Heart
+    size={18}
+    fill={
+      application.isFavorite
+        ? "currentColor"
+        : "none"
+    }
+  />
+
+  {favoriteSavingPilotId ===
+  (
+    application.pilot_id ||
+    application.user_id
+  )
+    ? "Salvataggio..."
+    : application.isFavorite
+      ? "Pilota preferito"
+      : "Aggiungi ai preferiti"}
 </button>
 
 <label
@@ -1286,6 +1587,33 @@ const compareCandidates =
                 onChange={(e) => setMeetingPoint(e.target.value)}
                 className="w-full rounded-2xl border border-white/10 bg-black/20 p-4"
               />
+
+              <div>
+  <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+    Data e orario appuntamento
+  </p>
+
+  <input
+    type="datetime-local"
+    value={arrivalTime}
+    min={
+      job?.job_date
+        ? `${job.job_date}T00:00`
+        : undefined
+    }
+    max={
+      job?.job_date
+        ? `${job.job_date}T23:59`
+        : undefined
+    }
+    onChange={(e) =>
+      setArrivalTime(
+        e.target.value
+      )
+    }
+    className="w-full rounded-2xl border border-white/10 bg-black/20 p-4 text-white [color-scheme:dark]"
+  />
+</div>
 
               <input
                 type="tel"

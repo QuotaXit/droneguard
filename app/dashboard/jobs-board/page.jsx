@@ -16,7 +16,8 @@ import {
   Briefcase,
   CheckCircle2,
   Plane,
-  Ruler
+  Ruler,
+  Bookmark
 } from "lucide-react"
 
 function isAssignedExpired(job) {
@@ -426,6 +427,16 @@ export default function JobsBoardPage() {
   const [workTypeFilter, setWorkTypeFilter] = useState("")
 
   const [
+  savedOnly,
+  setSavedOnly
+] = useState(false)
+
+const [
+  savingJobId,
+  setSavingJobId
+] = useState(null)
+
+  const [
   applicationsEnabled,
   setApplicationsEnabled
 ] = useState(true)
@@ -439,12 +450,17 @@ const [
     maintenanceActive ||
     !applicationsEnabled
 
-  const filteredJobs = jobs.filter((job) => {
+  const filteredJobs =
+  jobs.filter((job) => {
     const cityMatch =
       !cityFilter ||
-      String(job.location || "")
+      String(
+        job.location || ""
+      )
         .toLowerCase()
-        .includes(cityFilter.toLowerCase())
+        .includes(
+          cityFilter.toLowerCase()
+        )
 
     const workTypeMatch =
       !workTypeFilter ||
@@ -457,9 +473,19 @@ const [
           ""
       )
         .toLowerCase()
-        .includes(workTypeFilter.toLowerCase())
+        .includes(
+          workTypeFilter.toLowerCase()
+        )
 
-    return cityMatch && workTypeMatch
+    const savedMatch =
+      !savedOnly ||
+      job.isSaved === true
+
+    return (
+      cityMatch &&
+      workTypeMatch &&
+      savedMatch
+    )
   })
 
   const loadJobs = async () => {
@@ -487,6 +513,44 @@ const [
   Array.isArray(data?.jobs)
     ? data.jobs
     : []
+
+    const jobIds =
+  boardJobs
+    .map((job) => job.id)
+    .filter(Boolean)
+
+let savedJobIds =
+  new Set()
+
+if (jobIds.length > 0) {
+  const {
+    data: savedRows,
+    error: savedError
+  } = await supabase
+    .from("pilot_saved_jobs")
+    .select("job_id")
+    .in(
+      "job_id",
+      jobIds
+    )
+
+  if (savedError) {
+    console.error(
+      "[jobs-board] Lavori salvati non disponibili:",
+      savedError
+    )
+  } else {
+    savedJobIds =
+      new Set(
+        (savedRows || [])
+          .map(
+            (row) =>
+              row.job_id
+          )
+          .filter(Boolean)
+      )
+  }
+}
 
 const pilotBaseLatitude =
   data?.pilotBase?.latitude
@@ -607,7 +671,11 @@ const jobsWithDistance =
           unavailableDateSet.has(
             jobDateKey
           )
-        )
+        ),
+isSaved:
+  savedJobIds.has(
+    job.id
+  )
     }
   })
 
@@ -650,6 +718,124 @@ setJobs(
 useEffect(() => {
     loadJobs()
   }, [])
+
+const toggleSavedJob =
+  async (job) => {
+    if (
+      !job?.id ||
+      savingJobId
+    ) {
+      return
+    }
+
+    const nextSaved =
+      !job.isSaved
+
+    try {
+      setSavingJobId(
+        job.id
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "set_pilot_saved_job",
+        {
+          p_job_id:
+            job.id,
+
+          p_saved:
+            nextSaved
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_SALVABILE"
+          )
+        ) {
+          throw new Error(
+            "Questo lavoro non è più disponibile per il salvataggio."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "ACCOUNT_NON_ATTIVO"
+          )
+        ) {
+          throw new Error(
+            "Il tuo account non può effettuare questa operazione."
+          )
+        }
+
+        throw error
+      }
+
+      if (data?.success !== true) {
+        throw new Error(
+          "RISPOSTA_SALVATAGGIO_NON_VALIDA"
+        )
+      }
+
+      setJobs(
+        (current) =>
+          current.map(
+            (currentJob) =>
+              currentJob.id ===
+              job.id
+                ? {
+                    ...currentJob,
+                    isSaved:
+                      nextSaved
+                  }
+                : currentJob
+          )
+      )
+
+      toast.success(
+        nextSaved
+          ? "Lavoro salvato 🔖"
+          : "Lavoro rimosso dai salvati."
+      )
+    } catch (error) {
+      console.error(
+        "[saved-job] Modifica fallita:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile aggiornare i lavori salvati."
+      )
+    } finally {
+      setSavingJobId(
+        null
+      )
+    }
+  }
 
       const applyToJob = async (jobId) => {
     if (submittingJobs[jobId]) {
@@ -993,7 +1179,7 @@ useEffect(() => {
 ) : null}
 
             <div className="mb-8 rounded-3xl border border-white/10 bg-[#140a3a] p-5 sm:p-6">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
                 <input
                   type="text"
                   placeholder="Filtra per città"
@@ -1011,9 +1197,38 @@ useEffect(() => {
                 />
 
                 <button
+  type="button"
+  onClick={() =>
+    setSavedOnly(
+      (current) =>
+        !current
+    )
+  }
+  className={`flex w-full items-center justify-center gap-2 rounded-xl border p-4 font-semibold transition ${
+    savedOnly
+      ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+      : "border-white/10 bg-white/5 text-white hover:bg-white/10"
+  }`}
+>
+  <Bookmark
+    size={18}
+    fill={
+      savedOnly
+        ? "currentColor"
+        : "none"
+    }
+  />
+
+  {savedOnly
+    ? "Mostra tutti"
+    : "Solo salvati"}
+</button>
+
+                <button
                   onClick={() => {
                     setCityFilter("")
                     setWorkTypeFilter("")
+                    setSavedOnly(false)
                   }}
                   className="w-full rounded-xl border border-white/10 bg-white/5 p-4 font-semibold text-white hover:bg-white/10 transition"
                 >
@@ -1151,6 +1366,36 @@ useEffect(() => {
                     </div>
 
                     <div className="w-full lg:w-[300px]">
+                      <button
+  type="button"
+  disabled={
+    savingJobId ===
+    job.id
+  }
+  onClick={() =>
+    toggleSavedJob(job)
+  }
+  className={`mb-4 flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+    job.isSaved
+      ? "border-cyan-400/30 bg-cyan-400/10 text-cyan-200"
+      : "border-white/10 bg-white/[0.04] text-gray-300 hover:bg-white/[0.08]"
+  }`}
+>
+  <Bookmark
+    size={18}
+    fill={
+      job.isSaved
+        ? "currentColor"
+        : "none"
+    }
+  />
+
+  {savingJobId === job.id
+    ? "Salvataggio..."
+    : job.isSaved
+      ? "Lavoro salvato"
+      : "Salva lavoro"}
+</button>
                       <input
   type="number"
   min="0.01"
