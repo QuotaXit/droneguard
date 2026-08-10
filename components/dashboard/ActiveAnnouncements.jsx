@@ -21,7 +21,7 @@ const SEVERITY_CONFIG = {
       "border-cyan-400/25 bg-cyan-500/10",
     iconBox:
       "border-cyan-400/20 bg-cyan-500/15 text-cyan-300",
-    label: "text-cyan-300",
+    labelClass: "text-cyan-300",
     link:
       "border-cyan-400/20 bg-cyan-500/10 text-cyan-200 hover:bg-cyan-500/20"
   },
@@ -33,7 +33,7 @@ const SEVERITY_CONFIG = {
       "border-emerald-400/25 bg-emerald-500/10",
     iconBox:
       "border-emerald-400/20 bg-emerald-500/15 text-emerald-300",
-    label: "text-emerald-300",
+    labelClass: "text-emerald-300",
     link:
       "border-emerald-400/20 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/20"
   },
@@ -45,7 +45,7 @@ const SEVERITY_CONFIG = {
       "border-amber-400/25 bg-amber-500/10",
     iconBox:
       "border-amber-400/20 bg-amber-500/15 text-amber-300",
-    label: "text-amber-300",
+    labelClass: "text-amber-300",
     link:
       "border-amber-400/20 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20"
   },
@@ -57,7 +57,7 @@ const SEVERITY_CONFIG = {
       "border-red-400/30 bg-red-500/10",
     iconBox:
       "border-red-400/25 bg-red-500/15 text-red-300",
-    label: "text-red-300",
+    labelClass: "text-red-300",
     link:
       "border-red-400/25 bg-red-500/10 text-red-200 hover:bg-red-500/20"
   }
@@ -255,10 +255,10 @@ export default function ActiveAnnouncements() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p
-                        className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${config.label}`}
-                      >
-                        {config.label}
-                      </p>
+  className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${config.labelClass}`}
+>
+  {config.label}
+</p>
 
                       <h2 className="mt-1 pr-8 text-lg font-semibold text-white sm:text-xl">
                         {announcement.title}

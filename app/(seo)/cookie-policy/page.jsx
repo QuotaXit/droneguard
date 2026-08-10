@@ -11,7 +11,7 @@ export const metadata = {
 const CONTROLLER = {
   name: "Silvio Gavioli",
   address:
-    "Via Ferdinando Neri, n. [CIVICO], [CAP] [COMUNE] ([PROVINCIA]), Italia",
+    "Via aurelia, Roma, Italia",
   email: "assistenza@droneguard.it",
 }
 
