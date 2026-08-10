@@ -92,10 +92,10 @@ function BarChart({
 
               return (
                 <div
-                  key={`${item.label}-${index}`}
-                  className="group relative flex min-w-[22px] flex-1 flex-col items-center justify-end"
-                  title={`${item.label}: ${value}`}
-                >
+  key={`${item.label}-${index}`}
+  className="group relative flex h-full min-w-[22px] flex-1 flex-col items-center justify-end"
+  title={`${item.label}: ${value}`}
+>
                   <div
                     className="w-full rounded-t-md bg-green-500/80 transition group-hover:bg-green-400"
                     style={{
