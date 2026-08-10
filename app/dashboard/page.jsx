@@ -1379,15 +1379,6 @@ const insuranceIsExpired =
   )}
 
 
-  {/* MESSAGGIO DOPO INVIO */}
-  {insuranceMessage &&
-   !showInsuranceRequest && (
-
-    <p className="mt-2 text-xs leading-5 text-green-300">
-      {insuranceMessage}
-    </p>
-  )}
-
 </div>
 
                 {/* DATI PROFILO */}
