@@ -1,39 +1,50 @@
-import { redirect } from "next/navigation"
+import {
+  redirect
+} from "next/navigation"
 
-import CertificationsManagementClient from "./CertificationsManagementClient"
-import PilotCertificationsClient from "./PilotCertificationsClient"
-import { requireTeamAccess } from "@/lib/team/access"
+import {
+  requireTeamAccess
+} from "@/lib/team/access"
 
-export const dynamic = "force-dynamic"
+import VerificationManagementClient from "./VerificationManagementClient"
+
+
+export const dynamic =
+  "force-dynamic"
+
 
 export default async function CertificationsPage() {
+
   const {
     permissions
-  } = await requireTeamAccess()
+  } =
+    await requireTeamAccess()
+
 
   const canView =
     permissions.includes(
       "certifications.view"
     )
 
+
   const canReview =
     permissions.includes(
       "certifications.review"
     )
 
+
   if (!canView) {
-    redirect("/admin")
+    redirect(
+      "/admin"
+    )
   }
 
- return (
-  <div className="space-y-10">
-    <CertificationsManagementClient
-      canReview={canReview}
-    />
 
-    <PilotCertificationsClient
-      canReview={canReview}
+  return (
+    <VerificationManagementClient
+      canReview={
+        canReview
+      }
     />
-  </div>
-)
+  )
 }

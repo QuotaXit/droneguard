@@ -16,6 +16,7 @@ import {
   MessageSquare,
   Heart,
   UserPlus,
+  ShieldCheck,
   X
 } from "lucide-react"
 
@@ -107,20 +108,29 @@ function getPilotDisplayData(pilot) {
   const initials = `${name?.[0] || "P"}${surname?.[0] || "D"}`.toUpperCase()
 
   return {
-    avatarUrl:
-      safeText(pilot?.avatar_url) ||
-      safeText(pilot?.avatar) ||
-      safeText(pilot?.photo_url),
-    fullName,
-    bio,
-    drone,
-    city,
-    services,
-    certifications,
-    experience,
-    initials,
-    verified: Boolean(pilot?.verified)
-  }
+  avatarUrl:
+    safeText(pilot?.avatar_url) ||
+    safeText(pilot?.avatar) ||
+    safeText(pilot?.photo_url),
+
+  fullName,
+  bio,
+  drone,
+  city,
+  services,
+  certifications,
+  experience,
+  initials,
+
+  verified:
+    Boolean(
+      pilot?.verified
+    ),
+
+  insuranceVerified:
+    pilot?.insurance_verified ===
+    true
+}
 }
 
 function getStatusMeta(status) {
@@ -2030,12 +2040,33 @@ const compareCandidates =
                             </div>
 
                             <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-4">
+
   <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-gray-500">
     Certificazioni
   </p>
+
   <p className="mt-3 text-sm font-medium text-white">
     {pilotInfo.certifications}
   </p>
+
+
+  {pilotInfo.insuranceVerified && (
+
+    <div className="mt-3">
+
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-[11px] font-bold text-green-300">
+
+        <ShieldCheck
+          size={13}
+        />
+
+        Assicurazione verificata
+
+      </span>
+
+    </div>
+  )}
+
 </div>
                           </div>
                         </div>
@@ -2904,6 +2935,57 @@ const compareCandidates =
               )}
             </tr>
 
+<tr>
+
+  <td className="p-4 text-sm font-semibold text-gray-500">
+    Assicurazione
+  </td>
+
+
+  {compareCandidates.map(
+    (
+      application
+    ) => {
+
+      const info =
+        getPilotDisplayData(
+          application.pilot
+        )
+
+      return (
+        <td
+          key={
+            application.id
+          }
+          className="border-l border-white/[0.07] p-4"
+        >
+
+          {info.insuranceVerified ? (
+
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-bold text-green-300">
+
+              <ShieldCheck
+                size={13}
+              />
+
+              Verificata
+
+            </span>
+
+          ) : (
+
+            <span className="inline-flex rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-500">
+              Non verificata
+            </span>
+
+          )}
+
+        </td>
+      )
+    }
+  )}
+
+</tr>
 
             <tr>
               <td className="p-4 text-sm font-semibold text-gray-500">

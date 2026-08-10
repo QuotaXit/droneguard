@@ -118,6 +118,57 @@ function getStatusLabel(status) {
   return "ASSEGNATO"
 }
 
+function getRomeDateString() {
+  return new Intl.DateTimeFormat(
+    "en-CA",
+    {
+      timeZone:
+        "Europe/Rome",
+
+      year:
+        "numeric",
+
+      month:
+        "2-digit",
+
+      day:
+        "2-digit"
+    }
+  ).format(
+    new Date()
+  )
+}
+
+
+function formatInsuranceDate(
+  value
+) {
+  if (!value) {
+    return ""
+  }
+
+  const raw =
+    String(value)
+      .slice(0, 10)
+
+  const [
+    year,
+    month,
+    day
+  ] =
+    raw.split("-")
+
+  if (
+    !year ||
+    !month ||
+    !day
+  ) {
+    return raw
+  }
+
+  return `${day}/${month}/${year}`
+}
+
 export default function Dashboard() {
   const router = useRouter()
 
@@ -134,6 +185,46 @@ export default function Dashboard() {
   const [certFile, setCertFile] = useState(null)
   const [certSending, setCertSending] = useState(false)
   const [certMessage, setCertMessage] = useState("")
+
+  const [
+  showInsuranceRequest,
+  setShowInsuranceRequest
+] = useState(false)
+
+const [
+  insuranceFile,
+  setInsuranceFile
+] = useState(null)
+
+const [
+  insuranceCompany,
+  setInsuranceCompany
+] = useState("")
+
+const [
+  insurancePolicyNumber,
+  setInsurancePolicyNumber
+] = useState("")
+
+const [
+  insuranceValidFrom,
+  setInsuranceValidFrom
+] = useState("")
+
+const [
+  insuranceValidUntil,
+  setInsuranceValidUntil
+] = useState("")
+
+const [
+  insuranceSending,
+  setInsuranceSending
+] = useState(false)
+
+const [
+  insuranceMessage,
+  setInsuranceMessage
+] = useState("")
 
 
     useEffect(() => {
@@ -166,7 +257,7 @@ export default function Dashboard() {
         } = await supabase
           .from("users")
           .select(
-            "id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified,cert_request_sent"
+            "id,email,role,name,surname,avatar_url,bio,drone,city,location,services,certifications,experience,credits,verified,cert_enac_verified,cert_a1a3_verified,cert_a2_verified,cert_sts_verified,cert_sts01_verified,cert_sts02_verified,cert_specific_verified,cert_open_verified,cert_cro_verified,cert_luc_verified,cert_bvlos_verified,cert_notturno_verified,cert_termografia_verified,cert_fpv_racing_verified,cert_request_sent,insurance_verified,insurance_request_sent,insurance_expires_at"
           )
           .eq("id", user.id)
           .maybeSingle()
@@ -396,6 +487,219 @@ const profileInitials = [
   }
 }
 
+const handleInsuranceRequest =
+  async (
+    event
+  ) => {
+    event.preventDefault()
+
+    if (
+      insuranceCompany
+        .trim()
+        .length < 2
+    ) {
+      setInsuranceMessage(
+        "Inserisci la compagnia assicurativa."
+      )
+
+      return
+    }
+
+
+    if (
+      insurancePolicyNumber
+        .trim()
+        .length < 2
+    ) {
+      setInsuranceMessage(
+        "Inserisci il numero della polizza."
+      )
+
+      return
+    }
+
+
+    if (
+      !insuranceValidUntil
+    ) {
+      setInsuranceMessage(
+        "Inserisci la data di scadenza."
+      )
+
+      return
+    }
+
+
+    if (
+      insuranceValidFrom &&
+      insuranceValidFrom >
+        insuranceValidUntil
+    ) {
+      setInsuranceMessage(
+        "La data di inizio non può essere successiva alla scadenza."
+      )
+
+      return
+    }
+
+
+    if (!insuranceFile) {
+      setInsuranceMessage(
+        "Carica una foto o un PDF dell'assicurazione."
+      )
+
+      return
+    }
+
+
+    try {
+
+      setInsuranceSending(
+        true
+      )
+
+      setInsuranceMessage(
+        ""
+      )
+
+
+      const formData =
+        new FormData()
+
+
+      formData.append(
+        "insuranceCompany",
+        insuranceCompany.trim()
+      )
+
+      formData.append(
+        "policyNumber",
+        insurancePolicyNumber.trim()
+      )
+
+      formData.append(
+        "validFrom",
+        insuranceValidFrom
+      )
+
+      formData.append(
+        "validUntil",
+        insuranceValidUntil
+      )
+
+      formData.append(
+        "file",
+        insuranceFile
+      )
+
+
+      const response =
+        await fetch(
+          "/api/insurance-request",
+          {
+            method:
+              "POST",
+
+            body:
+              formData
+          }
+        )
+
+
+      let result =
+        null
+
+
+      try {
+        result =
+          await response.json()
+      } catch {
+        result =
+          null
+      }
+
+
+      if (!response.ok) {
+        throw new Error(
+          result?.error ||
+          "Errore durante l'invio dell'assicurazione."
+        )
+      }
+
+
+      /*
+       * Il database è già stato aggiornato
+       * dall'API server.
+       */
+      setUserData(
+        (
+          current
+        ) => {
+          if (!current) {
+            return current
+          }
+
+          return {
+            ...current,
+
+            insurance_request_sent:
+              true
+          }
+        }
+      )
+
+
+      setInsuranceMessage(
+        "Assicurazione inviata. Il Team DroneGuard controllerà il documento."
+      )
+
+
+      setInsuranceFile(
+        null
+      )
+
+      setInsuranceCompany(
+        ""
+      )
+
+      setInsurancePolicyNumber(
+        ""
+      )
+
+      setInsuranceValidFrom(
+        ""
+      )
+
+      setInsuranceValidUntil(
+        ""
+      )
+
+      setShowInsuranceRequest(
+        false
+      )
+
+    } catch (error) {
+
+      console.error(
+        "[dashboard] insurance request failed:",
+        error
+      )
+
+
+      setInsuranceMessage(
+        error instanceof Error
+          ? error.message
+          : "Errore durante l'invio. Riprova più tardi."
+      )
+
+    } finally {
+
+      setInsuranceSending(
+        false
+      )
+    }
+  }
+
  const hasVerifiedCertification = Boolean(
     userData?.cert_enac_verified ||
     userData?.cert_a1a3_verified ||
@@ -411,6 +715,47 @@ const profileInitials = [
     userData?.cert_notturno_verified ||
     userData?.cert_termografia_verified ||
     userData?.cert_fpv_racing_verified
+  )
+
+  const todayInRome =
+  getRomeDateString()
+
+
+const insuranceIsValid =
+  Boolean(
+    userData
+      ?.insurance_verified ===
+      true &&
+
+    userData
+      ?.insurance_expires_at &&
+
+    String(
+      userData
+        .insurance_expires_at
+    )
+      .slice(
+        0,
+        10
+      ) >=
+      todayInRome
+  )
+
+
+const insuranceIsExpired =
+  Boolean(
+    userData
+      ?.insurance_expires_at &&
+
+    String(
+      userData
+        .insurance_expires_at
+    )
+      .slice(
+        0,
+        10
+      ) <
+      todayInRome
   )
 
   return (
@@ -697,6 +1042,353 @@ const profileInitials = [
                       </form>
                     </div>
                   )}
+
+                  {/* =========================================
+    ASSICURAZIONE
+========================================= */}
+
+<div className="mt-4 w-full border-t border-white/10 pt-4">
+
+
+  {/* ASSICURAZIONE VERIFICATA */}
+  {insuranceIsValid && (
+
+    <div className="rounded-xl border border-green-400/20 bg-green-500/10 px-4 py-3">
+
+      <div className="flex items-center justify-center gap-2">
+
+        <ShieldCheck
+          size={16}
+          className="text-green-400"
+        />
+
+        <p className="text-xs font-semibold text-green-300">
+          Assicurazione verificata
+        </p>
+
+      </div>
+
+
+      <p className="mt-1 text-center text-xs text-gray-300">
+        Valida fino al{" "}
+        {formatInsuranceDate(
+          userData
+            ?.insurance_expires_at
+        )}
+      </p>
+
+    </div>
+  )}
+
+
+  {/* RICHIESTA IN VERIFICA */}
+  {userData
+      ?.insurance_request_sent && (
+
+    <div className="mt-2 rounded-xl border border-yellow-400/20 bg-yellow-500/10 px-4 py-3">
+
+      <p className="text-xs font-semibold text-yellow-300">
+        ⏳ Assicurazione in verifica
+      </p>
+
+      <p className="mt-1 text-xs leading-5 text-gray-300">
+        Hai già inviato la tua assicurazione.
+        Il Team DroneGuard controllerà il documento.
+      </p>
+
+    </div>
+  )}
+
+
+  {/* ASSICURAZIONE SCADUTA */}
+  {insuranceIsExpired &&
+   !userData?.insurance_request_sent && (
+
+    <div className="mt-2 rounded-xl border border-red-400/20 bg-red-500/10 px-4 py-3">
+
+      <p className="text-xs font-semibold text-red-300">
+        Assicurazione scaduta
+      </p>
+
+      <p className="mt-1 text-xs leading-5 text-gray-300">
+        La polizza registrata è scaduta il{" "}
+        {formatInsuranceDate(
+          userData
+            ?.insurance_expires_at
+        )}.
+        Carica la nuova assicurazione.
+      </p>
+
+    </div>
+  )}
+
+
+  {/* PULSANTE CARICAMENTO */}
+  {!insuranceIsValid &&
+   !userData?.insurance_request_sent &&
+   !showInsuranceRequest && (
+
+    <button
+      type="button"
+      onClick={() =>
+        setShowInsuranceRequest(
+          true
+        )
+      }
+      className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-white/15"
+    >
+      <UploadCloud
+        size={15}
+      />
+
+      {insuranceIsExpired
+        ? "Carica nuova assicurazione"
+        : "Carica la tua assicurazione"}
+    </button>
+  )}
+
+
+  {/* FORM CARICAMENTO */}
+  {showInsuranceRequest &&
+   !userData?.insurance_request_sent &&
+   !insuranceIsValid && (
+
+    <div className="mt-3 rounded-2xl border border-white/15 bg-[#0B0F2A]/70 p-4">
+
+      <div className="mb-4 flex items-center justify-between">
+
+        <div>
+
+          <p className="text-xs font-bold uppercase tracking-[0.15em] text-green-400">
+            Assicurazione
+          </p>
+
+          <h4 className="mt-1 text-sm font-semibold text-white">
+            Richiesta verifica
+          </h4>
+
+        </div>
+
+
+        <button
+          type="button"
+          disabled={
+            insuranceSending
+          }
+          onClick={() =>
+            setShowInsuranceRequest(
+              false
+            )
+          }
+          className="text-gray-400 transition hover:text-white"
+        >
+          <X
+            size={16}
+          />
+        </button>
+
+      </div>
+
+
+      <form
+        onSubmit={
+          handleInsuranceRequest
+        }
+        className="space-y-3"
+      >
+
+        <div>
+
+          <label className="mb-1.5 block text-left text-[11px] font-semibold text-gray-400">
+            Compagnia assicurativa
+          </label>
+
+          <input
+            type="text"
+            required
+            maxLength={150}
+            value={
+              insuranceCompany
+            }
+            onChange={(
+              event
+            ) =>
+              setInsuranceCompany(
+                event
+                  .target
+                  .value
+              )
+            }
+            placeholder="Es. Allianz"
+            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-xs text-white outline-none transition focus:border-green-400/40"
+          />
+
+        </div>
+
+
+        <div>
+
+          <label className="mb-1.5 block text-left text-[11px] font-semibold text-gray-400">
+            Numero polizza
+          </label>
+
+          <input
+            type="text"
+            required
+            maxLength={100}
+            value={
+              insurancePolicyNumber
+            }
+            onChange={(
+              event
+            ) =>
+              setInsurancePolicyNumber(
+                event
+                  .target
+                  .value
+              )
+            }
+            className="w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2.5 text-xs text-white outline-none transition focus:border-green-400/40"
+          />
+
+        </div>
+
+
+        <div className="grid grid-cols-2 gap-2">
+
+          <div>
+
+            <label className="mb-1.5 block text-left text-[11px] font-semibold text-gray-400">
+              Valida dal
+            </label>
+
+            <input
+              type="date"
+              value={
+                insuranceValidFrom
+              }
+              onChange={(
+                event
+              ) =>
+                setInsuranceValidFrom(
+                  event
+                    .target
+                    .value
+                )
+              }
+              className="w-full rounded-xl border border-white/10 bg-black/20 px-2 py-2.5 text-xs text-white outline-none"
+            />
+
+          </div>
+
+
+          <div>
+
+            <label className="mb-1.5 block text-left text-[11px] font-semibold text-gray-400">
+              Scadenza
+            </label>
+
+            <input
+              type="date"
+              required
+              min={
+                todayInRome
+              }
+              value={
+                insuranceValidUntil
+              }
+              onChange={(
+                event
+              ) =>
+                setInsuranceValidUntil(
+                  event
+                    .target
+                    .value
+                )
+              }
+              className="w-full rounded-xl border border-white/10 bg-black/20 px-2 py-2.5 text-xs text-white outline-none"
+            />
+
+          </div>
+
+        </div>
+
+
+        <label className="flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-white/20 bg-white/5 p-4 text-center transition hover:bg-white/10">
+
+          <UploadCloud
+            size={22}
+            className="mb-2 text-green-400"
+          />
+
+          <span className="text-xs text-gray-300">
+            {insuranceFile
+              ? insuranceFile.name
+              : "Carica foto o PDF della polizza"}
+          </span>
+
+
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+            onChange={(
+              event
+            ) =>
+              setInsuranceFile(
+                event
+                  .target
+                  .files?.[0] ||
+                null
+              )
+            }
+            className="hidden"
+          />
+
+        </label>
+
+
+        <p className="text-[11px] leading-5 text-gray-500">
+          PDF, JPG, PNG o WEBP. Massimo 10 MB.
+          Il documento sarà visibile soltanto al Team DroneGuard.
+        </p>
+
+
+        <button
+          type="submit"
+          disabled={
+            insuranceSending
+          }
+          className="w-full rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {insuranceSending
+            ? "Invio in corso..."
+            : "Invia assicurazione"}
+        </button>
+
+
+        {insuranceMessage && (
+
+          <p className="text-xs leading-5 text-green-300">
+            {insuranceMessage}
+          </p>
+        )}
+
+      </form>
+
+    </div>
+  )}
+
+
+  {/* MESSAGGIO DOPO INVIO */}
+  {insuranceMessage &&
+   !showInsuranceRequest && (
+
+    <p className="mt-2 text-xs leading-5 text-green-300">
+      {insuranceMessage}
+    </p>
+  )}
+
+</div>
 
                 {/* DATI PROFILO */}
                 <div className="mt-5 space-y-2 border-t border-white/10 pt-5">

@@ -5,7 +5,10 @@ import Navbar from "@/components/Navbar"
 import JobDocumentsPanel from "@/components/JobDocumentsPanel"
 import { toast } from "sonner"
 import { supabase } from "@/lib/supabase/client"
-import { Users } from "lucide-react"
+import {
+  ShieldCheck,
+  Users
+} from "lucide-react"
 
 function hasAppointmentDetails(
   assignment
@@ -2381,14 +2384,52 @@ className="rounded-xl border border-red-500/30 bg-red-500 px-4 py-3 font-bold te
             <p className="text-green-400 mb-4">Pilota verificato</p>
 
             <div className="space-y-2 text-gray-300 text-sm mb-6">
-              <p>📍 {selectedPilot.city || "Non impostata"}</p>
-              <p>🚁 {selectedPilot.drone || "Non specificato"}</p>
-              <p>🎯 Esperienza: {selectedPilot.experience || "Non impostata"}</p>
-              <p>
-                📜 Certificazioni:{" "}
-                {selectedPilot.certifications || "Nessuna"}
-              </p>
-            </div>
+
+  <p>
+    📍{" "}
+    {selectedPilot.city ||
+      "Non impostata"}
+  </p>
+
+  <p>
+    🚁{" "}
+    {selectedPilot.drone ||
+      "Non specificato"}
+  </p>
+
+  <p>
+    🎯 Esperienza:{" "}
+    {selectedPilot.experience ||
+      "Non impostata"}
+  </p>
+
+  <p>
+    📜 Certificazioni:{" "}
+    {selectedPilot.certifications ||
+      "Nessuna"}
+  </p>
+
+
+  {selectedPilot
+      .insurance_verified ===
+    true && (
+
+    <div className="flex justify-center pt-2">
+
+      <span className="inline-flex items-center gap-1.5 rounded-full border border-green-400/20 bg-green-500/10 px-3 py-1.5 text-xs font-bold text-green-300">
+
+        <ShieldCheck
+          size={14}
+        />
+
+        Assicurazione verificata
+
+      </span>
+
+    </div>
+  )}
+
+</div>
 
             <div className="border-t border-white/10 pt-4">
               <p className="text-xs text-gray-400 mb-2">BIOGRAFIA</p>
