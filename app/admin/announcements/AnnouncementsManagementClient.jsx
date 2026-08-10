@@ -554,6 +554,20 @@ export default function AnnouncementsManagementClient() {
       return
     }
 
+    const startsAtIso =
+  form.startsAt
+    ? new Date(
+        form.startsAt
+      ).toISOString()
+    : null
+
+const endsAtIso =
+  form.endsAt
+    ? new Date(
+        form.endsAt
+      ).toISOString()
+    : null
+
     const payload = {
       title,
       message,

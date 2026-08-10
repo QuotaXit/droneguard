@@ -681,38 +681,60 @@ const emailRedirectTo = `${siteUrl}/auth/callback`
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
+  <div className="min-h-screen flex flex-col">
+    <Navbar />
 
-      <div className="relative flex flex-1 items-start justify-center px-4 py-8 text-white sm:items-center sm:px-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
+    <div className="relative flex flex-1 justify-center px-4 py-8 text-white sm:px-6 lg:px-8 lg:py-12">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]" />
 
-        <form
-          onSubmit={handleRegister}
-          className="relative z-10 w-full max-w-sm space-y-4 rounded-2xl border border-white/20 bg-white/5 p-6 sm:p-8"
-        >
-          {registrationStatusLoading ? (
-            <div className="rounded-xl border border-blue-400/30 bg-blue-400/10 p-4 text-sm leading-6 text-blue-100">
-              Controllo disponibilità delle registrazioni...
-            </div>
-          ) : !registrationsEnabled ? (
-            <div className="rounded-xl border border-yellow-400/30 bg-yellow-400/10 p-4">
-              <p className="font-bold text-yellow-200">
-                Registrazioni temporaneamente sospese
-              </p>
+      <form
+        onSubmit={handleRegister}
+        className="relative z-10 w-full max-w-[560px] rounded-[28px] border border-white/10 bg-[rgba(20,10,58,0.88)] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur sm:p-6"
+      >
+        <div className="mb-5">
+          <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-emerald-300">
+            DroneGuard
+          </p>
 
-              <p className="mt-2 text-sm leading-6 text-yellow-100/80">
-                {registrationBlockedMessage ||
-                  "Al momento non è possibile creare un nuovo account. Riprova più tardi."}
-              </p>
-            </div>
-          ) : null}
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">
+            Registrazione
+          </h1>
 
-          <div className="flex gap-3">
+          <p className="mt-2 text-sm leading-6 text-gray-400">
+            Crea il tuo account e accedi alla piattaforma come{" "}
+            <span className="font-semibold text-white">
+              {type === "pilot" ? "pilota" : "cliente"}.
+            </span>
+          </p>
+        </div>
+
+        {registrationStatusLoading ? (
+          <div className="mb-4 rounded-2xl border border-cyan-400/25 bg-cyan-400/10 px-4 py-3 text-sm leading-6 text-cyan-100">
+            Controllo disponibilità delle registrazioni...
+          </div>
+        ) : !registrationsEnabled ? (
+          <div className="mb-4 rounded-2xl border border-yellow-400/25 bg-yellow-400/10 px-4 py-3">
+            <p className="font-bold text-yellow-200">
+              Registrazioni temporaneamente sospese
+            </p>
+
+            <p className="mt-2 text-sm leading-6 text-yellow-100/80">
+              {registrationBlockedMessage ||
+                "Al momento non è possibile creare un nuovo account. Riprova più tardi."}
+            </p>
+          </div>
+        ) : null}
+
+        <div className="mb-5 rounded-2xl border border-white/10 bg-white/[0.04] p-2">
+          <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={() => switchType("pilot")}
-              className={`flex-1 rounded py-2 ${type === "pilot" ? "bg-white text-black" : "border"}`}
+              className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
+                type === "pilot"
+                  ? "bg-white text-slate-950"
+                  : "border border-white/15 bg-transparent text-white hover:bg-white/5"
+              }`}
             >
               Pilota
             </button>
@@ -720,95 +742,202 @@ const emailRedirectTo = `${siteUrl}/auth/callback`
             <button
               type="button"
               onClick={() => switchType("cliente")}
-              className={`flex-1 rounded py-2 ${type === "cliente" ? "bg-white text-black" : "border"}`}
+              className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
+                type === "cliente"
+                  ? "bg-white text-slate-950"
+                  : "border border-white/15 bg-transparent text-white hover:bg-white/5"
+              }`}
             >
               Cliente
             </button>
           </div>
+        </div>
 
-          {type === "pilot" && (
-            <>
-              <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} className="input" />
-              <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} className="input" />
-
-<select
-  value={citta}
-  onChange={(e) => setCitta(e.target.value)}
-  className="input"
->
-  <option value="">Seleziona città</option>
-
-  {italianCities.map((item) => (
-    <option key={item} value={item}>
-      {item}
-    </option>
-  ))}
-</select>
-
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div onClick={() => { setOpenCert(!openCert); setOpenExp(false); setOpenDrone(false) }} className="input cursor-pointer">
-                  {certificazioni.length > 0 ? certificazioni.join(", ") : "Certificazioni"}
-                </div>
-
-                {openCert && (
-                  <div className="dropdown">
-                    {certificationsList.map((item) => (
-                      <div
-                        key={item}
-                        onClick={() => {
-                          if (certificazioni.includes(item)) {
-                            setCertificazioni(certificazioni.filter((c) => c !== item))
-                          } else if (certificazioni.length < 3) {
-                            setCertificazioni([...certificazioni, item])
-                          } else {
-                            toast.error("Puoi selezionare massimo 3 certificazioni.")
-                          }
-                        }}
-                        className="item"
-                      >
-                        {certificazioni.includes(item) ? "✓ " : ""}
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                )}
+        {type === "pilot" && (
+          <>
+            <div className="mb-5 rounded-2xl border border-white/10 bg-black/10 p-4 sm:p-5">
+              <div className="mb-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                  Dati profilo
+                </p>
               </div>
 
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div onClick={() => { setOpenExp(!openExp); setOpenCert(false); setOpenDrone(false) }} className="input cursor-pointer">
-                  {esperienza || "Esperienza"}
-                </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  placeholder="Nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className="input"
+                />
 
-                {openExp && (
-                  <div className="dropdown">
-                    {experienceList.map((item) => (
-                      <div key={item} onClick={() => { setEsperienza(item); setOpenExp(false) }} className="item">
-                        {item}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <input
+                  placeholder="Cognome"
+                  value={cognome}
+                  onChange={(e) => setCognome(e.target.value)}
+                  className="input"
+                />
               </div>
 
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <div onClick={() => { setOpenDrone(!openDrone); setOpenCert(false); setOpenExp(false) }} className="input cursor-pointer">
-                  {drone.length > 0 ? drone.join(", ") : "Seleziona drone"}
+              <div className="mt-3">
+                <select
+                  value={citta}
+                  onChange={(e) => setCitta(e.target.value)}
+                  className="input"
+                >
+                  <option value="">Seleziona città</option>
+
+                  {italianCities.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="mb-5 rounded-2xl border border-white/10 bg-black/10 p-4 sm:p-5">
+              <div className="mb-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                  Profilo pilota
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div
+                  className="relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div
+                    onClick={() => {
+                      setOpenCert(!openCert)
+                      setOpenExp(false)
+                      setOpenDrone(false)
+                    }}
+                    className="input cursor-pointer"
+                  >
+                    {certificazioni.length > 0
+                      ? certificazioni.join(", ")
+                      : "Certificazioni"}
+                  </div>
+
+                  {openCert && (
+                    <div className="dropdown">
+                      {certificationsList.map((item) => (
+                        <div
+                          key={item}
+                          onClick={() => {
+                            if (certificazioni.includes(item)) {
+                              setCertificazioni(
+                                certificazioni.filter(
+                                  (c) => c !== item
+                                )
+                              )
+                            } else if (
+                              certificazioni.length < 3
+                            ) {
+                              setCertificazioni([
+                                ...certificazioni,
+                                item
+                              ])
+                            } else {
+                              toast.error(
+                                "Puoi selezionare massimo 3 certificazioni."
+                              )
+                            }
+                          }}
+                          className="item"
+                        >
+                          {certificazioni.includes(item)
+                            ? "✓ "
+                            : ""}
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div
+                  className="relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div
+                    onClick={() => {
+                      setOpenExp(!openExp)
+                      setOpenCert(false)
+                      setOpenDrone(false)
+                    }}
+                    className="input cursor-pointer"
+                  >
+                    {esperienza || "Esperienza"}
+                  </div>
+
+                  {openExp && (
+                    <div className="dropdown">
+                      {experienceList.map((item) => (
+                        <div
+                          key={item}
+                          onClick={() => {
+                            setEsperienza(item)
+                            setOpenExp(false)
+                          }}
+                          className="item"
+                        >
+                          {item}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div
+                className="relative mt-3"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div
+                  onClick={() => {
+                    setOpenDrone(!openDrone)
+                    setOpenCert(false)
+                    setOpenExp(false)
+                  }}
+                  className="input cursor-pointer"
+                >
+                  {drone.length > 0
+                    ? drone.join(", ")
+                    : "Seleziona drone"}
                 </div>
 
                 {openDrone && (
-                  <div className="dropdown h-52 overflow-y-auto">
-                    <input placeholder="Cerca..." value={searchDrone} onChange={(e) => setSearchDrone(e.target.value)} className="input mb-2" />
+                  <div className="dropdown h-56 overflow-y-auto">
+                    <input
+                      placeholder="Cerca drone..."
+                      value={searchDrone}
+                      onChange={(e) =>
+                        setSearchDrone(e.target.value)
+                      }
+                      className="input mb-2"
+                    />
 
                     {filteredDrones.map((item) => (
                       <div
                         key={item}
                         onClick={() => {
                           if (drone.includes(item)) {
-                            setDrone(drone.filter((d) => d !== item))
+                            setDrone(
+                              drone.filter(
+                                (d) => d !== item
+                              )
+                            )
                           } else if (drone.length < 3) {
-                            setDrone([...drone, item])
+                            setDrone([
+                              ...drone,
+                              item
+                            ])
                           } else {
-                            toast.error("Puoi selezionare massimo 3 droni.")
+                            toast.error(
+                              "Puoi selezionare massimo 3 droni."
+                            )
                           }
                         }}
                         className="item"
@@ -820,155 +949,261 @@ const emailRedirectTo = `${siteUrl}/auth/callback`
                   </div>
                 )}
               </div>
-            </>
-          )}
+            </div>
+          </>
+        )}
 
-          {type === "cliente" && (
-            <>
-              <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} className="input" />
-              <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} className="input" />
+        {type === "cliente" && (
+          <>
+            <div className="mb-5 rounded-2xl border border-white/10 bg-black/10 p-4 sm:p-5">
+              <div className="mb-4">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+                  Dati profilo
+                </p>
+              </div>
 
-              <select value={citta} onChange={(e) => setCitta(e.target.value)} className="input">
-                <option value="">Seleziona città</option>
-                {italianCities.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  placeholder="Nome"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  className="input"
+                />
 
-              <input placeholder="Ragione sociale" value={ragioneSociale} onChange={(e) => setRagioneSociale(e.target.value)} className="input" />
-              <input placeholder="Partita IVA" value={partitaIva} onChange={(e) => setPartitaIva(e.target.value)} className="input" />
-            </>
-          )}
+                <input
+                  placeholder="Cognome"
+                  value={cognome}
+                  onChange={(e) => setCognome(e.target.value)}
+                  className="input"
+                />
+              </div>
 
-          <div>
-            <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value)
-                if (emailError) setEmailError("")
-              }}
-              className={`input ${emailError ? "border-red-500" : ""}`}
-            />
+              <div className="mt-3">
+                <select
+                  value={citta}
+                  onChange={(e) => setCitta(e.target.value)}
+                  className="input"
+                >
+                  <option value="">Seleziona città</option>
 
-            {emailError && <p className="mt-2 text-sm text-red-300">{emailError}</p>}
+                  {italianCities.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <input
+                  placeholder="Ragione sociale"
+                  value={ragioneSociale}
+                  onChange={(e) =>
+                    setRagioneSociale(e.target.value)
+                  }
+                  className="input"
+                />
+
+                <input
+                  placeholder="Partita IVA"
+                  value={partitaIva}
+                  onChange={(e) =>
+                    setPartitaIva(e.target.value)
+                  }
+                  className="input"
+                />
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="mb-5 rounded-2xl border border-white/10 bg-black/10 p-4 sm:p-5">
+          <div className="mb-4">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
+              Accesso account
+            </p>
           </div>
 
-          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="input" />
-
-        <div className="flex items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
-  <input
-    id="acceptedLegal"
-    type="checkbox"
-    checked={acceptedLegal}
-    onChange={(e) => setAcceptedLegal(e.target.checked)}
-    className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-green-500"
-  />
-
-  <div>
-    Dichiaro di aver letto la{" "}
-    <Link
-      href="/privacy-policy"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
-    >
-      Privacy Policy
-    </Link>
-    {" "}e accetto i{" "}
-    <Link
-      href="/privacy-policy"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
-    >
-      Termini di utilizzo
-    </Link>
-    .
-  </div>
-</div>
-
-          {type === "pilot" && (
-            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-white/15 bg-white/5 p-3 text-xs leading-5 text-gray-300">
+          <div className="space-y-3">
+            <div>
               <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (emailError) setEmailError("")
+                }}
+                className={`input ${
+                  emailError ? "border-red-500" : ""
+                }`}
+              />
+
+              {emailError && (
+                <p className="mt-2 text-sm text-red-300">
+                  {emailError}
+                </p>
+              )}
+            </div>
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) =>
+                setPassword(e.target.value)
+              }
+              className="input"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-xs leading-6 text-gray-300">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input
+                id="acceptedLegal"
                 type="checkbox"
-                checked={acceptedRules}
-                onChange={(e) => setAcceptedRules(e.target.checked)}
+                checked={acceptedLegal}
+                onChange={(e) =>
+                  setAcceptedLegal(e.target.checked)
+                }
                 className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-green-500"
               />
 
-              <span>
-                Dichiaro di essere in possesso delle certificazioni ENAC indicate, di operare nel rispetto delle normative vigenti e di assumermi la responsabilità dei dati inseriti. Ogni pagamento per il lavoro svolto, avviene tra le parti al di fuori della piattaforma DroneGuard.
-              </span>
+              <div>
+                Dichiaro di aver letto la{" "}
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
+                >
+                  Privacy Policy
+                </Link>{" "}
+                e accetto i{" "}
+                <Link
+                  href="/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold text-green-400 underline underline-offset-2 hover:text-green-300"
+                >
+                  Termini di utilizzo
+                </Link>
+                .
+              </div>
             </label>
+          </div>
+
+          {type === "pilot" && (
+            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-xs leading-6 text-gray-300">
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={acceptedRules}
+                  onChange={(e) =>
+                    setAcceptedRules(e.target.checked)
+                  }
+                  className="mt-1 h-4 w-4 shrink-0 cursor-pointer accent-green-500"
+                />
+
+                <span>
+                  Dichiaro di essere in possesso delle
+                  certificazioni ENAC indicate, di operare nel
+                  rispetto delle normative vigenti e di
+                  assumermi la responsabilità dei dati inseriti.
+                  Ogni pagamento per il lavoro svolto, avviene
+                  tra le parti al di fuori della piattaforma
+                  DroneGuard.
+                </span>
+              </label>
+            </div>
           )}
+        </div>
 
-                    <button
-            type="submit"
-            disabled={
-  loading ||
-  registrationStatusLoading ||
-  !registrationsEnabled ||
-  !acceptedLegal ||
-  (
-    type === "pilot" &&
-    !acceptedRules
-  )
-}
-            className="w-full rounded-lg bg-green-500 py-3 font-semibold text-black disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {loading
-              ? "Registrazione..."
-              : registrationStatusLoading
-                ? "Controllo disponibilità..."
-                : !registrationsEnabled
-                  ? "Registrazioni sospese"
-                  : "Registrati"}
-          </button>
-        </form>
-      </div>
+        <button
+          type="submit"
+          disabled={
+            loading ||
+            registrationStatusLoading ||
+            !registrationsEnabled ||
+            !acceptedLegal ||
+            (type === "pilot" && !acceptedRules)
+          }
+          className="mt-5 w-full rounded-2xl bg-green-500 px-4 py-3.5 text-base font-black text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading
+            ? "Registrazione..."
+            : registrationStatusLoading
+              ? "Controllo disponibilità..."
+              : !registrationsEnabled
+                ? "Registrazioni sospese"
+                : "Registrati"}
+        </button>
 
-      <style jsx>{`
-        .input {
-          width: 100%;
-          padding: 10px;
-          border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.2);
-          background: transparent;
-          color: white;
-        }
-
-        .input::placeholder {
-          color: rgba(255,255,255,0.7);
-        }
-
-        .input option {
-          color: black;
-          background: white;
-        }
-
-        .dropdown {
-          position: absolute;
-          width: 100%;
-          background: #0F1B4D;
-          border: 1px solid rgba(255,255,255,0.2);
-          border-radius: 8px;
-          padding: 8px;
-          margin-top: 5px;
-          z-index: 50;
-        }
-
-        .item {
-          padding: 8px;
-          cursor: pointer;
-          border-radius: 6px;
-        }
-
-        .item:hover {
-          background: rgba(255,255,255,0.1);
-        }
-      `}</style>
+        <p className="mt-4 text-center text-xs leading-6 text-gray-500">
+          Registrandoti su DroneGuard potrai accedere alla
+          piattaforma con il profilo selezionato.
+        </p>
+      </form>
     </div>
-  )
+
+    <style jsx>{`
+      .input {
+        width: 100%;
+        min-height: 50px;
+        padding: 0 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.03);
+        color: white;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .input:focus {
+        border-color: rgba(34, 197, 94, 0.55);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+      }
+
+      .input::placeholder {
+        color: rgba(255, 255, 255, 0.62);
+      }
+
+      .input option {
+        color: white;
+        background: #16204f;
+      }
+
+      .dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 100%;
+        background: #101944;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 16px;
+        padding: 8px;
+        z-index: 50;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      .item {
+        padding: 10px 12px;
+        cursor: pointer;
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.92);
+        transition: background 0.15s ease;
+      }
+
+      .item:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+    `}</style>
+  </div>
+)
 }
