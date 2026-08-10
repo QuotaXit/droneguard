@@ -179,110 +179,188 @@ export default function ApplicationsPage() {
 
 
           const [
-            applicationsResult,
-            invitationsResult
-          ] =
-            await Promise.all([
-              supabase
-                .from(
-                  "applications"
-                )
-                .select(`
-                  id,
-                  status,
-                  created_at,
-                  pilot_id,
-                  user_id,
-                  jobs (
-                    id,
-                    title,
-                    description,
-                    price,
-                    location,
-                    job_date,
-                    status
-                  )
-                `)
-                .or(
-                  `pilot_id.eq.${user.id},user_id.eq.${user.id}`
-                )
-                .order(
-                  "created_at",
-                  {
-                    ascending:
-                      false
-                  }
-                ),
+  applicationsResult,
+  invitationsResult
+] =
+  await Promise.all([
+    supabase
+      .from(
+        "applications"
+      )
+      .select(`
+        id,
+        job_id,
+        status,
+        created_at,
+        pilot_id,
+        user_id
+      `)
+      .or(
+        `pilot_id.eq.${user.id},user_id.eq.${user.id}`
+      )
+      .order(
+        "created_at",
+        {
+          ascending:
+            false
+        }
+      ),
 
-              supabase
-                .from(
-                  "job_invitations"
-                )
-                .select(`
-                  id,
-                  job_id,
-                  client_id,
-                  pilot_id,
-                  message,
-                  status,
-                  created_at,
-                  responded_at,
-                  jobs (
-                    id,
-                    title,
-                    description,
-                    price,
-                    location,
-                    job_date,
-                    status
-                  )
-                `)
-                .eq(
-                  "pilot_id",
-                  user.id
-                )
-                .order(
-                  "created_at",
-                  {
-                    ascending:
-                      false
-                  }
-                )
-            ])
+    supabase
+      .from(
+        "job_invitations"
+      )
+      .select(`
+        id,
+        job_id,
+        client_id,
+        pilot_id,
+        message,
+        status,
+        created_at,
+        responded_at,
+        jobs (
+          id,
+          title,
+          description,
+          price,
+          location,
+          job_date,
+          status
+        )
+      `)
+      .eq(
+        "pilot_id",
+        user.id
+      )
+      .order(
+        "created_at",
+        {
+          ascending:
+            false
+        }
+      )
+  ])
 
 
-          if (
-            applicationsResult.error
-          ) {
-            console.error(
-              "[applications] Caricamento candidature fallito:",
-              applicationsResult.error
-            )
+if (
+  applicationsResult.error
+) {
+  console.error(
+    "[applications] Caricamento candidature fallito:",
+    {
+      message:
+        applicationsResult.error.message,
+      details:
+        applicationsResult.error.details,
+      hint:
+        applicationsResult.error.hint,
+      code:
+        applicationsResult.error.code
+    }
+  )
 
-            setApplications([])
-          } else {
-            setApplications(
-              applicationsResult.data ||
-                []
-            )
-          }
+  setApplications([])
+} else {
+  const applicationRows =
+    applicationsResult.data ||
+    []
+
+  const jobIds = [
+    ...new Set(
+      applicationRows
+        .map(
+          (application) =>
+            application.job_id
+        )
+        .filter(Boolean)
+    )
+  ]
+
+  let jobsMap =
+    new Map()
+
+  if (
+    jobIds.length > 0
+  ) {
+    const {
+      data: jobsData,
+      error: jobsError
+    } =
+      await supabase
+        .from("jobs")
+        .select(`
+          id,
+          title,
+          description,
+          price,
+          location,
+          job_date,
+          status
+        `)
+        .in(
+          "id",
+          jobIds
+        )
+
+    if (jobsError) {
+      console.error(
+        "[applications] Caricamento lavori candidature fallito:",
+        {
+          message:
+            jobsError.message,
+          details:
+            jobsError.details,
+          hint:
+            jobsError.hint,
+          code:
+            jobsError.code
+        }
+      )
+    } else {
+      jobsMap =
+        new Map(
+          (jobsData || []).map(
+            (job) => [
+              job.id,
+              job
+            ]
+          )
+        )
+    }
+  }
+
+  setApplications(
+    applicationRows.map(
+      (application) => ({
+        ...application,
+
+        jobs:
+          jobsMap.get(
+            application.job_id
+          ) ||
+          null
+      })
+    )
+  )
+}
 
 
-          if (
-            invitationsResult.error
-          ) {
-            console.error(
-              "[job-invitations] Caricamento inviti fallito:",
-              invitationsResult.error
-            )
+if (
+  invitationsResult.error
+) {
+  console.error(
+    "[job-invitations] Caricamento inviti fallito:",
+    invitationsResult.error
+  )
 
-            setInvitations([])
-          } else {
-            setInvitations(
-              invitationsResult.data ||
-                []
-            )
-          }
+  setInvitations([])
+} else {
+  setInvitations(
+    invitationsResult.data ||
+      []
+  )
+}
 
         } catch (error) {
           console.error(

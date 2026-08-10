@@ -1938,198 +1938,235 @@ setSelectedPilot(
     <div className="min-h-screen flex flex-col text-white">
       <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
-          <div className="space-y-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:space-y-0 lg:col-span-3 lg:block lg:space-y-6">
-            <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
-              <p className="text-gray-400">Piloti contattati</p>
-              <h2 className="text-3xl font-bold text-yellow-400 sm:text-4xl">
-                {stats.pilots}
-              </h2>
+      <main className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F]">
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+
+          {/* HEADER + STATISTICHE */}
+          <div className="mb-7 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-green-300">
+                Area cliente
+              </p>
+
+              <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl lg:text-5xl">
+                Lavori in corso
+              </h1>
+
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-gray-400 sm:text-base">
+                Gestisci i lavori assegnati, i dati operativi e le conferme con il pilota.
+              </p>
             </div>
 
-            <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
-              <p className="text-gray-400">Lavori completati</p>
-              <h2 className="text-3xl font-bold text-green-400 sm:text-4xl">
-                {stats.completed}
-              </h2>
-            </div>
+            <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 lg:w-auto lg:min-w-[500px]">
+              <div className="rounded-2xl border border-yellow-400/10 bg-yellow-400/[0.045] px-3 py-3.5 sm:px-4">
+                <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-yellow-300/70 sm:text-xs">
+                  Piloti contattati
+                </p>
+                <p className="mt-1.5 text-2xl font-black text-yellow-300 sm:text-3xl">
+                  {stats.pilots}
+                </p>
+              </div>
 
-            <div className="bg-[#140a3a] p-6 rounded-2xl border border-white/10">
-              <p className="text-gray-400">Attivi</p>
-              <h2 className="text-3xl font-bold text-cyan-400 sm:text-4xl">
-                {stats.active}
-              </h2>
+              <div className="rounded-2xl border border-green-400/10 bg-green-400/[0.045] px-3 py-3.5 sm:px-4">
+                <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-green-300/70 sm:text-xs">
+                  Completati
+                </p>
+                <p className="mt-1.5 text-2xl font-black text-green-300 sm:text-3xl">
+                  {stats.completed}
+                </p>
+              </div>
+
+              <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/[0.045] px-3 py-3.5 sm:px-4">
+                <p className="truncate text-[10px] font-bold uppercase tracking-[0.12em] text-cyan-300/70 sm:text-xs">
+                  Attivi
+                </p>
+                <p className="mt-1.5 text-2xl font-black text-cyan-300 sm:text-3xl">
+                  {stats.active}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="lg:col-span-9">
-            <h1 className="mb-8 text-3xl font-bold sm:text-4xl lg:text-5xl">Lavori in corso</h1>
-
-            {jobs.length === 0 ? (
-              <div className="rounded-2xl bg-[#140a3a] p-6 text-center sm:p-10">
-                Nessun lavoro in corso
+          {jobs.length === 0 ? (
+            <div className="rounded-3xl border border-white/10 bg-[#140a3a] px-6 py-14 text-center shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-xl">
+                🚁
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                {jobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="bg-[#140a3a] rounded-2xl border border-white/10 overflow-hidden"
-                  >
-                    {job.image1 && (
+
+              <h2 className="mt-4 text-xl font-bold sm:text-2xl">
+                Nessun lavoro in corso
+              </h2>
+
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-gray-500">
+                Quando assegnerai un lavoro a un pilota, comparirà qui con tutte le informazioni operative.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              {jobs.map((job) => (
+                <article
+                  key={job.id}
+                  className="overflow-hidden rounded-3xl border border-white/10 bg-[#140a3a] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+                >
+                  {job.image1 && (
+                    <div className="p-3 pb-0">
                       <img
                         src={job.image1}
                         alt={job.title || "Lavoro"}
-                        className="w-full h-48 object-cover"
+                        className="h-36 w-full rounded-2xl object-cover sm:h-40"
                       />
-                    )}
+                    </div>
+                  )}
 
-                    <div className="p-6 text-center">
-                      <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:justify-between">
-                        <span className="bg-yellow-400 text-black px-3 py-1 rounded-full text-xs font-semibold">
-                          IN CORSO
-                        </span>
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="inline-flex items-center rounded-full border border-yellow-400/20 bg-yellow-400/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-yellow-200">
+                        In corso
+                      </span>
 
-                        <div className="flex items-center gap-2 text-sm text-gray-400">
-                          <Users size={14} />
-                          {job.applications}
-                        </div>
-                      </div>
-
-                      <h3 className="text-xl font-bold mb-2">{job.title}</h3>
-
-                      <p className="text-gray-400 mb-4 line-clamp-2">
-                        {job.description}
-                      </p>
-
-                      <div className="mb-5 space-y-3 text-center">
-  <div>
-    <p className="text-xs uppercase tracking-widest text-gray-500">
-      📍 Posizione
-    </p>
-    <p className="text-lg font-bold text-white">
-      {job.location}
-    </p>
-  </div>
-
-  <div>
-    <p className="text-xs uppercase tracking-widest text-gray-500">
-      📅 Data
-    </p>
-    <p className="text-lg font-bold text-white">
-      {job.job_date}
-    </p>
-
-{job.assignment && (
-  <div
-    className={`rounded-xl border px-4 py-3 text-sm font-semibold ${
-      job.assignment
-        .appointment_confirmed_at
-        ? "border-green-400/20 bg-green-400/10 text-green-300"
-        : job.assignment
-              .appointment_client_confirmed_at
-          ? "border-amber-400/20 bg-amber-400/10 text-amber-200"
-          : job.assignment
-                .appointment_pilot_confirmed_at
-            ? "border-cyan-400/20 bg-cyan-400/10 text-cyan-200"
-            : hasAppointmentDetails(
-                  job.assignment
-                )
-              ? "border-purple-400/20 bg-purple-400/10 text-purple-200"
-              : "border-white/10 bg-white/[0.04] text-gray-400"
-    }`}
-  >
-    {job.assignment
-      .appointment_confirmed_at
-      ? "✅ Appuntamento confermato"
-      : job.assignment
-            .appointment_client_confirmed_at
-        ? "⏳ Appuntamento • In attesa del pilota"
-        : job.assignment
-              .appointment_pilot_confirmed_at
-          ? "📅 Il pilota ha già confermato"
-          : hasAppointmentDetails(
-                job.assignment
-              )
-            ? "📅 Appuntamento da confermare"
-            : "📅 Dettagli appuntamento incompleti"}
-  </div>
-)}
-
-  </div>
-</div>
-
-                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <button
-                          onClick={() => openPilotDetails(job.pilot_id)}
-                          className="bg-green-500 text-black py-2 rounded-lg font-semibold hover:bg-green-400 transition"
-                        >
-                          Dettagli pilota
-                        </button>
-
-                        <button
-                          onClick={() => openJobDetailsModal(job)}
-                          className="bg-green-500 text-black py-2 rounded-lg font-semibold hover:bg-green-400 transition"
-                        >
-                          Vedi dati
-                        </button>
-
-                        {job.client_completed_at &&
-!job.pilot_completed_at ? (
-  <div className="rounded-lg border border-amber-300/30 bg-amber-400/10 px-4 py-2 text-center text-sm font-bold text-amber-200">
-    Conferma inviata • In attesa del pilota
-  </div>
-) : (
-  <button
-    type="button"
-    disabled={
-      completingJobId === job.id
-    }
-    onClick={() =>
-      completeJob(job.id)
-    }
-    className="rounded-lg bg-red-500 py-2 font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-60"
-  >
-    {completingJobId === job.id
-      ? "Conferma in corso..."
-      : job.pilot_completed_at
-        ? "Conferma e completa lavoro"
-        : "Conferma completamento"}
-  </button>
-)}
-
-                        <button
-  type="button"
-  disabled={
-    cancellingJobId === job.id ||
-    completingJobId === job.id ||
-    Boolean(
-      job.client_completed_at ||
-      job.pilot_completed_at
-    )
-  }
-  onClick={() =>
-    cancelJob(job.id)
-  }
-  className="rounded-lg bg-red-500 py-2 font-semibold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
->
-  {cancellingJobId === job.id
-    ? "Annullamento..."
-    : job.client_completed_at ||
-        job.pilot_completed_at
-      ? "Annullamento non disponibile"
-      : "Annulla"}
-</button>
+                      <div className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/[0.07] bg-white/[0.035] px-2.5 py-1.5 text-xs font-semibold text-gray-400">
+                        <Users size={14} />
+                        {job.applications}
                       </div>
                     </div>
+
+                    <div className="mt-4 min-w-0">
+                      <h3 className="truncate text-xl font-black text-white sm:text-2xl">
+                        {job.title}
+                      </h3>
+
+                      <p className="mt-1.5 line-clamp-2 min-h-[40px] text-sm leading-5 text-gray-400">
+                        {job.description}
+                      </p>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-2 gap-2.5">
+                      <div className="min-w-0 rounded-2xl border border-white/[0.07] bg-black/20 px-3.5 py-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                          📍 Posizione
+                        </p>
+                        <p className="mt-1.5 truncate text-sm font-bold text-white sm:text-base">
+                          {job.location}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/[0.07] bg-black/20 px-3.5 py-3">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-gray-500">
+                          📅 Data
+                        </p>
+                        <p className="mt-1.5 text-sm font-bold text-white sm:text-base">
+                          {job.job_date}
+                        </p>
+                      </div>
+                    </div>
+
+                    {job.assignment && (
+                      <div
+                        className={`mt-3 rounded-2xl border px-4 py-3 text-center text-xs font-bold sm:text-sm ${
+                          job.assignment
+                            .appointment_confirmed_at
+                            ? "border-green-400/20 bg-green-400/[0.08] text-green-300"
+                            : job.assignment
+                                  .appointment_client_confirmed_at
+                              ? "border-amber-400/20 bg-amber-400/[0.08] text-amber-200"
+                              : job.assignment
+                                    .appointment_pilot_confirmed_at
+                                ? "border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-200"
+                                : hasAppointmentDetails(
+                                      job.assignment
+                                  )
+                                  ? "border-purple-400/20 bg-purple-400/[0.08] text-purple-200"
+                                  : "border-white/10 bg-white/[0.035] text-gray-400"
+                        }`}
+                      >
+                        {job.assignment
+                          .appointment_confirmed_at
+                          ? "✅ Appuntamento confermato"
+                          : job.assignment
+                                .appointment_client_confirmed_at
+                            ? "⏳ Appuntamento • In attesa del pilota"
+                            : job.assignment
+                                  .appointment_pilot_confirmed_at
+                              ? "📅 Il pilota ha già confermato"
+                              : hasAppointmentDetails(
+                                    job.assignment
+                                )
+                                ? "📅 Appuntamento da confermare"
+                                : "📅 Dettagli appuntamento incompleti"}
+                      </div>
+                    )}
+
+                    <div className="mt-4 grid grid-cols-2 gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() => openPilotDetails(job.pilot_id)}
+className="rounded-xl border border-yellow-400/30 bg-yellow-400 px-4 py-3 font-bold text-black transition hover:bg-yellow-300"
+                      >
+                        Dettagli pilota
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => openJobDetailsModal(job)}
+className="rounded-xl border border-yellow-400/30 bg-yellow-400 px-4 py-3 font-bold text-black transition hover:bg-yellow-300"
+                      >
+                        Vedi dati
+                      </button>
+
+                      {job.client_completed_at &&
+                      !job.pilot_completed_at ? (
+                        <div className="flex min-h-[42px] items-center justify-center rounded-xl border border-amber-300/25 bg-amber-400/[0.08] px-3 py-2 text-center text-xs font-bold leading-4 text-amber-200 sm:text-sm">
+                          Conferma inviata • In attesa del pilota
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={
+                            completingJobId === job.id
+                          }
+                          onClick={() =>
+                            completeJob(job.id)
+                          }
+                          className="rounded-xl bg-green-500 px-3 py-2.5 text-sm font-black text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          {completingJobId === job.id
+                            ? "Conferma in corso..."
+                            : job.pilot_completed_at
+                              ? "Conferma e completa lavoro"
+                              : "Conferma completamento"}
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        disabled={
+                          cancellingJobId === job.id ||
+                          completingJobId === job.id ||
+                          Boolean(
+                            job.client_completed_at ||
+                            job.pilot_completed_at
+                          )
+                        }
+                        onClick={() =>
+                          cancelJob(job.id)
+                        }
+className="rounded-xl border border-red-500/30 bg-red-500 px-4 py-3 font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {cancellingJobId === job.id
+                          ? "Annullamento..."
+                          : job.client_completed_at ||
+                              job.pilot_completed_at
+                            ? "Annullamento non disponibile"
+                            : "Annulla"}
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                </article>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      </main>
 
       {showAppointmentChangeModal &&
   selectedJob &&

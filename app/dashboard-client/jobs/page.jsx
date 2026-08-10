@@ -14,7 +14,8 @@ import {
   Pencil,
   X,
   Lock,
-  Copy
+  Copy,
+  Trash2
 } from "lucide-react"
 
 function isAssignedExpired(job) {
@@ -72,6 +73,11 @@ export default function ClientJobs() {
    const [savingJob, setSavingJob] =
     useState(false)
 
+    const [
+  deletingJobId,
+  setDeletingJobId
+] = useState(null)
+
   const loadJobs = async () => {
     const {
       data: { user }
@@ -110,10 +116,11 @@ export default function ClientJobs() {
     )
 
     const visibleJobs = jobsWithApplications.filter((job) => {
-      if (job.status === "completed") return false
-      if (isAssignedExpired(job)) return false
-      return true
-    })
+  if (job.status === "completed") return false
+  if (job.status === "cancelled") return false
+  if (isAssignedExpired(job)) return false
+  return true
+})
 
     const active = visibleJobs.filter(
       (job) => job.status !== "assigned" && job.status !== "completed"
@@ -125,11 +132,16 @@ export default function ClientJobs() {
       (job) => job.status === "completed"
     )
 
-    const total = jobsWithApplications.reduce(
-      (sum, job) => sum + job.applications,
-      0
-    )
-
+    const total = jobsWithApplications
+  .filter(
+    (job) =>
+      job.status !== "cancelled"
+  )
+  .reduce(
+    (sum, job) =>
+      sum + job.applications,
+    0
+  )
     setJobs(visibleJobs)
     setActiveJobs(active.length)
     setAssignedJobs(assigned.length)
@@ -370,6 +382,118 @@ export default function ClientJobs() {
     }
   }
 
+const deleteOpenJob =
+  async (job) => {
+    if (
+      deletingJobId ||
+      !job?.id
+    ) {
+      return
+    }
+
+    if (
+      job.status !== "open"
+    ) {
+      toast.error(
+        "Puoi eliminare soltanto un lavoro ancora aperto."
+      )
+
+      return
+    }
+
+    const confirmed =
+      window.confirm(
+        `Vuoi eliminare "${job.title}"?\n\nIl lavoro non sarà più visibile ai piloti.\n\nI crediti utilizzati per pubblicarlo NON verranno restituiti.`
+      )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setDeletingJobId(
+        job.id
+      )
+
+      const {
+        data,
+        error
+      } = await supabase.rpc(
+        "cancel_open_job_no_refund",
+        {
+          p_job_id:
+            job.id
+        }
+      )
+
+      if (error) {
+        const errorText = [
+          error.message,
+          error.details,
+          error.hint,
+          error.code
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toUpperCase()
+
+        if (
+          errorText.includes(
+            "LAVORO_NON_TROVATO"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più disponibile."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "NON_SEI_IL_PROPRIETARIO_DEL_LAVORO"
+          )
+        ) {
+          throw new Error(
+            "Non sei autorizzato a eliminare questo lavoro."
+          )
+        }
+
+        if (
+          errorText.includes(
+            "SOLO_I_LAVORI_APERTI_POSSONO_ESSERE_ELIMINATI"
+          )
+        ) {
+          throw new Error(
+            "Il lavoro non è più aperto e non può essere eliminato da questa schermata."
+          )
+        }
+
+        throw error
+      }
+
+      toast.success(
+        data?.already_processed
+          ? "Il lavoro risultava già eliminato."
+          : "Lavoro eliminato. I crediti utilizzati non sono stati restituiti."
+      )
+
+      await loadJobs()
+
+    } catch (error) {
+      console.error(
+        "[cancel-open-job] Operazione fallita:",
+        error
+      )
+
+      toast.error(
+        error?.message ||
+          "Impossibile eliminare il lavoro."
+      )
+    } finally {
+      setDeletingJobId(
+        null
+      )
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col text-white">
@@ -539,6 +663,27 @@ export default function ClientJobs() {
   <Copy size={16} />
   Duplica lavoro
 </Link>
+
+{job.status === "open" && (
+  <button
+    type="button"
+    disabled={
+      deletingJobId ===
+      job.id
+    }
+    onClick={() =>
+      deleteOpenJob(job)
+    }
+    className="flex w-full items-center justify-center gap-2 rounded-xl border border-red-400/30 bg-red-500 py-3 font-bold text-white transition hover:bg-red-400 disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2"
+  >
+    <Trash2 size={16} />
+
+    {deletingJobId === job.id
+      ? "Eliminazione..."
+      : "Elimina lavoro"}
+  </button>
+)}
+
 </div>
                     </div>
                   </div>

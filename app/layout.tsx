@@ -4,6 +4,7 @@ import CookieBanner from "@/components/CookieBanner"
 import { Geist, Geist_Mono, Krona_One } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel"
+import DroneGuardAssistant from "@/components/DroneGuardAssistant"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,10 +41,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${krona.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <Toaster richColors position="top-right" />
-        {children}
-        <CookieBanner />
-      </body>
+  <Toaster richColors position="top-right" />
+  {children}
+  <DroneGuardAssistant />
+  <MetaPixel />
+  <CookieBanner />
+</body>
     </html>
   );
 }

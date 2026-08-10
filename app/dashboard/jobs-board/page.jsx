@@ -20,6 +20,14 @@ import {
   Bookmark
 } from "lucide-react"
 
+const ACTIVE_STATUSES = [
+  "assigned",
+  "accepted",
+  "in_progress",
+  "active",
+  "details_sent"
+]
+
 function isAssignedExpired(job) {
   if (job.status !== "assigned" || !job.assigned_at) return false
 

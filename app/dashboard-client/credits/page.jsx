@@ -92,129 +92,201 @@ export default function CreditsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col text-white">
-      <Navbar logged />
+  <div className="min-h-screen flex flex-col text-white">
+    <Navbar logged />
 
-      <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="mb-6 text-3xl font-[var(--font-krona)] sm:text-4xl">
-            Crediti
-          </h1>
+    <div className="flex-1 bg-gradient-to-br from-[#0B0F2A] via-[#0F1B4D] to-[#0A0D1F] px-4 py-7 sm:px-6 lg:px-8 lg:py-10">
+      <div className="mx-auto max-w-7xl">
 
-          <div className="bg-white/5 border border-white/20 rounded-2xl p-8 mb-10 text-center">
-            <p className="text-gray-400 mb-2">
+        {/* HEADER */}
+        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.28em] text-emerald-300">
+              Area cliente
+            </p>
+
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl">
+              Crediti
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-sm text-gray-400 sm:text-base">
+              Acquista crediti da utilizzare per pubblicare nuovi lavori su DroneGuard.
+            </p>
+          </div>
+
+          {/* CREDITI DISPONIBILI */}
+          <div className="w-full rounded-2xl border border-emerald-400/20 bg-emerald-400/[0.06] px-6 py-5 lg:w-[260px]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
               Crediti disponibili
             </p>
 
-            <h2 className="text-4xl font-bold sm:text-5xl">
-              {loading ? "..." : credits}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-           <div className="rounded-2xl border border-green-400/30 bg-white/5 p-8 text-center">
-  <h3 className="mb-2 text-2xl font-semibold">
-    Bonus iniziale cliente
-  </h3>
-
-  <p className="mb-4 text-3xl font-bold text-green-400 sm:text-4xl">
-    10 crediti
-  </p>
-
-  <p className="text-sm leading-6 text-gray-400">
-    Assegnati automaticamente una sola volta alla prima registrazione.
-  </p>
-</div> 
-            <div className="bg-white/5 border border-white/20 rounded-2xl p-8 text-center">
-              <h3 className="text-2xl mb-2 font-semibold">
-                Basic
-              </h3>
-
-              <p className="text-gray-400 mb-4">
-                Ricarica veloce
-              </p>
-
-              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-                €4
+            <div className="mt-2 flex items-end justify-between">
+              <h2 className="text-4xl font-black text-white">
+                {loading ? "..." : credits}
               </h2>
 
-              <p className="mb-6">
-                5 crediti
-              </p>
-
-              <button
-                onClick={() => buyCredits("client_basic")}
-                disabled={checkoutLoading === "client_basic"}
-                className="w-full py-3 bg-white text-black rounded-lg font-medium hover:scale-105 transition disabled:opacity-50"
-              >
-                {checkoutLoading === "client_basic"
-                  ? "Apertura pagamento..."
-                  : "Acquista"}
-              </button>
+              <span className="mb-1 text-sm text-gray-400">
+                crediti
+              </span>
             </div>
-
-            <div className="bg-white/5 border border-white/20 rounded-2xl p-8 text-center">
-              <h3 className="text-2xl mb-2 font-semibold">
-                Standard
-              </h3>
-
-              <p className="text-gray-400 mb-4">
-                Perfetto per iniziare
-              </p>
-
-              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-                €9
-              </h2>
-
-              <p className="mb-6">
-                40 crediti
-              </p>
-
-              <button
-                onClick={() => buyCredits("client_standard")}
-                disabled={checkoutLoading === "client_standard"}
-                className="w-full py-3 bg-white text-black rounded-lg font-medium hover:scale-105 transition disabled:opacity-50"
-              >
-                {checkoutLoading === "client_standard"
-                  ? "Apertura pagamento..."
-                  : "Acquista"}
-              </button>
-            </div>
-
-            <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl p-8 text-center shadow-xl">
-              <h3 className="text-2xl mb-2 font-semibold">
-                Pro
-              </h3>
-
-              <p className="text-white/80 mb-4">
-                Per clienti professionali
-              </p>
-
-              <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-                €19.99
-              </h2>
-
-              <p className="mb-6">
-                120 crediti
-              </p>
-
-              <button
-                onClick={() => buyCredits("client_pro")}
-                disabled={checkoutLoading === "client_pro"}
-                className="w-full py-3 bg-white text-black rounded-lg font-medium hover:scale-105 transition disabled:opacity-50"
-              >
-                {checkoutLoading === "client_pro"
-                  ? "Apertura pagamento..."
-                  : "Acquista Pro"}
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-10 text-center text-gray-400 text-sm">
-            Ogni pubblicazione lavoro costa 5 crediti
           </div>
         </div>
+
+        {/* PACCHETTI */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+          {/* BASIC */}
+          <div className="flex flex-col rounded-3xl border border-white/10 bg-[#140a3a] p-6 shadow-xl shadow-black/10">
+            <div className="mb-6">
+              <div className="mb-4 inline-flex rounded-full border border-yellow-400/30 bg-yellow-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-yellow-300">
+                Basic
+              </div>
+
+              <h3 className="text-2xl font-black text-white">
+                Ricarica veloce
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-400">
+                Per pubblicare un singolo lavoro.
+              </p>
+            </div>
+
+            <div className="mb-6 rounded-2xl border border-white/10 bg-black/15 p-5">
+              <div className="flex items-end gap-1">
+                <span className="text-4xl font-black text-white">
+                  €4
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-sm text-gray-400">
+                  Crediti inclusi
+                </span>
+
+                <span className="text-xl font-bold text-yellow-300">
+                  5
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => buyCredits("client_basic")}
+              disabled={checkoutLoading === "client_basic"}
+              className="mt-auto w-full rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {checkoutLoading === "client_basic"
+                ? "Apertura pagamento..."
+                : "Acquista"}
+            </button>
+          </div>
+
+          {/* STANDARD */}
+          <div className="flex flex-col rounded-3xl border border-cyan-400/20 bg-[#140a3a] p-6 shadow-xl shadow-black/10">
+            <div className="mb-6">
+              <div className="mb-4 inline-flex rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-300">
+                Standard
+              </div>
+
+              <h3 className="text-2xl font-black text-white">
+                Più conveniente
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-400">
+                Ideale per pubblicare più lavori.
+              </p>
+            </div>
+
+            <div className="mb-6 rounded-2xl border border-white/10 bg-black/15 p-5">
+              <div className="flex items-end gap-1">
+                <span className="text-4xl font-black text-white">
+                  €9
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-sm text-gray-400">
+                  Crediti inclusi
+                </span>
+
+                <span className="text-xl font-bold text-cyan-300">
+                  40
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => buyCredits("client_standard")}
+              disabled={checkoutLoading === "client_standard"}
+              className="mt-auto w-full rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {checkoutLoading === "client_standard"
+                ? "Apertura pagamento..."
+                : "Acquista"}
+            </button>
+          </div>
+
+          {/* PRO */}
+          <div className="relative flex flex-col overflow-hidden rounded-3xl border border-purple-400/30 bg-[#140a3a] p-6 shadow-xl shadow-purple-950/20">
+            <div className="absolute right-0 top-0 rounded-bl-2xl bg-purple-500 px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-white">
+              Più crediti
+            </div>
+
+            <div className="mb-6">
+              <div className="mb-4 inline-flex rounded-full border border-purple-400/30 bg-purple-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-purple-300">
+                Pro
+              </div>
+
+              <h3 className="text-2xl font-black text-white">
+                Professionale
+              </h3>
+
+              <p className="mt-2 text-sm text-gray-400">
+                Per clienti che pubblicano frequentemente.
+              </p>
+            </div>
+
+            <div className="mb-6 rounded-2xl border border-purple-400/20 bg-purple-400/[0.06] p-5">
+              <div className="flex items-end gap-1">
+                <span className="text-4xl font-black text-white">
+                  €19.99
+                </span>
+              </div>
+
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-sm text-gray-400">
+                  Crediti inclusi
+                </span>
+
+                <span className="text-xl font-bold text-purple-300">
+                  120
+                </span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => buyCredits("client_pro")}
+              disabled={checkoutLoading === "client_pro"}
+              className="mt-auto w-full rounded-xl bg-green-500 px-5 py-3.5 font-bold text-black transition hover:bg-green-400 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {checkoutLoading === "client_pro"
+                ? "Apertura pagamento..."
+                : "Acquista Pro"}
+            </button>
+          </div>
+        </div>
+
+        {/* INFO COSTO */}
+        <div className="mt-6 flex items-center justify-center">
+          <div className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-center text-sm text-gray-400">
+            Ogni pubblicazione lavoro costa{" "}
+            <span className="font-bold text-white">
+              5 crediti
+            </span>
+          </div>
+        </div>
+
       </div>
     </div>
-  )
+  </div>
+)
 }
