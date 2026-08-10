@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { requireTeamAccess } from "@/lib/team/access"
+import AdminLogoutButton from "./AdminLogoutButton"
 import OnlineNowBadge from "@/components/admin/OnlineNowBadge"
 
 export const dynamic = "force-dynamic"
@@ -147,6 +148,7 @@ export default async function AdminLayout({ children }) {
             >
               Torna al sito
             </Link>
+            <AdminLogoutButton />
           </div>
         </aside>
 
@@ -166,9 +168,19 @@ export default async function AdminLayout({ children }) {
               <div className="flex items-center gap-2">
   <OnlineNowBadge />
 
+  <div className="flex items-center gap-2">
+
   <div className="rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-xs font-semibold text-green-400">
     {access.role_name}
   </div>
+
+  <div className="lg:hidden">
+    <AdminLogoutButton
+      compact
+    />
+  </div>
+
+</div>
 </div>
             </div>
           </header>
