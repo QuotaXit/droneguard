@@ -157,7 +157,7 @@ export default function DroneGuardAssistant() {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="font-bold">
-                    Assistente DroneGuard
+                  DroneGuard AI
                   </h2>
 
                   <Sparkles
@@ -165,10 +165,6 @@ export default function DroneGuardAssistant() {
                     className="text-green-400"
                   />
                 </div>
-
-                <p className="mt-0.5 text-xs text-gray-400">
-                  Supporto AI sulla piattaforma
-                </p>
               </div>
             </div>
 
@@ -292,7 +288,7 @@ export default function DroneGuardAssistant() {
       >
         <MessageCircle size={20} />
         <span className="hidden sm:inline">
-          Assistente AI
+          DroneGuard AI
         </span>
       </button>
     </>

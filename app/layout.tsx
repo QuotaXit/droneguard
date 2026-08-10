@@ -5,6 +5,8 @@ import { Geist, Geist_Mono, Krona_One } from "next/font/google";
 import "./globals.css";
 import MetaPixel from "@/components/MetaPixel"
 import DroneGuardAssistant from "@/components/DroneGuardAssistant"
+import SiteAnalyticsTracker from "@/components/SiteAnalyticsTracker"
+import SitePresenceTracker from "@/components/SitePresenceTracker"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +44,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
   <Toaster richColors position="top-right" />
+   <SitePresenceTracker />
+  <SiteAnalyticsTracker />
+
   {children}
   <DroneGuardAssistant />
   <MetaPixel />

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { requireTeamAccess } from "@/lib/team/access"
+import OnlineNowBadge from "@/components/admin/OnlineNowBadge"
 
 export const dynamic = "force-dynamic"
 
@@ -10,6 +11,12 @@ const navigationItems = [
     icon: "◈",
     permission: "dashboard.view"
   },
+  {
+  href: "/admin/analytics",
+  label: "Statistiche",
+  icon: "⌁",
+  permission: "dashboard.view"
+},
   {
     href: "/admin/team",
     label: "Account Team",
@@ -156,9 +163,13 @@ export default async function AdminLayout({ children }) {
                 </p>
               </div>
 
-              <div className="rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-xs font-semibold text-green-400">
-                {access.role_name}
-              </div>
+              <div className="flex items-center gap-2">
+  <OnlineNowBadge />
+
+  <div className="rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-xs font-semibold text-green-400">
+    {access.role_name}
+  </div>
+</div>
             </div>
           </header>
 
