@@ -2,6 +2,7 @@ import Link from "next/link"
 import { requireTeamAccess } from "@/lib/team/access"
 import AdminLogoutButton from "./AdminLogoutButton"
 import OnlineNowBadge from "@/components/admin/OnlineNowBadge"
+import TeamNotificationBell from "./TeamNotificationBell"
 
 export const dynamic = "force-dynamic"
 
@@ -167,6 +168,8 @@ export default async function AdminLayout({ children }) {
 
               <div className="flex items-center gap-2">
   <OnlineNowBadge />
+
+  <TeamNotificationBell />
 
   <div className="flex items-center gap-2">
 
