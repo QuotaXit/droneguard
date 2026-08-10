@@ -167,26 +167,23 @@ export default async function AdminLayout({ children }) {
               </div>
 
               <div className="flex items-center gap-2">
+
   <OnlineNowBadge />
 
   <TeamNotificationBell />
-
-  <div className="flex items-center gap-2">
 
   <div className="rounded-full border border-green-400/20 bg-green-400/10 px-4 py-2 text-xs font-semibold text-green-400">
     {access.role_name}
   </div>
 
   <div className="lg:hidden">
-    <AdminLogoutButton
-      compact
-    />
+    <AdminLogoutButton compact />
   </div>
 
 </div>
+
 </div>
-            </div>
-          </header>
+</header>
 
           <nav className="flex gap-2 overflow-x-auto border-b border-white/10 bg-[#0B1028] p-3 lg:hidden">
             {visibleNavigation.map((item) => (
