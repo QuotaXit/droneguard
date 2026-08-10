@@ -769,6 +769,143 @@ export async function POST(request) {
     )
   }
 
+  // =====================================================
+// NOTIFICA CENTRO OPERATIVO TEAM - PAGAMENTO
+// =====================================================
+
+try {
+  const creditsAdded =
+    Number(
+      processingResult
+        .credits_added || 0
+    )
+
+  const formattedAmount =
+    new Intl.NumberFormat(
+      "it-IT",
+      {
+        style: "currency",
+        currency:
+          currency.toUpperCase()
+      }
+    ).format(
+      amountTotal / 100
+    )
+
+  const paymentMessage =
+    creditsAdded > 0
+      ? `${creditsAdded} crediti acquistati — ${formattedAmount}`
+      : `Pagamento ricevuto — ${formattedAmount}`
+
+  const {
+    error: teamNotificationError
+  } =
+    await adminSupabase
+      .from(
+        "team_notifications"
+      )
+      .upsert(
+        {
+          event_key:
+            `stripe-payment:${session.id}`,
+
+          category:
+            "payment",
+
+          severity:
+            "success",
+
+          title:
+            "Pagamento ricevuto",
+
+          message:
+            paymentMessage,
+
+          href:
+            "/admin/payments",
+
+          required_permission:
+            "payments.view",
+
+          source_type:
+            "stripe_payment",
+
+          source_id:
+            processingResult
+              .payment_id ||
+            session.id,
+
+          actor_user_id:
+            userId,
+
+          metadata: {
+            checkout_session_id:
+              session.id,
+
+            payment_intent_id:
+              paymentIntentId,
+
+            payment_id:
+              processingResult
+                .payment_id ||
+              null,
+
+            ledger_id:
+              processingResult
+                .ledger_id ||
+              null,
+
+            package_id:
+              packageId,
+
+            credits_added:
+              creditsAdded,
+
+            amount_total:
+              amountTotal,
+
+            currency:
+              currency,
+
+            balance_after:
+              Number(
+                processingResult
+                  .balance_after ||
+                0
+              ),
+
+            livemode:
+              Boolean(
+                event.livemode
+              )
+          }
+        },
+        {
+          onConflict:
+            "event_key",
+
+          ignoreDuplicates:
+            true
+        }
+      )
+
+  if (
+    teamNotificationError
+  ) {
+    console.error(
+      "[stripe-webhook] team payment notification insert failed:",
+      teamNotificationError
+    )
+  }
+} catch (
+  teamNotificationUnexpectedError
+) {
+  console.error(
+    "[stripe-webhook] team payment notification unexpected error:",
+    teamNotificationUnexpectedError
+  )
+}
+
   return jsonResponse({
     received: true,
     processed: true,

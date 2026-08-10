@@ -1216,6 +1216,81 @@ export async function POST(
           ""
       ).trim()
 
+      // =====================================================
+// NOTIFICA CENTRO OPERATIVO TEAM
+// =====================================================
+
+try {
+  const {
+    error: teamNotificationError
+  } =
+    await adminSupabase
+      .from(
+        "team_notifications"
+      )
+      .upsert(
+        {
+          event_key:
+            `insurance-request:${requestId}`,
+
+          category:
+            "insurance",
+
+          severity:
+            "warning",
+
+          title:
+            "Nuova assicurazione pilota",
+
+          message:
+            `${fullName} ha inviato una polizza assicurativa da verificare.`,
+
+          href:
+            "/admin/certifications",
+
+          required_permission:
+            "certifications.view",
+
+          source_type:
+            "insurance_request",
+
+          source_id:
+            requestId,
+
+          actor_user_id:
+            user.id,
+
+          metadata: {
+            pilot_user_id:
+              user.id
+          }
+        },
+        {
+          onConflict:
+            "event_key",
+
+          ignoreDuplicates:
+            true
+        }
+      )
+
+  if (
+    teamNotificationError
+  ) {
+    console.error(
+      "[insurance-request] team notification insert failed:",
+      teamNotificationError
+    )
+  }
+} catch (
+  teamNotificationUnexpectedError
+) {
+  console.error(
+    "[insurance-request] team notification unexpected error:",
+    teamNotificationUnexpectedError
+  )
+}
+
     const siteUrl =
       String(
         process.env

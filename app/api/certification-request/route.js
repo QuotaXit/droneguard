@@ -562,6 +562,81 @@ const declaredCertifications =
       "Non indicate"
   ).trim()
 
+  // =====================================================
+// NOTIFICA CENTRO OPERATIVO TEAM
+// =====================================================
+
+try {
+  const {
+    error: teamNotificationError
+  } =
+    await adminSupabase
+      .from(
+        "team_notifications"
+      )
+      .upsert(
+        {
+          event_key:
+            `certification-request:${requestId}`,
+
+          category:
+            "certification",
+
+          severity:
+            "warning",
+
+          title:
+            "Nuova certificazione pilota",
+
+          message:
+            `${fullName} ha inviato una certificazione da verificare.`,
+
+          href:
+            "/admin/certifications",
+
+          required_permission:
+            "certifications.view",
+
+          source_type:
+            "certification_request",
+
+          source_id:
+            requestId,
+
+          actor_user_id:
+            user.id,
+
+          metadata: {
+            pilot_user_id:
+              user.id
+          }
+        },
+        {
+          onConflict:
+            "event_key",
+
+          ignoreDuplicates:
+            true
+        }
+      )
+
+  if (
+    teamNotificationError
+  ) {
+    console.error(
+      "[certification-request] team notification insert failed:",
+      teamNotificationError
+    )
+  }
+} catch (
+  teamNotificationUnexpectedError
+) {
+  console.error(
+    "[certification-request] team notification unexpected error:",
+    teamNotificationUnexpectedError
+  )
+}
+
 const siteUrl =
   String(
     process.env.NEXT_PUBLIC_SITE_URL ||
